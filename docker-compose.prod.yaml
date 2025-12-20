@@ -1,0 +1,124 @@
+services:
+  # -----------------------------
+  # Django Backend
+  # -----------------------------
+  backend:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    container_name: healthpilot-backend
+    command: >
+      sh -c "
+      python manage.py migrate &&
+      python manage.py collectstatic --noinput &&
+      gunicorn core.wsgi:application
+      --bind 0.0.0.0:8000
+      --workers 3
+      --timeout 120
+      "
+    volumes:
+      - static_volume:/app/staticfiles
+      - media_volume:/app/media
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    environment:
+      # Django Core
+      DEBUG: ${DEBUG:-False}
+      SECRET_KEY: ${SECRET_KEY}
+      ALLOWED_HOSTS: ${ALLOWED_HOSTS:-localhost,127.0.0.1}
+
+      # Database
+      DATABASE_URL: ${DATABASE_URL}
+
+      # CORS
+      FRONTEND_URL: ${FRONTEND_URL:-http://localhost:3000}
+      CORS_ALLOW_ALL_ORIGINS: ${CORS_ALLOW_ALL_ORIGINS:-False}
+
+      # Email
+      EMAIL_BACKEND: ${EMAIL_BACKEND:-django.core.mail.backends.smtp.EmailBackend}
+      EMAIL_HOST: ${EMAIL_HOST:-smtp.gmail.com}
+      EMAIL_PORT: ${EMAIL_PORT:-587}
+      EMAIL_USE_TLS: ${EMAIL_USE_TLS:-True}
+      EMAIL_HOST_USER: ${EMAIL_HOST_USER}
+      EMAIL_HOST_PASSWORD: ${EMAIL_HOST_PASSWORD}
+      DEFAULT_FROM_EMAIL: ${DEFAULT_FROM_EMAIL:-Health Pilot <noreply@healthpilot.com>}
+
+      # OpenAI
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+
+      # Celery (External Redis)
+      CELERY_BROKER_URL: ${CELERY_BROKER_URL}
+      CELERY_RESULT_BACKEND: ${CELERY_RESULT_BACKEND}
+
+      # Security (Production)
+      SECURE_SSL_REDIRECT: ${SECURE_SSL_REDIRECT:-True}
+      SESSION_COOKIE_SECURE: ${SESSION_COOKIE_SECURE:-True}
+      CSRF_COOKIE_SECURE: ${CSRF_COOKIE_SECURE:-True}
+      SECURE_BROWSER_XSS_FILTER: ${SECURE_BROWSER_XSS_FILTER:-True}
+      SECURE_CONTENT_TYPE_NOSNIFF: ${SECURE_CONTENT_TYPE_NOSNIFF:-True}
+      X_FRAME_OPTIONS: ${X_FRAME_OPTIONS:-DENY}
+      SECURE_HSTS_SECONDS: ${SECURE_HSTS_SECONDS:-31536000}
+      SECURE_HSTS_INCLUDE_SUBDOMAINS: ${SECURE_HSTS_INCLUDE_SUBDOMAINS:-True}
+      SECURE_HSTS_PRELOAD: ${SECURE_HSTS_PRELOAD:-True}
+
+      # Logging
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8000/health/ || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    networks:
+      - healthpilot-network
+
+  # -----------------------------
+  # Next.js Frontend
+  # -----------------------------
+  frontend:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    container_name: healthpilot-frontend
+    env_file:
+      - .env
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:8000}
+    ports:
+      - "3000:3000"
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "wget --no-verbose --tries=1 --spider http://localhost:3000 || exit 1",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    networks:
+      - healthpilot-network
+
+# -----------------------------
+# Volumes
+# -----------------------------
+volumes:
+  static_volume:
+  media_volume:
+
+# -----------------------------
+# Network
+# -----------------------------
+networks:
+  healthpilot-network:
+    driver: bridge

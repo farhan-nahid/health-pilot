@@ -1,7 +1,7 @@
 # ----------------------------------------
 # Base image with Bun
 # ----------------------------------------
-FROM oven/bun:1 AS base
+FROM oven/bun:1.3.5 AS base
 WORKDIR /app
 
 # ----------------------------------------
@@ -9,7 +9,7 @@ WORKDIR /app
 # Only package.json / lockfile copied first for efficient caching
 # ----------------------------------------
 FROM base AS deps
-COPY package.json bun.lock* ./
+COPY package.json bun.lock ./
 RUN bun install --frozen-lockfile || bun install
 
 # ----------------------------------------
@@ -29,7 +29,7 @@ RUN bun run build
 # ----------------------------------------
 # Production runtime
 # ----------------------------------------
-FROM oven/bun:1-slim AS runner
+FROM oven/bun:1.3.5-slim AS runner
 WORKDIR /app
 
 ENV NODE_ENV=production \
