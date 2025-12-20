@@ -1,14 +1,16 @@
 "use client"
 
+import { useUser } from "@/hooks/use-user";
 import { cn } from "@/lib/utils";
 import {
-    Activity,
-    Calendar,
-    FileText,
-    LayoutDashboard,
-    Settings,
-    UserCircle,
-    Users
+  Activity,
+  Calendar,
+  Clock,
+  FileText,
+  LayoutDashboard,
+  Settings,
+  UserCircle,
+  Users
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -17,12 +19,12 @@ const navigation = [
   { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
   { name: 'Appointments', href: '/dashboard/appointments', icon: Calendar },
   { name: 'Patients', href: '/dashboard/patients', icon: Users, roles: ['doctor'] },
-  { name: 'Medical Reports', href: '/dashboard/reports', icon: FileText, roles: ['patient'] },
+  { name: 'Medical Reports', href: '/dashboard/reports', icon: FileText, roles: ['patient', 'doctor'] },
+  { name: 'Schedule', href: '/dashboard/schedule', icon: Clock, roles: ['doctor'] },
   { name: 'Profile', href: '/dashboard/profile', icon: UserCircle },
   { name: 'Settings', href: '/dashboard/settings', icon: Settings },
 ];
 
-import { useUser } from "@/hooks/use-user";
 
 export function Sidebar({ className }: { className?: string }) {
   const pathname = usePathname();

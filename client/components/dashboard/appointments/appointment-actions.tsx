@@ -26,6 +26,7 @@ import { showError, showSuccess } from "@/lib/notifications";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { CheckCircle2, Edit, Eye, MoreHorizontal, Trash2, XCircle } from "lucide-react";
 import { useState } from "react";
+import { CompleteAppointmentDialog } from "./complete-appointment-dialog";
 import { EditAppointmentDialog } from "./edit-appointment-dialog";
 import { ViewAppointmentDialog } from "./view-appointment-dialog";
 
@@ -44,6 +45,7 @@ export function AppointmentActions({
   const [showDeleteAlert, setShowDeleteAlert] = useState(false);
   const [showAcceptAlert, setShowAcceptAlert] = useState(false);
   const [showRejectAlert, setShowRejectAlert] = useState(false);
+  const [showComplete, setShowComplete] = useState(false);
 
   const queryClient = useQueryClient();
 
@@ -129,6 +131,15 @@ export function AppointmentActions({
               <CheckCircle2 className="mr-2 h-4 w-4" /> Accept
             </DropdownMenuItem>
           )}
+
+          {isDoctor && appointment.status === "accepted" && (
+            <DropdownMenuItem 
+              onClick={() => setShowComplete(true)}
+              className="text-emerald-600 focus:text-emerald-600 focus:bg-emerald-50"
+            >
+              <CheckCircle2 className="mr-2 h-4 w-4" /> Mark Completed
+            </DropdownMenuItem>
+          )}
           
           {isDoctor && isPending && (
             <DropdownMenuItem 
@@ -170,6 +181,13 @@ export function AppointmentActions({
         appointment={appointment} 
         open={showEdit} 
         onOpenChange={setShowEdit} 
+        onSuccess={onRefresh}
+      />
+
+      <CompleteAppointmentDialog
+        appointment={appointment}
+        open={showComplete}
+        onOpenChange={setShowComplete}
         onSuccess={onRefresh}
       />
 

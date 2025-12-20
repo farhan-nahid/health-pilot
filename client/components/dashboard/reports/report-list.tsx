@@ -15,6 +15,8 @@ import { Eye, FileText } from "lucide-react";
 import { useState } from "react";
 import { ViewReportDialog } from "./view-report-dialog";
 
+import { useUser } from "@/hooks/use-user";
+
 export function ReportList({ 
   reports, 
   isLoading 
@@ -22,6 +24,8 @@ export function ReportList({
   reports: MedicalReport[]; 
   isLoading: boolean;
 }) {
+  const { user } = useUser();
+  const isDoctor = user?.user_type === 'doctor';
   const [selectedReport, setSelectedReport] = useState<MedicalReport | null>(null);
 
   if (isLoading) {
@@ -49,6 +53,7 @@ export function ReportList({
         <TableHeader>
           <TableRow className="bg-muted/50 hover:bg-muted/50">
             <TableHead>Date Uploaded</TableHead>
+            {isDoctor && <TableHead>Patient</TableHead>}
             <TableHead>Symptoms</TableHead>
             <TableHead>AI Specialization</TableHead>
             <TableHead className="w-[100px] text-right">Action</TableHead>
@@ -60,6 +65,11 @@ export function ReportList({
               <TableCell className="font-medium" suppressHydrationWarning>
                 {format(new Date(report.uploaded_at), "PPP")}
               </TableCell>
+              {isDoctor && (
+                <TableCell className="font-semibold">
+                  {report.patient_name}
+                </TableCell>
+              )}
               <TableCell className="max-w-[300px] truncate">
                 {report.symptoms}
               </TableCell>

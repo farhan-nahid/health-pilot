@@ -6,7 +6,11 @@ import { AlertCircle } from "lucide-react";
 import { ReportList } from "./report-list";
 import { UploadReportDialog } from "./upload-report-dialog";
 
+import { useUser } from "@/hooks/use-user";
+
 export function ReportsClient() {
+  const { user } = useUser();
+  const isDoctor = user?.user_type === 'doctor';
   const { reports, isLoading, refresh, error } = useMedicalReports();
 
   return (
@@ -15,10 +19,12 @@ export function ReportsClient() {
         <div>
           <h2 className="text-3xl font-bold tracking-tight">Medical Reports</h2>
           <p className="text-muted-foreground">
-            View AI-powered summaries and analyses of your clinical documents.
+            {isDoctor 
+              ? "Review AI-powered summaries of medical reports shared by your patients."
+              : "View AI-powered summaries and analyses of your clinical documents."}
           </p>
         </div>
-        <UploadReportDialog onSuccess={refresh} />
+        {!isDoctor && <UploadReportDialog onSuccess={refresh} />}
       </div>
 
       {error && (
