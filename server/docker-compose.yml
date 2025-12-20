@@ -1,37 +1,61 @@
 services:
   web:
     build: .
-    command: python manage.py runserver 0.0.0.0:8000
+    command: sh -c "python manage.py migrate && python manage.py collectstatic --noinput && gunicorn --bind 0.0.0.0:8000 --workers 3 --timeout 120 core.wsgi:application"
     volumes:
-      - .:/app
+      - static_volume:/app/staticfiles
+      - media_volume:/app/media
     ports:
       - "8000:8000"
     depends_on:
-      - db
-      - redis
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
     environment:
-      - DEBUG=1
-      - SECRET_KEY=dev_secret_key_for_docker
+      - DEBUG=${DEBUG:-0}
+      - SECRET_KEY=${SECRET_KEY:-dev_secret_key_change_in_production}
       - DB_ENGINE=django.db.backends.postgresql
-      - DB_NAME=healthpilot
-      - DB_USER=postgres
-      - DB_PASSWORD=postgres
+      - DB_NAME=${DB_NAME:-healthpilot}
+      - DB_USER=${DB_USER:-postgres}
+      - DB_PASSWORD=${DB_PASSWORD:-postgres}
       - DB_HOST=db
       - DB_PORT=5432
-      # Pass through OpenAI key if set locally
+      - ALLOWED_HOSTS=${ALLOWED_HOSTS:-localhost,127.0.0.1}
       - OPENAI_API_KEY=${OPENAI_API_KEY}
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/admin/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
 
   db:
-    image: postgres:15
+    image: postgres:15-alpine
     volumes:
       - postgres_data:/var/lib/postgresql/data
     environment:
-      - POSTGRES_DB=healthpilot
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=${DB_NAME:-healthpilot}
+      - POSTGRES_USER=${DB_USER:-postgres}
+      - POSTGRES_PASSWORD=${DB_PASSWORD:-postgres}
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-postgres}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   redis:
-    image: redis:7
+    image: redis:7-alpine
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
 volumes:
   postgres_data:
+  static_volume:
+  media_volume:

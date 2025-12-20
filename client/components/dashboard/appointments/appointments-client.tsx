@@ -2,12 +2,13 @@
 
 import { useAppointments } from "@/hooks/use-appointments";
 import { useUser } from "@/hooks/use-user";
+import { Suspense } from "react";
 import { AppointmentList } from "./appointment-list";
 import { BookAppointmentDialog } from "./book-appointment-dialog";
 
 import { useSearchParams } from "next/navigation";
 
-export function AppointmentsClient() {
+function AppointmentsContent() {
   const searchParams = useSearchParams();
   const patientId = searchParams.get("patient_id");
   const { user } = useUser();
@@ -38,5 +39,13 @@ export function AppointmentsClient() {
         />
       </div>
     </div>
+  );
+}
+
+export function AppointmentsClient() {
+  return (
+    <Suspense fallback={<div>Loading appointments...</div>}>
+      <AppointmentsContent />
+    </Suspense>
   );
 }

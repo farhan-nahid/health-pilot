@@ -2,14 +2,14 @@
 
 import { Button } from "@/components/ui/button";
 import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogHeader,
-    DialogTitle,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
 } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
-import { MedicalReport } from "@/hooks/use-medical-reports";
+import { MedicalReport } from "@/types";
 import { format } from "date-fns";
 import { Download, FileText, Info, Stethoscope } from "lucide-react";
 
