@@ -1,4 +1,3 @@
-import { Footer } from "@/components/footer";
 import { Providers } from "@/components/providers";
 import { Toaster } from "@/components/ui/sonner";
 import type { Metadata } from "next";
@@ -32,7 +31,6 @@ export default function RootLayout({
       >
         <Providers>
           {children}
-          <Footer />
           <Toaster position="top-right" richColors closeButton />
         </Providers>
       </body>
