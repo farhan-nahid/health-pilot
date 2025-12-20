@@ -3,6 +3,7 @@ from dj_rest_auth.registration.serializers import RegisterSerializer
 from .models import User
 
 class CustomRegisterSerializer(RegisterSerializer):
+    username = None
     user_type = serializers.ChoiceField(choices=User.USER_TYPE_CHOICES)
     first_name = serializers.CharField(required=True)
     last_name = serializers.CharField(required=True)

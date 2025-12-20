@@ -196,6 +196,10 @@ REST_AUTH = {
     'REGISTER_SERIALIZER': 'accounts.serializers.CustomRegisterSerializer',
 }
 
+ACCOUNT_SIGNUP_PASSWORD_ENTER_TWICE = False
+
+
+
 # Email Configuration (for development)
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
