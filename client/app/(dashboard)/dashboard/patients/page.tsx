@@ -1,5 +1,6 @@
 import { PatientsClient } from "@/components/dashboard/patients/patients-client";
 import { Metadata } from "next";
+import { Suspense } from "react";
 
 export const metadata: Metadata = {
   title: "Patients",
@@ -7,5 +8,9 @@ export const metadata: Metadata = {
 };
 
 export default function PatientsPage() {
-  return <PatientsClient />;
+  return (
+    <Suspense fallback={<div className="flex items-center justify-center p-8">Loading patients...</div>}>
+      <PatientsClient />
+    </Suspense>
+  );
 }

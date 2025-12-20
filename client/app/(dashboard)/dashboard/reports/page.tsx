@@ -1,5 +1,6 @@
 import { ReportsClient } from "@/components/dashboard/reports/reports-client";
 import { Metadata } from "next";
+import { Suspense } from "react";
 
 export const metadata: Metadata = {
   title: "Medical Reports",
@@ -7,5 +8,9 @@ export const metadata: Metadata = {
 };
 
 export default function ReportsPage() {
-  return <ReportsClient />;
+  return (
+    <Suspense fallback={<div className="flex items-center justify-center p-8">Loading reports...</div>}>
+      <ReportsClient />
+    </Suspense>
+  );
 }

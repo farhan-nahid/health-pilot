@@ -1,5 +1,6 @@
 import { AppointmentsClient } from "@/components/dashboard/appointments/appointments-client";
 import { Metadata } from "next";
+import { Suspense } from "react";
 
 export const metadata: Metadata = {
   title: "Appointments",
@@ -7,5 +8,9 @@ export const metadata: Metadata = {
 };
 
 export default function AppointmentsPage() {
-  return <AppointmentsClient />;
+  return (
+    <Suspense fallback={<div className="flex items-center justify-center p-8">Loading appointments...</div>}>
+      <AppointmentsClient />
+    </Suspense>
+  );
 }
