@@ -4,20 +4,15 @@ import { FormInput, FormPasswordInput, FormSelect } from "@/components/form";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { SelectItem } from "@/components/ui/select";
-import api from "@/lib/api";
-import { showError, showSuccess } from "@/lib/notifications";
+import { useAuth } from "@/hooks/use-auth";
 import { registerSchema, RegisterValues } from "@/schemas/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
 import { useForm } from "react-hook-form";
 
 export function RegisterForm() {
-  const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const { register } = useAuth();
 
   const form = useForm<RegisterValues>({
     resolver: zodResolver(registerSchema),
@@ -31,40 +26,16 @@ export function RegisterForm() {
     },
   });
 
-  const onSubmit = async (values: RegisterValues) => {
-    setError(null);
-    setIsLoading(true);
-
-    try {
-      const payload = {
-        email: values.email,
-        password1: values.password,
-        password2: values.password,
-        user_type: values.userType,
-        first_name: values.firstName,
-        last_name: values.lastName,
-        phone: values.phone,
-      };
-
-      const { data } = await api.post("/auth/registration/", payload);
-      showSuccess("Account created successfully! Welcome to Health Pilot.");
-
-      if (data.key) {
-        localStorage.setItem("token", data.key);
-        router.push("/dashboard");
-        router.refresh();
-      }
-    } catch (err: any) {
-      showError(err);
-      const errorMessage = err.response?.data?.email?.[0] || 
-                          err.response?.data?.non_field_errors?.[0] || 
-                          err.message || 
-                          "Registration failed. Please check your information.";
-      setError(errorMessage);
-    } finally {
-      setIsLoading(false);
-    }
+  const onSubmit = (values: RegisterValues) => {
+    register.mutate(values);
   };
+
+  const errorMessage = register.error ? 
+    ((register.error as any).response?.data?.email?.[0] || 
+     (register.error as any).response?.data?.non_field_errors?.[0] || 
+     (register.error as any).message || 
+     "Registration failed. Please check your information.") 
+    : null;
 
   return (
     <Card className="border-none shadow-none bg-transparent">
@@ -123,9 +94,9 @@ export function RegisterForm() {
               </FormSelect>
             </div>
           </div>
-          {error && (
+          {errorMessage && (
             <div className="text-destructive text-sm font-medium text-center bg-destructive/10 py-2 rounded-md border border-destructive/20">
-              {error}
+              {errorMessage}
             </div>
           )}
           <div className="text-center text-sm">
@@ -136,7 +107,7 @@ export function RegisterForm() {
           </div>
         </CardContent>
         <CardFooter className="px-0 pt-6">
-          <Button type="submit" className="w-full" loading={isLoading}>
+          <Button type="submit" className="w-full" loading={register.isPending}>
             Create Account
             <ArrowRight className="ml-2 h-4 w-4" />
           </Button>

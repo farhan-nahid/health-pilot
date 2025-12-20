@@ -8,6 +8,7 @@ import { useSettings } from "@/hooks/use-settings";
 import { showError, showSuccess } from "@/lib/notifications";
 import { Loader2, Monitor, Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
+import { ChangePasswordForm } from "./change-password-form";
 
 export function SettingsClient() {
   const { theme, setTheme } = useTheme();
@@ -84,6 +85,8 @@ export function SettingsClient() {
           </div>
         </CardContent>
       </Card>
+
+      <ChangePasswordForm />
 
       <Card>
         <CardHeader>

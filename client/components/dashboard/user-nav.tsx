@@ -16,16 +16,17 @@ import {
     DropdownMenuShortcut,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { useAuth } from "@/hooks/use-auth"
 import { useUser } from "@/hooks/use-user"
 import { useRouter } from "next/navigation"
 
 export function UserNav() {
   const router = useRouter();
   const { user, isLoading } = useUser();
+  const { logout } = useAuth();
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
-    router.push("/auth/login");
+    logout.mutate();
   };
 
   const name = user ? `${user.first_name} ${user.last_name}` : "User Name";
