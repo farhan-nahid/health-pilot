@@ -1,0 +1,136 @@
+"use client"
+
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Switch } from "@/components/ui/switch";
+import { Monitor, Moon, Sun } from "lucide-react";
+import { useTheme } from "next-themes";
+
+export function SettingsClient() {
+  const { theme, setTheme } = useTheme();
+
+  return (
+    <div className="max-w-4xl mx-auto space-y-6">
+      <Card>
+        <CardHeader>
+          <CardTitle>Appearance</CardTitle>
+          <CardDescription>
+            Customize how Health Pilot looks on your device.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <div className="space-y-4">
+            <Label>Interface Theme</Label>
+            <RadioGroup 
+              value={theme} 
+              onValueChange={setTheme}
+              className="grid grid-cols-3 gap-4"
+            >
+              <div>
+                <RadioGroupItem
+                  value="light"
+                  id="light"
+                  className="peer sr-only"
+                />
+                <Label
+                  htmlFor="light"
+                  className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary"
+                >
+                  <Sun className="mb-3 h-6 w-6" />
+                  <span className="text-sm font-medium">Light</span>
+                </Label>
+              </div>
+              <div>
+                <RadioGroupItem
+                  value="dark"
+                  id="dark"
+                  className="peer sr-only"
+                />
+                <Label
+                  htmlFor="dark"
+                  className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary"
+                >
+                  <Moon className="mb-3 h-6 w-6" />
+                  <span className="text-sm font-medium">Dark</span>
+                </Label>
+              </div>
+              <div>
+                <RadioGroupItem
+                  value="system"
+                  id="system"
+                  className="peer sr-only"
+                />
+                <Label
+                  htmlFor="system"
+                  className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary"
+                >
+                  <Monitor className="mb-3 h-6 w-6" />
+                  <span className="text-sm font-medium">System</span>
+                </Label>
+              </div>
+            </RadioGroup>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Notifications</CardTitle>
+          <CardDescription>
+            Choose what updates you want to receive.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex items-center justify-between">
+            <div className="space-y-0.5">
+              <Label>Appointment Reminders</Label>
+              <p className="text-xs text-muted-foreground">
+                Receive notifications for your upcoming appointments.
+              </p>
+            </div>
+            <Switch defaultChecked />
+          </div>
+          <div className="flex items-center justify-between border-t pt-4">
+            <div className="space-y-0.5">
+              <Label>Health Tips</Label>
+              <p className="text-xs text-muted-foreground">
+                Get personalized health insights and tips.
+              </p>
+            </div>
+            <Switch defaultChecked />
+          </div>
+          <div className="flex items-center justify-between border-t pt-4">
+            <div className="space-y-0.5">
+              <Label>Security Alerts</Label>
+              <p className="text-xs text-muted-foreground">
+                Notifications about your account login and security.
+              </p>
+            </div>
+            <Switch defaultChecked disabled />
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Account Data</CardTitle>
+          <CardDescription>
+            Manage your personal data and account status.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex items-center justify-between">
+            <div className="space-y-0.5">
+              <Label>Two-Factor Authentication</Label>
+              <p className="text-xs text-muted-foreground">
+                Add an extra layer of security to your account.
+              </p>
+            </div>
+            <Switch />
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
