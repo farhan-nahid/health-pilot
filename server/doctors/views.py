@@ -1,4 +1,4 @@
-from rest_framework import viewsets, status
+from rest_framework import viewsets, status, filters
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
@@ -13,6 +13,9 @@ from appointments.serializers import AppointmentSerializer
 
 class DoctorViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
+    filter_backends = [filters.OrderingFilter]
+    ordering_fields = ['experience_years', 'consultation_fee', 'created_at']
+    ordering = ['-created_at']
     
     def get_queryset(self):
         if self.request.user.user_type == 'doctor':
@@ -110,6 +113,8 @@ class DoctorViewSet(viewsets.ModelViewSet):
 class DoctorAvailabilityViewSet(viewsets.ModelViewSet):
     serializer_class = DoctorAvailabilitySerializer
     permission_classes = [IsAuthenticated]
+    filter_backends = [filters.OrderingFilter]
+    ordering_fields = ['day_of_week', 'start_time']
     
     def get_queryset(self):
         if self.request.user.user_type == 'doctor':

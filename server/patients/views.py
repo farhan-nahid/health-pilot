@@ -1,4 +1,4 @@
-from rest_framework import viewsets, status
+from rest_framework import viewsets, status, filters
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
@@ -13,6 +13,9 @@ from doctors.serializers import DoctorListSerializer
 
 class PatientViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
+    filter_backends = [filters.OrderingFilter]
+    ordering_fields = ['created_at', 'updated_at']
+    ordering = ['-created_at']
     
     def get_queryset(self):
         if self.request.user.user_type == 'patient':
@@ -167,6 +170,9 @@ class MedicalReportViewSet(viewsets.ModelViewSet):
     serializer_class = MedicalReportSerializer
     permission_classes = [IsAuthenticated]
     parser_classes = (MultiPartParser, FormParser)
+    filter_backends = [filters.OrderingFilter]
+    ordering_fields = ['uploaded_at', 'ai_specialization']
+    ordering = ['-uploaded_at']
     
     def get_queryset(self):
         if self.request.user.user_type == 'patient':

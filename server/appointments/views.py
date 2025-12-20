@@ -1,4 +1,4 @@
-from rest_framework import viewsets, status
+from rest_framework import viewsets, status, filters
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
@@ -13,6 +13,9 @@ from datetime import datetime, time
 
 class AppointmentViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
+    filter_backends = [filters.OrderingFilter]
+    ordering_fields = ['appointment_date', 'appointment_time', 'created_at', 'status']
+    ordering = ['-created_at']  # Default to newest created first
     
     def get_queryset(self):
         user = self.request.user

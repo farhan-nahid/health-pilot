@@ -34,16 +34,21 @@ class AppointmentCreateSerializer(serializers.ModelSerializer):
 
 class AppointmentSerializer(serializers.ModelSerializer):
     doctor_details = DoctorListSerializer(source='doctor', read_only=True)
+    patient_details = serializers.SerializerMethodField()
     patient_name = serializers.SerializerMethodField()
     medical_report_summary = serializers.SerializerMethodField()
     
     class Meta:
         model = Appointment
-        fields = ('id', 'patient', 'patient_name', 'doctor', 'doctor_details', 
+        fields = ('id', 'patient', 'patient_name', 'patient_details', 'doctor', 'doctor_details', 
                   'medical_report', 'medical_report_summary', 'appointment_date', 
                   'appointment_time', 'status', 'symptoms', 'doctor_notes', 
                   'rejection_reason', 'created_at', 'updated_at')
         read_only_fields = ('id', 'patient', 'created_at', 'updated_at')
+    
+    def get_patient_details(self, obj):
+        from patients.serializers import PatientSerializer
+        return PatientSerializer(obj.patient).data
     
     def get_patient_name(self, obj):
         return obj.patient.user.get_full_name()
