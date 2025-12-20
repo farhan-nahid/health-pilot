@@ -1,4 +1,10 @@
 import { Globe, Heart, Shield } from "lucide-react";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "About Us",
+  description: "Learn more about Health Pilot's mission and values.",
+};
 
 export default function AboutPage() {
   return (

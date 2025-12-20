@@ -2,7 +2,7 @@ import { AppointmentsClient } from "@/components/dashboard/appointments/appointm
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Appointments | Health Pilot",
+  title: "Appointments",
   description: "Manage your medical appointments and consultations.",
 };
 

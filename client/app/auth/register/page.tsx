@@ -1,8 +1,9 @@
 import { RegisterForm } from "@/components/auth/register-form";
+import { Metadata } from "next";
 
-export const metadata = {
-  title: "Register | Health Pilot",
-  description: "Join Health Pilot today",
+export const metadata: Metadata = {
+  title: "Register",
+  description: "Join Health Pilot today to manage your healthcare journey.",
 };
 
 export default function RegisterPage() {

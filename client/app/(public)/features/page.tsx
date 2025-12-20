@@ -1,4 +1,10 @@
 import { Bell, Calendar, Lock, PieChart, Search, Zap } from "lucide-react";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Features",
+  description: "Explore the powerful features of Health Pilot for modern healthcare.",
+};
 
 export default function FeaturesPage() {
   return (

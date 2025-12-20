@@ -1,5 +1,11 @@
 import { Activity, ArrowRight, Shield, Star, Users } from "lucide-react";
+import { Metadata } from "next";
 import Link from "next/link";
+
+export const metadata: Metadata = {
+  title: "Home",
+  description: "Welcome to Health Pilot - Modern healthcare management simplified.",
+};
 
 export default function Home() {
   return (

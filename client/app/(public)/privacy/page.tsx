@@ -1,3 +1,10 @@
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Privacy Policy",
+  description: "Health Pilot's privacy policy and data protection standards.",
+};
+
 export default function PrivacyPage() {
   return (
     <div className="py-24 px-6 lg:px-8 max-w-3xl mx-auto">

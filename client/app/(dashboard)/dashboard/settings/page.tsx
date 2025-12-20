@@ -2,7 +2,7 @@ import { SettingsClient } from "@/components/dashboard/settings-client";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Settings | Health Pilot",
+  title: "Settings",
   description: "Customize your application preferences and security settings.",
 };
 

@@ -15,8 +15,11 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Health Pilot",
-  description: "Modern healthcare at your fingertips",
+  title: {
+    default: "Health Pilot",
+    template: "%s | Health Pilot",
+  },
+  description: "Modern healthcare management simplified.",
 };
 
 export default function RootLayout({

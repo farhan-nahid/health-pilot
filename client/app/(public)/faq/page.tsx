@@ -1,3 +1,10 @@
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "FAQ",
+  description: "Frequently Asked Questions about Health Pilot.",
+};
+
 export default function FAQPage() {
   const faqs = [
     {

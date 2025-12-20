@@ -2,7 +2,7 @@ import { DashboardClient } from "@/components/dashboard/dashboard-client";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Dashboard | Health Pilot",
+  title: "Dashboard",
   description: "Overview of your health data and upcoming activities.",
 };
 

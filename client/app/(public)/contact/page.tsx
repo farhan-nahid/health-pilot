@@ -1,4 +1,10 @@
 import { Mail, MapPin, Phone, Send } from "lucide-react";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Contact Us",
+  description: "Get in touch with the Health Pilot team for support or inquiries.",
+};
 
 export default function ContactPage() {
   return (

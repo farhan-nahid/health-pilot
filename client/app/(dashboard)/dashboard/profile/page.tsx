@@ -2,7 +2,7 @@ import { ProfileClient } from "@/components/dashboard/profile-client";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Profile | Health Pilot",
+  title: "Profile",
   description: "Manage your personal information and account settings.",
 };
 

@@ -2,7 +2,7 @@ import { ReportsClient } from "@/components/dashboard/reports/reports-client";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Medical Reports | Health Pilot",
+  title: "Medical Reports",
   description: "Securely manage and analyze your medical documents with AI.",
 };
 

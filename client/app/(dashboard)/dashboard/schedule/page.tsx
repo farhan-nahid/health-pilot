@@ -2,7 +2,7 @@ import { ScheduleClient } from "@/components/dashboard/schedule/schedule-client"
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "My Schedule | Health Pilot",
+  title: "My Schedule",
   description: "Manage your weekly availability slots.",
 };
 
