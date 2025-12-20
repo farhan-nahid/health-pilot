@@ -28,7 +28,7 @@ export function LoginForm() {
       
       if (data.key) {
         localStorage.setItem("token", data.key);
-        router.push("/");
+        router.push("/dashboard");
       }
     } catch (err: any) {
       const errorMessage = err.response?.data?.non_field_errors?.[0] || err.message || "Something went wrong";

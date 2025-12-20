@@ -50,7 +50,7 @@ export function RegisterForm() {
 
       if (data.key) {
         localStorage.setItem("token", data.key);
-        router.push("/");
+        router.push("/dashboard");
       }
     } catch (err: any) {
       let errorMessage = "Something went wrong";
