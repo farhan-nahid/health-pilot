@@ -1,7 +1,7 @@
 "use client"
 
 import api from "@/lib/api";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 export interface User {
   id: number;
@@ -29,4 +29,18 @@ export function useUser() {
     isLoading,
     error: error ? (error as any).message : null,
   };
+}
+
+export function useUpdateUser() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (payload: Partial<User>) => {
+      const { data } = await api.patch("/auth/user/", payload);
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["user"] });
+    },
+  });
 }
