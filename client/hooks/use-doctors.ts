@@ -1,19 +1,8 @@
 "use client"
 
 import api from "@/lib/api";
+import { Doctor } from "@/types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-
-export interface Doctor {
-  id: number;
-  doctor_name: string;
-  specialization: string;
-  bio: string | null;
-  profile_picture: string | null;
-  experience_years: number;
-  consultation_fee: string;
-  created_at?: string;
-  updated_at?: string;
-}
 
 export function useDoctors() {
   const { data, isLoading, error } = useQuery<Doctor[]>({

@@ -9,7 +9,7 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
-import { MedicalReport } from "@/hooks/use-medical-reports";
+import { MedicalReport } from "@/types";
 import { format } from "date-fns";
 import { Eye, FileText } from "lucide-react";
 import { useState } from "react";

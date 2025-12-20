@@ -10,8 +10,8 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
-import { Appointment } from "@/hooks/use-appointments";
 import { cn } from "@/lib/utils";
+import { Appointment } from "@/types";
 import { format } from "date-fns";
 import { AppointmentActions } from "./appointment-actions";
 

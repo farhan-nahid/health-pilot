@@ -1,14 +1,8 @@
 "use client"
 
 import api from "@/lib/api";
+import { UserSettings } from "@/types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-
-export interface UserSettings {
-  appointment_reminders: boolean;
-  health_tips: boolean;
-  security_alerts: boolean;
-  two_factor_auth: boolean;
-}
 
 export function useSettings() {
   const queryClient = useQueryClient();

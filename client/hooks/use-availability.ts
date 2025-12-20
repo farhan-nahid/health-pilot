@@ -1,14 +1,6 @@
 import api from "@/lib/api";
+import { AvailabilitySlot } from "@/types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-
-export interface AvailabilitySlot {
-  id: number;
-  doctor: number;
-  day_of_week: "monday" | "tuesday" | "wednesday" | "thursday" | "friday" | "saturday" | "sunday";
-  start_time: string;
-  end_time: string;
-  is_available: boolean;
-}
 
 export function useAvailability() {
   const queryClient = useQueryClient();

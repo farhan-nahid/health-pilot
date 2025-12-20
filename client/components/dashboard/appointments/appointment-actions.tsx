@@ -2,27 +2,27 @@
 import { format } from "date-fns";
 
 import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Appointment } from "@/hooks/use-appointments";
 import api from "@/lib/api";
 import { showError, showSuccess } from "@/lib/notifications";
+import { Appointment } from "@/types";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { CheckCircle2, Edit, Eye, MoreHorizontal, Trash2, XCircle } from "lucide-react";
 import { useState } from "react";
@@ -55,9 +55,11 @@ export function AppointmentActions({
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["appointments"] });
+      showSuccess("Appointment cancelled.");
       setShowCancelAlert(false);
       onRefresh();
     },
+    onError: (err: any) => showError(err),
   });
 
   const deleteMutation = useMutation({
@@ -66,9 +68,11 @@ export function AppointmentActions({
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["appointments"] });
+      showSuccess("Appointment deleted.");
       setShowDeleteAlert(false);
       onRefresh();
     },
+    onError: (err: any) => showError(err),
   });
 
   const acceptMutation = useMutation({

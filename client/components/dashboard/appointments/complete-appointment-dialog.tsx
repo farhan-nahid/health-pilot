@@ -11,9 +11,9 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Appointment } from "@/hooks/use-appointments";
 import api from "@/lib/api";
 import { showError, showSuccess } from "@/lib/notifications";
+import { Appointment } from "@/types";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { CheckCircle2 } from "lucide-react";
 import { useState } from "react";

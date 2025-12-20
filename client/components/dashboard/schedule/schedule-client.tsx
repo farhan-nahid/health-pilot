@@ -12,7 +12,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useAvailability } from "@/hooks/use-availability";
-import { showSuccess } from "@/lib/notifications";
+import { showError, showSuccess } from "@/lib/notifications";
 import { Clock, Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
 
@@ -30,18 +30,26 @@ export function ScheduleClient() {
   const [endTime, setEndTime] = useState("17:00");
 
   const handleAddSlot = async () => {
-    await updateAvailability.mutateAsync([{
-      day_of_week: newDay as any,
-      start_time: startTime,
-      end_time: endTime,
-      is_available: true
-    }]);
-    showSuccess("Availability slot added!");
+    try {
+      await updateAvailability.mutateAsync([{
+        day_of_week: newDay as any,
+        start_time: startTime,
+        end_time: endTime,
+        is_available: true
+      }]);
+      showSuccess("Availability slot added!");
+    } catch (err: any) {
+      showError(err);
+    }
   };
 
   const handleDelete = async (id: number) => {
-    await deleteSlot.mutateAsync(id);
-    showSuccess("Slot removed.");
+    try {
+      await deleteSlot.mutateAsync(id);
+      showSuccess("Slot removed.");
+    } catch (err: any) {
+      showError(err);
+    }
   };
 
   return (

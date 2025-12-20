@@ -4,14 +4,14 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from "@/components/ui/table";
-import { Patient } from "@/hooks/use-patient";
+import { Patient } from "@/types";
 import { format } from "date-fns";
 import { Calendar, Mail, Phone } from "lucide-react";
 import Link from "next/link";

@@ -1,44 +1,8 @@
 "use client"
 
 import api from "@/lib/api";
+import { Appointment } from "@/types";
 import { useQuery } from "@tanstack/react-query";
-
-export interface Appointment {
-  id: number;
-  patient: number;
-  patient_name: string;
-  patient_details: {
-    id: number;
-    user: {
-      id: number;
-      email: string;
-      first_name: string;
-      last_name: string;
-      phone: string;
-    };
-    date_of_birth: string | null;
-    blood_group: string | null;
-    address: string | null;
-    emergency_contact: string | null;
-  };
-  doctor: number;
-  doctor_details: {
-    id: number;
-    doctor_name: string;
-    specialization: string;
-    profile_picture: string | null;
-    experience_years: number;
-    consultation_fee: string;
-  };
-  appointment_date: string;
-  appointment_time: string;
-  status: 'pending' | 'accepted' | 'rejected' | 'completed' | 'cancelled';
-  symptoms: string;
-  doctor_notes: string | null;
-  rejection_reason: string | null;
-  created_at: string;
-  updated_at: string;
-}
 
 export function useAppointments(patientId?: string | null) {
   const { data, isLoading, error, refetch } = useQuery<Appointment[]>({

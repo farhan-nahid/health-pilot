@@ -8,7 +8,7 @@ import {
     DialogTitle,
 } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
-import { Appointment } from "@/hooks/use-appointments";
+import { Appointment } from "@/types";
 import { format } from "date-fns";
 import { Activity, Calendar, Clock, FileText, StickyNote, User } from "lucide-react";
 

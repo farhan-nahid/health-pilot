@@ -24,10 +24,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { Appointment } from "@/hooks/use-appointments";
 import { useDoctors } from "@/hooks/use-doctors";
 import api from "@/lib/api";
+import { showError, showSuccess } from "@/lib/notifications";
 import { cn } from "@/lib/utils";
+import { Appointment } from "@/types";
 import { format } from "date-fns";
 import { Calendar as CalendarIcon } from "lucide-react";
 import { useState } from "react";
@@ -66,10 +67,12 @@ export function EditAppointmentDialog({
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["appointments"] });
+      showSuccess("Appointment updated successfully!");
       onOpenChange(false);
       onSuccess();
     },
     onError: (err: any) => {
+      showError(err);
       setError(err.response?.data?.non_field_errors?.[0] || err.message || "Failed to update appointment");
     },
   });
