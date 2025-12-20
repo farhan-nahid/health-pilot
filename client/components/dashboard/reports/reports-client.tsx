@@ -2,16 +2,20 @@
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useMedicalReports } from "@/hooks/use-medical-reports";
+import { useUser } from "@/hooks/use-user";
 import { AlertCircle } from "lucide-react";
+import { parseAsInteger, useQueryState } from "nuqs";
 import { ReportList } from "./report-list";
 import { UploadReportDialog } from "./upload-report-dialog";
 
-import { useUser } from "@/hooks/use-user";
-
 export function ReportsClient() {
+  const [page, setPage] = useQueryState(
+    "page",
+    parseAsInteger.withDefault(1).withOptions({ shallow: false })
+  );
   const { user } = useUser();
   const isDoctor = user?.user_type === 'doctor';
-  const { reports, isLoading, refresh, error } = useMedicalReports();
+  const { reports, count, isLoading, refresh, error } = useMedicalReports(page);
 
   return (
     <div className="space-y-8">
@@ -38,7 +42,13 @@ export function ReportsClient() {
       )}
 
       <div className="space-y-4">
-        <ReportList reports={reports} isLoading={isLoading} />
+        <ReportList 
+          reports={reports} 
+          isLoading={isLoading} 
+          count={count}
+          page={page}
+          onPageChange={setPage}
+        />
       </div>
     </div>
   );

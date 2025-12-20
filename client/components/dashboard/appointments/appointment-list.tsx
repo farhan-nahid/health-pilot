@@ -1,6 +1,7 @@
 "use client"
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { DataTablePagination } from "@/components/ui/pagination";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
     Table,
@@ -17,7 +18,7 @@ import { AppointmentActions } from "./appointment-actions";
 
 const statusVariants: Record<string, string> = {
   pending: "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400 border-amber-200 dark:border-amber-800",
-  accepted: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800",
+  accepted: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 border-emerald-200 dark:border-amber-800",
   rejected: "bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-400 border-rose-200 dark:border-rose-800",
   completed: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400 border-blue-200 dark:border-blue-800",
   cancelled: "bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-400 border-gray-200 dark:border-gray-800",
@@ -28,11 +29,17 @@ export function AppointmentList({
   isLoading,
   onRefresh,
   userType,
+  count,
+  page,
+  onPageChange,
 }: {
   appointments: Appointment[];
   isLoading: boolean;
   onRefresh: () => void;
   userType?: "doctor" | "patient";
+  count: number;
+  page: number;
+  onPageChange: (page: number) => void;
 }) {
   if (isLoading) {
     return (
@@ -121,6 +128,12 @@ export function AppointmentList({
           ))}
         </TableBody>
       </Table>
+      <DataTablePagination
+        page={page}
+        pageSize={10}
+        totalCount={count}
+        onPageChange={onPageChange}
+      />
     </div>
   );
 }

@@ -1,7 +1,7 @@
 "use client"
 
 import api from "@/lib/api";
-import { Patient } from "@/types";
+import { PaginatedResponse, Patient } from "@/types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 export function usePatientProfile() {
@@ -22,17 +22,30 @@ export function usePatientProfile() {
   };
 }
 
-export function usePatients() {
-  const { data, isLoading, error } = useQuery<Patient[]>({
-    queryKey: ["patients"],
+export function usePatients(page: number = 1) {
+  const { data, isLoading, error } = useQuery<PaginatedResponse<Patient>>({
+    queryKey: ["patients", page],
     queryFn: async () => {
-      const { data } = await api.get("/patients/");
-      return Array.isArray(data) ? data : data.results || [];
+      const url = page > 1 ? `/patients/?page=${page}` : "/patients/";
+      const { data } = await api.get(url);
+
+      if (data.results) {
+        return data as PaginatedResponse<Patient>;
+      }
+      return {
+        count: (data as Patient[]).length,
+        next: null,
+        previous: null,
+        results: data as Patient[]
+      };
     },
   });
 
   return {
-    patients: data || [],
+    patients: data?.results || [],
+    count: data?.count || 0,
+    next: data?.next,
+    previous: data?.previous,
     isLoading,
     error: error ? (error as any).message : null,
   };

@@ -2,14 +2,15 @@
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import { DataTablePagination } from "@/components/ui/pagination";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
 } from "@/components/ui/table";
 import { Patient } from "@/types";
 import { format } from "date-fns";
@@ -19,9 +20,15 @@ import Link from "next/link";
 export function PatientList({
   patients,
   isLoading,
+  count,
+  page,
+  onPageChange,
 }: {
   patients: Patient[];
   isLoading: boolean;
+  count: number;
+  page: number;
+  onPageChange: (page: number) => void;
 }) {
   if (isLoading) {
     return (
@@ -116,6 +123,12 @@ export function PatientList({
           })}
         </TableBody>
       </Table>
+      <DataTablePagination
+        page={page}
+        pageSize={10}
+        totalCount={count}
+        onPageChange={onPageChange}
+      />
     </div>
   );
 }

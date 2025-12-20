@@ -2,17 +2,19 @@
 
 import { useAppointments } from "@/hooks/use-appointments";
 import { useUser } from "@/hooks/use-user";
+import { parseAsInteger, useQueryState } from "nuqs";
 import { Suspense } from "react";
 import { AppointmentList } from "./appointment-list";
 import { BookAppointmentDialog } from "./book-appointment-dialog";
 
-import { useSearchParams } from "next/navigation";
-
 function AppointmentsContent() {
-  const searchParams = useSearchParams();
-  const patientId = searchParams.get("patient_id");
+  const [page, setPage] = useQueryState(
+    "page",
+    parseAsInteger.withDefault(1).withOptions({ shallow: false })
+  );
+  
   const { user } = useUser();
-  const { appointments, isLoading, refresh } = useAppointments(patientId);
+  const { appointments, count, isLoading, refresh } = useAppointments(null, page);
 
   const isPatient = user?.user_type === "patient";
 
@@ -35,7 +37,10 @@ function AppointmentsContent() {
           appointments={appointments} 
           isLoading={isLoading} 
           onRefresh={refresh}
-          userType={user?.user_type}
+          userType={user?.user_type as any}
+          count={count}
+          page={page}
+          onPageChange={setPage}
         />
       </div>
     </div>

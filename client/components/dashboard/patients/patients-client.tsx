@@ -3,11 +3,16 @@
 import { Input } from "@/components/ui/input";
 import { usePatients } from "@/hooks/use-patient";
 import { Search } from "lucide-react";
+import { parseAsInteger, useQueryState } from "nuqs";
 import { useState } from "react";
 import { PatientList } from "./patient-list";
 
 export function PatientsClient() {
-  const { patients, isLoading } = usePatients();
+  const [page, setPage] = useQueryState(
+    "page",
+    parseAsInteger.withDefault(1).withOptions({ shallow: false })
+  );
+  const { patients, count, isLoading } = usePatients(page);
   const [search, setSearch] = useState("");
 
   const filteredPatients = patients.filter(patient => {
@@ -38,7 +43,13 @@ export function PatientsClient() {
         />
       </div>
 
-      <PatientList patients={filteredPatients} isLoading={isLoading} />
+      <PatientList 
+        patients={filteredPatients} 
+        isLoading={isLoading} 
+        count={count}
+        page={page}
+        onPageChange={setPage}
+      />
     </div>
   );
 }

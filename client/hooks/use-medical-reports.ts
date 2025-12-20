@@ -1,20 +1,33 @@
 "use client"
 
 import api from "@/lib/api";
-import { MedicalReport, UploadReportPayload } from "@/types";
+import { MedicalReport, PaginatedResponse, UploadReportPayload } from "@/types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-export function useMedicalReports() {
-  const { data, isLoading, error, refetch } = useQuery<MedicalReport[]>({
-    queryKey: ["medical-reports"],
+export function useMedicalReports(page: number = 1) {
+  const { data, isLoading, error, refetch } = useQuery<PaginatedResponse<MedicalReport>>({
+    queryKey: ["medical-reports", page],
     queryFn: async () => {
-      const { data } = await api.get("/medical-reports/");
-      return Array.isArray(data) ? data : data.results || [];
+      const url = page > 1 ? `/medical-reports/?page=${page}` : "/medical-reports/";
+      const { data } = await api.get(url);
+
+      if (data.results) {
+        return data as PaginatedResponse<MedicalReport>;
+      }
+      return {
+        count: (data as MedicalReport[]).length,
+        next: null,
+        previous: null,
+        results: data as MedicalReport[]
+      };
     },
   });
 
   return {
-    reports: data || [],
+    reports: data?.results || [],
+    count: data?.count || 0,
+    next: data?.next,
+    previous: data?.previous,
     isLoading,
     error: error ? (error as any).message : null,
     refresh: refetch

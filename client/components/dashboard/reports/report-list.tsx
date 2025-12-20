@@ -1,6 +1,7 @@
 "use client"
 
 import { Button } from "@/components/ui/button";
+import { DataTablePagination } from "@/components/ui/pagination";
 import {
     Table,
     TableBody,
@@ -9,20 +10,25 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
+import { useUser } from "@/hooks/use-user";
 import { MedicalReport } from "@/types";
 import { format } from "date-fns";
 import { Eye, FileText } from "lucide-react";
 import { useState } from "react";
 import { ViewReportDialog } from "./view-report-dialog";
 
-import { useUser } from "@/hooks/use-user";
-
 export function ReportList({ 
   reports, 
-  isLoading 
+  isLoading,
+  count,
+  page,
+  onPageChange,
 }: { 
   reports: MedicalReport[]; 
   isLoading: boolean;
+  count: number;
+  page: number;
+  onPageChange: (page: number) => void;
 }) {
   const { user } = useUser();
   const isDoctor = user?.user_type === 'doctor';
@@ -100,6 +106,12 @@ export function ReportList({
           onOpenChange={(open) => !open && setSelectedReport(null)} 
         />
       )}
+      <DataTablePagination
+        page={page}
+        pageSize={10}
+        totalCount={count}
+        onPageChange={onPageChange}
+      />
     </div>
   );
 }
