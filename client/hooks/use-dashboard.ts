@@ -13,9 +13,12 @@ export interface DashboardSummary {
     appointments_total: number;
     appointments_accepted: number;
     appointments_completed: number;
+    appointments_pending?: number;
+    patients_total?: number;
+    revenue_estimated?: number;
     reports_total: number;
     reports_analyzed: number;
-    unique_specializations: string[];
+    unique_specializations?: string[];
   };
   upcoming_consultations: Appointment[];
   recent_activity: {
@@ -27,14 +30,16 @@ export interface DashboardSummary {
   }[];
 }
 
-export function useDashboardSummary() {
+export function useDashboardSummary(userType?: string) {
   const { data, isLoading, error, refetch } = useQuery<DashboardSummary>({
-    queryKey: ["dashboard-summary"],
+    queryKey: ["dashboard-summary", userType],
     queryFn: async () => {
-      const { data } = await api.get("/patients/dashboard_summary/");
+      const endpoint = userType === 'doctor' ? "/doctors/dashboard_summary/" : "/patients/dashboard_summary/";
+      const { data } = await api.get(endpoint);
       return data;
     },
     retry: false,
+    enabled: !!userType,
   });
 
   return {

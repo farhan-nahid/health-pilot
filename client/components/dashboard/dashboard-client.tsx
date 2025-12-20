@@ -2,60 +2,105 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useDashboardSummary } from "@/hooks/use-dashboard";
+import { useUser } from "@/hooks/use-user";
 import { cn } from "@/lib/utils";
 import { formatDistanceToNow } from "date-fns";
 import {
     Calendar,
     CheckCircle2,
     Clock,
-    FileText,
-    Stethoscope
+    DollarSign,
+    FileText, Stethoscope,
+    Users
 } from "lucide-react";
 
 export function DashboardClient() {
-  const { summary, isLoading } = useDashboardSummary();
+  const { user } = useUser();
+  const isDoctor = user?.user_type === 'doctor';
+  const { summary, isLoading } = useDashboardSummary(user?.user_type);
 
   // Stats mapping from summary
-  const stats = [
-    {
-      title: "Appointments",
-      value: summary?.stats.appointments_total.toString() || "0",
-      icon: Calendar,
-      description: `${summary?.stats.appointments_accepted || 0} accepted`,
-      color: "text-blue-500",
-    },
-    {
-      title: "Medical Reports",
-      value: summary?.stats.reports_total.toString() || "0",
-      icon: FileText,
-      description: `${summary?.stats.reports_analyzed || 0} AI analyzed`,
-      color: "text-emerald-500",
-    },
-    {
-      title: "Health Sessions",
-      value: summary?.stats.appointments_completed.toString() || "0",
-      icon: CheckCircle2,
-      description: "Completed consultations",
-      color: "text-purple-500",
-    },
-    {
-      title: "Specializations",
-      value: summary?.stats.unique_specializations.length.toString() || "0",
-      icon: Stethoscope,
-      description: "Recommended experts",
-      color: "text-rose-500",
-    },
-  ];
+  const getStats = () => {
+    if (isDoctor) {
+      return [
+        {
+          title: "Total Appointments",
+          value: summary?.stats.appointments_total.toString() || "0",
+          icon: Calendar,
+          description: `${summary?.stats.appointments_pending || 0} pending requests`,
+          color: "text-blue-500",
+        },
+        {
+          title: "Unique Patients",
+          value: summary?.stats.patients_total?.toString() || "0",
+          icon: Users,
+          description: "Registered patients",
+          color: "text-emerald-500",
+        },
+        {
+          title: "Completed Sessions",
+          value: summary?.stats.appointments_completed.toString() || "0",
+          icon: CheckCircle2,
+          description: "Successfully treated",
+          color: "text-purple-500",
+        },
+        {
+          title: "Estimated Revenue",
+          value: `$${summary?.stats.revenue_estimated?.toFixed(2) || "0.00"}`,
+          icon: DollarSign,
+          description: "From completed sessions",
+          color: "text-rose-500",
+        },
+      ];
+    }
+    
+    return [
+      {
+        title: "Appointments",
+        value: summary?.stats.appointments_total.toString() || "0",
+        icon: Calendar,
+        description: `${summary?.stats.appointments_accepted || 0} accepted`,
+        color: "text-blue-500",
+      },
+      {
+        title: "Medical Reports",
+        value: summary?.stats.reports_total.toString() || "0",
+        icon: FileText,
+        description: `${summary?.stats.reports_analyzed || 0} AI analyzed`,
+        color: "text-emerald-500",
+      },
+      {
+        title: "Health Sessions",
+        value: summary?.stats.appointments_completed.toString() || "0",
+        icon: CheckCircle2,
+        description: "Completed consultations",
+        color: "text-purple-500",
+      },
+      {
+        title: "Specializations",
+        value: summary?.stats.unique_specializations?.length.toString() || "0",
+        icon: Stethoscope,
+        description: "Recommended experts",
+        color: "text-rose-500",
+      },
+    ];
+  };
+
+  const stats = getStats();
 
   return (
     <div className="space-y-8">
       <div className="flex items-center justify-between space-y-2">
         <div>
           <h2 className="text-3xl font-bold tracking-tight">
-            {isLoading ? "Loading..." : `Welcome back, ${summary?.user.first_name || 'User'}`}
+            {isLoading ? "Loading..." : `Welcome back, ${summary?.user.first_name || user?.first_name || 'User'}`}
           </h2>
           <p className="text-muted-foreground">
-            {isLoading ? "Fetching your health data..." : "Here's a summary of your health journey with Health Pilot."}
+            {isLoading 
+              ? "Fetching your health data..." 
+              : isDoctor 
+                ? "Here's an overview of your practice and upcoming patient consultations."
+                : "Here's a summary of your health journey with Health Pilot."}
           </p>
         </div>
       </div>
@@ -128,7 +173,9 @@ export function DashboardClient() {
                 summary.upcoming_consultations.map((app) => (
                   <div key={app.id} className="flex items-center justify-between p-3 rounded-lg border bg-background/50 hover:bg-accent/50 transition-colors">
                     <div className="space-y-1">
-                      <p className="text-sm font-medium">Dr. {app.doctor_details.doctor_name}</p>
+                      <p className="text-sm font-medium">
+                        {isDoctor ? app.patient_name : `Dr. ${app.doctor_details.doctor_name}`}
+                      </p>
                       <p className="text-[10px] text-muted-foreground uppercase">{app.appointment_time}</p>
                     </div>
                     <div className="text-xs font-bold text-primary">
