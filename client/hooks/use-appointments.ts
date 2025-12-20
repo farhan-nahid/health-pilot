@@ -7,6 +7,20 @@ export interface Appointment {
   id: number;
   patient: number;
   patient_name: string;
+  patient_details: {
+    id: number;
+    user: {
+      id: number;
+      email: string;
+      first_name: string;
+      last_name: string;
+      phone: string;
+    };
+    date_of_birth: string | null;
+    blood_group: string | null;
+    address: string | null;
+    emergency_contact: string | null;
+  };
   doctor: number;
   doctor_details: {
     id: number;

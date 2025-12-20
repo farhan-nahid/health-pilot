@@ -27,10 +27,12 @@ export function AppointmentList({
   appointments,
   isLoading,
   onRefresh,
+  userType,
 }: {
   appointments: Appointment[];
   isLoading: boolean;
   onRefresh: () => void;
+  userType?: "doctor" | "patient";
 }) {
   if (isLoading) {
     return (
@@ -53,12 +55,14 @@ export function AppointmentList({
     );
   }
 
+  const isDoctor = userType === "doctor";
+
   return (
     <div className="rounded-md border border-border bg-card overflow-hidden">
       <Table>
         <TableHeader>
           <TableRow className="bg-muted/50 hover:bg-muted/50">
-            <TableHead className="w-[250px]">Doctor</TableHead>
+            <TableHead className="w-[250px]">{isDoctor ? "Patient" : "Doctor"}</TableHead>
             <TableHead>Date & Time</TableHead>
             <TableHead>Status</TableHead>
             <TableHead className="max-w-[200px]">Symptoms</TableHead>
@@ -71,12 +75,25 @@ export function AppointmentList({
               <TableCell className="font-medium">
                 <div className="flex items-center gap-3">
                   <Avatar className="h-8 w-8">
-                    <AvatarImage src={apt.doctor_details.profile_picture || ""} />
-                    <AvatarFallback>{apt.doctor_details.doctor_name[0]}</AvatarFallback>
+                    {isDoctor ? (
+                        <>
+                            <AvatarFallback>{apt.patient_name[0]}</AvatarFallback>
+                        </>
+                    ) : (
+                        <>
+                            <AvatarImage src={apt.doctor_details.profile_picture || ""} />
+                            <AvatarFallback>{apt.doctor_details.doctor_name[0]}</AvatarFallback>
+                        </>
+                    )}
                   </Avatar>
                   <div className="flex flex-col">
-                    <span className="text-sm font-semibold">{apt.doctor_details.doctor_name}</span>
-                    <span className="text-[10px] text-muted-foreground uppercase">{apt.doctor_details.specialization}</span>
+                    <span className="text-sm font-semibold">{isDoctor ? apt.patient_name : apt.doctor_details.doctor_name}</span>
+                    {!isDoctor && (
+                        <span className="text-[10px] text-muted-foreground uppercase">{apt.doctor_details.specialization}</span>
+                    )}
+                    {isDoctor && (
+                         <span className="text-[10px] text-muted-foreground uppercase">{apt.patient_details?.user?.phone || "No phone"}</span>
+                    )}
                   </div>
                 </div>
               </TableCell>
@@ -98,7 +115,11 @@ export function AppointmentList({
                 {apt.symptoms}
               </TableCell>
               <TableCell>
-                <AppointmentActions appointment={apt} onRefresh={onRefresh} />
+                <AppointmentActions 
+                  appointment={apt} 
+                  onRefresh={onRefresh} 
+                  userType={userType}
+                />
               </TableCell>
             </TableRow>
           ))}

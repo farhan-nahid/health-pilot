@@ -23,12 +23,16 @@ const statusVariants: Record<string, string> = {
 export function ViewAppointmentDialog({ 
   appointment, 
   open, 
-  onOpenChange 
+  onOpenChange,
+  userType
 }: { 
   appointment: Appointment; 
   open: boolean; 
   onOpenChange: (open: boolean) => void;
+  userType?: "doctor" | "patient";
 }) {
+  const isDoctor = userType === "doctor";
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[500px]">
@@ -40,7 +44,7 @@ export function ViewAppointmentDialog({
             </span>
           </DialogTitle>
           <DialogDescription>
-            Detailed information about your consultation.
+            Detailed information about {isDoctor ? "the patient consultation" : "your consultation"}.
           </DialogDescription>
         </DialogHeader>
         
@@ -48,10 +52,19 @@ export function ViewAppointmentDialog({
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1">
               <span className="text-xs text-muted-foreground flex items-center">
-                <User className="h-3 w-3 mr-1" /> Doctor
+                <User className="h-3 w-3 mr-1" /> {isDoctor ? "Patient" : "Doctor"}
               </span>
-              <p className="text-sm font-semibold">{appointment.doctor_details.doctor_name}</p>
-              <p className="text-[10px] text-muted-foreground uppercase">{appointment.doctor_details.specialization}</p>
+              {isDoctor ? (
+                <>
+                  <p className="text-sm font-semibold">{appointment.patient_name}</p>
+                  <p className="text-[10px] text-muted-foreground uppercase">{appointment.patient_details?.user?.phone || "No phone"}</p>
+                </>
+              ) : (
+                <>
+                  <p className="text-sm font-semibold">{appointment.doctor_details.doctor_name}</p>
+                  <p className="text-[10px] text-muted-foreground uppercase">{appointment.doctor_details.specialization}</p>
+                </>
+              )}
             </div>
             <div className="space-y-1">
               <span className="text-xs text-muted-foreground flex items-center">
