@@ -1,60 +1,61 @@
 "use client"
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useUser } from "@/hooks/use-user";
+import { useDashboardSummary } from "@/hooks/use-dashboard";
 import { cn } from "@/lib/utils";
+import { formatDistanceToNow } from "date-fns";
 import {
-    Activity,
-    ArrowDownRight,
-    ArrowUpRight,
     Calendar,
+    CheckCircle2,
+    Clock,
     FileText,
-    Users
+    Stethoscope
 } from "lucide-react";
 
-const stats = [
-  {
-    title: "Total Patients",
-    value: "1,284",
-    icon: Users,
-    description: "+12% from last month",
-    trend: "up",
-  },
-  {
-    title: "Appointments",
-    value: "42",
-    icon: Calendar,
-    description: "Scheduled for today",
-    trend: "stable",
-  },
-  {
-    title: "Medical Reports",
-    value: "856",
-    icon: FileText,
-    description: "+5% from last week",
-    trend: "up",
-  },
-  {
-    title: "Health Score",
-    value: "94%",
-    icon: Activity,
-    description: "Platform average",
-    trend: "down",
-  },
-];
-
 export function DashboardClient() {
-  const { user, isLoading } = useUser();
+  const { summary, isLoading } = useDashboardSummary();
+
+  // Stats mapping from summary
+  const stats = [
+    {
+      title: "Appointments",
+      value: summary?.stats.appointments_total.toString() || "0",
+      icon: Calendar,
+      description: `${summary?.stats.appointments_accepted || 0} accepted`,
+      color: "text-blue-500",
+    },
+    {
+      title: "Medical Reports",
+      value: summary?.stats.reports_total.toString() || "0",
+      icon: FileText,
+      description: `${summary?.stats.reports_analyzed || 0} AI analyzed`,
+      color: "text-emerald-500",
+    },
+    {
+      title: "Health Sessions",
+      value: summary?.stats.appointments_completed.toString() || "0",
+      icon: CheckCircle2,
+      description: "Completed consultations",
+      color: "text-purple-500",
+    },
+    {
+      title: "Specializations",
+      value: summary?.stats.unique_specializations.length.toString() || "0",
+      icon: Stethoscope,
+      description: "Recommended experts",
+      color: "text-rose-500",
+    },
+  ];
 
   return (
     <div className="space-y-8">
       <div className="flex items-center justify-between space-y-2">
         <div>
           <h2 className="text-3xl font-bold tracking-tight">
-            {isLoading ? "Loading..." : `Welcome back, ${user?.first_name || 'User'}`}
+            {isLoading ? "Loading..." : `Welcome back, ${summary?.user.first_name || 'User'}`}
           </h2>
           <p className="text-muted-foreground">
-            {isLoading ? "Fetching your health data..." : "Here's what's happening with your health pilot today."}
+            {isLoading ? "Fetching your health data..." : "Here's a summary of your health journey with Health Pilot."}
           </p>
         </div>
       </div>
@@ -66,13 +67,11 @@ export function DashboardClient() {
               <CardTitle className="text-sm font-medium">
                 {stat.title}
               </CardTitle>
-              <stat.icon className="h-4 w-4 text-muted-foreground" />
+              <stat.icon className={cn("h-4 w-4", stat.color)} />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{stat.value}</div>
-              <p className="text-xs text-muted-foreground flex items-center mt-1">
-                {stat.trend === 'up' && <ArrowUpRight className="h-3 w-3 text-emerald-500 mr-1" />}
-                {stat.trend === 'down' && <ArrowDownRight className="h-3 w-3 text-rose-500 mr-1" />}
+              <div className="text-2xl font-bold">{isLoading ? "..." : stat.value}</div>
+              <p className="text-xs text-muted-foreground mt-1">
                 {stat.description}
               </p>
             </CardContent>
@@ -87,43 +86,61 @@ export function DashboardClient() {
           </CardHeader>
           <CardContent>
             <div className="space-y-8">
-              {[1, 2, 3].map((i) => (
-                <div key={i} className="flex items-center">
-                  <div className="ml-4 space-y-1">
-                    <p className="text-sm font-medium leading-none">New Appointment Scheduled</p>
-                    <p className="text-sm text-muted-foreground">
-                      Patient John Doe with Dr. Smith - 2 hours ago
-                    </p>
+              {summary && summary.recent_activity.length > 0 ? (
+                summary.recent_activity.map((activity) => (
+                  <div key={activity.id} className="flex items-center">
+                    <div className={cn(
+                      "p-2 rounded-full mr-4",
+                      activity.id.startsWith('app') ? "bg-blue-500/10" : "bg-emerald-500/10"
+                    )}>
+                      {activity.id.startsWith('app') ? 
+                        <Calendar className="h-4 w-4 text-blue-500" /> : 
+                        <FileText className="h-4 w-4 text-emerald-500" />
+                      }
+                    </div>
+                    <div className="space-y-1">
+                      <p className="text-sm font-medium leading-none">{activity.title}</p>
+                      <p className="text-sm text-muted-foreground">
+                        {activity.detail}
+                      </p>
+                    </div>
+                    <div className="ml-auto font-medium text-xs text-muted-foreground flex items-center">
+                      <Clock className="h-3 w-3 mr-1" />
+                      {formatDistanceToNow(new Date(activity.date), { addSuffix: true })}
+                    </div>
                   </div>
-                  <div className="ml-auto font-medium text-xs text-muted-foreground">Just now</div>
+                ))
+              ) : (
+                <div className="text-center py-8 text-muted-foreground">
+                  {isLoading ? "Updating activity..." : "No recent activity found."}
                 </div>
-              ))}
+              )}
             </div>
           </CardContent>
         </Card>
         <Card className="col-span-3 bg-card/50 backdrop-blur-sm border-border">
           <CardHeader>
-            <CardTitle>Upcoming Tasks</CardTitle>
+            <CardTitle>Upcoming Consultations</CardTitle>
           </CardHeader>
           <CardContent>
              <div className="space-y-4">
-              {[
-                { label: "Review lab results", priority: "High" },
-                { label: "Call patient for followup", priority: "Medium" },
-                { label: "Update medical records", priority: "Low" }
-              ].map((task) => (
-                <div key={task.label} className="flex items-center justify-between p-2 rounded-lg hover:bg-accent/50 transition-colors">
-                  <span className="text-sm">{task.label}</span>
-                  <span className={cn(
-                    "text-[10px] px-2 py-0.5 rounded-full font-bold uppercase",
-                    task.priority === 'High' ? "bg-rose-500/10 text-rose-500" :
-                    task.priority === 'Medium' ? "bg-amber-500/10 text-amber-500" :
-                    "bg-blue-500/10 text-blue-500"
-                  )}>
-                    {task.priority}
-                  </span>
+              {summary && summary.upcoming_consultations.length > 0 ? (
+                summary.upcoming_consultations.map((app) => (
+                  <div key={app.id} className="flex items-center justify-between p-3 rounded-lg border bg-background/50 hover:bg-accent/50 transition-colors">
+                    <div className="space-y-1">
+                      <p className="text-sm font-medium">Dr. {app.doctor_details.doctor_name}</p>
+                      <p className="text-[10px] text-muted-foreground uppercase">{app.appointment_time}</p>
+                    </div>
+                    <div className="text-xs font-bold text-primary">
+                      {formatDistanceToNow(new Date(app.appointment_date), { addSuffix: true })}
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="text-center py-8 text-muted-foreground text-sm">
+                  {isLoading ? "Checking schedule..." : "No upcoming consultations."}
                 </div>
-              ))}
+              )}
              </div>
           </CardContent>
         </Card>

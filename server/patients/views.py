@@ -43,6 +43,78 @@ class PatientViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_404_NOT_FOUND
             )
     
+    @action(detail=False, methods=['get'])
+    def dashboard_summary(self, request):
+        """Get consolidated dashboard summary for the current patient"""
+        if request.user.user_type != 'patient':
+            return Response(
+                {'error': 'Only patients can access this endpoint'},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        
+        try:
+            patient = request.user.patient_profile
+            
+            # 1. Stats
+            appointments = Appointment.objects.filter(patient=patient)
+            reports = MedicalReport.objects.filter(patient=patient)
+            
+            stats = {
+                'appointments_total': appointments.count(),
+                'appointments_accepted': appointments.filter(status='accepted').count(),
+                'appointments_completed': appointments.filter(status='completed').count(),
+                'reports_total': reports.count(),
+                'reports_analyzed': reports.exclude(ai_specialization__isnull=True).exclude(ai_specialization='').count(),
+                'unique_specializations': list(reports.values_list('ai_specialization', flat=True).distinct().exclude(ai_specialization__isnull=True).exclude(ai_specialization=''))
+            }
+            
+            # 2. Upcoming Consultations (Accepted ones)
+            upcoming = appointments.filter(status='accepted').order_by('appointment_date', 'appointment_time')[:3]
+            
+            # 3. Recent Activity (Latest 5 items)
+            # Combine latest appointments and reports
+            recent_appointments = appointments.order_by('-updated_at')[:5]
+            recent_reports = reports.order_by('-uploaded_at')[:5]
+            
+            activity_list = []
+            for app in recent_appointments:
+                activity_list.append({
+                    'id': f'app-{app.id}',
+                    'type': 'appointment',
+                    'title': f'Appointment {app.status.capitalize()}',
+                    'detail': f'With Dr. {app.doctor.user.get_full_name()}',
+                    'date': app.updated_at,
+                })
+            
+            for rep in recent_reports:
+                activity_list.append({
+                    'id': f'rep-{rep.id}',
+                    'type': 'report',
+                    'title': 'Medical Report Uploaded',
+                    'detail': f'Analyzed as {rep.ai_specialization}' if rep.ai_specialization else 'Processing AI analysis...',
+                    'date': rep.uploaded_at,
+                })
+            
+            # Sort activity by date descending
+            activity_list.sort(key=lambda x: x['date'], reverse=True)
+            
+            response_data = {
+                'user': {
+                    'name': request.user.get_full_name(),
+                    'first_name': request.user.first_name,
+                },
+                'stats': stats,
+                'upcoming_consultations': AppointmentSerializer(upcoming, many=True).data,
+                'recent_activity': activity_list[:5]
+            }
+            
+            return Response(response_data)
+        except Patient.DoesNotExist:
+            return Response(
+                {'error': 'Patient profile not found'},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
     @action(detail=False, methods=['put', 'patch'])
     def update_profile(self, request):
         """Update current patient's profile"""
