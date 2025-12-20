@@ -1,4 +1,5 @@
 from rest_framework import viewsets, status, filters
+from django.db import IntegrityError
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
@@ -110,6 +111,74 @@ class DoctorViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_404_NOT_FOUND
             )
 
+    @action(detail=False, methods=['get'])
+    def dashboard_summary(self, request):
+        """Get consolidated dashboard summary for the current doctor"""
+        if request.user.user_type != 'doctor':
+            return Response(
+                {'error': 'Only doctors can access this endpoint'},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        
+        try:
+            doctor = request.user.doctor_profile
+            
+            # 1. Stats
+            appointments = Appointment.objects.filter(doctor=doctor)
+            
+            # Count unique patients
+            unique_patients_count = appointments.values('patient').distinct().count()
+            
+            # Estimate revenue from completed appointments
+            consultation_fee = float(doctor.consultation_fee)
+            completed_count = appointments.filter(status='completed').count()
+            estimated_revenue = completed_count * consultation_fee
+            
+            stats = {
+                'appointments_total': appointments.count(),
+                'appointments_pending': appointments.filter(status='pending').count(),
+                'appointments_accepted': appointments.filter(status='accepted').count(),
+                'appointments_completed': completed_count,
+                'patients_total': unique_patients_count,
+                'revenue_estimated': estimated_revenue
+            }
+            
+            # 2. Upcoming Consultations (Accepted ones)
+            upcoming = appointments.filter(status='accepted').order_by('appointment_date', 'appointment_time')[:3]
+            
+            # 3. Recent Activity (Latest 5 items)
+            recent_appointments = appointments.order_by('-updated_at')[:5]
+            
+            activity_list = []
+            for app in recent_appointments:
+                activity_list.append({
+                    'id': f'app-{app.id}',
+                    'type': 'appointment',
+                    'title': f'Appointment {app.status.capitalize()}',
+                    'detail': f'With patient {app.patient.user.get_full_name()}',
+                    'date': app.updated_at,
+                })
+            
+            # Sort activity by date descending
+            activity_list.sort(key=lambda x: x['date'], reverse=True)
+            
+            response_data = {
+                'user': {
+                    'name': f"Dr. {request.user.get_full_name()}",
+                    'first_name': request.user.first_name,
+                },
+                'stats': stats,
+                'upcoming_consultations': AppointmentSerializer(upcoming, many=True).data,
+                'recent_activity': activity_list[:5]
+            }
+            
+            return Response(response_data)
+        except Doctor.DoesNotExist:
+            return Response(
+                {'error': 'Doctor profile not found'},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
 class DoctorAvailabilityViewSet(viewsets.ModelViewSet):
     serializer_class = DoctorAvailabilitySerializer
     permission_classes = [IsAuthenticated]
@@ -138,23 +207,34 @@ class DoctorAvailabilityViewSet(viewsets.ModelViewSet):
             doctor = request.user.doctor_profile
             data = request.data.copy()
             
-            # Support bulk creation
             if isinstance(data, list):
                 created_slots = []
                 for slot_data in data:
                     slot_data['doctor'] = doctor.id
                     serializer = self.get_serializer(data=slot_data)
                     if serializer.is_valid():
-                        availability = serializer.save(doctor=doctor)
-                        created_slots.append(serializer.data)
+                        try:
+                            availability = serializer.save(doctor=doctor)
+                            created_slots.append(serializer.data)
+                        except IntegrityError:
+                            return Response(
+                                {'error': 'A slot with this day and start time already exists.'},
+                                status=status.HTTP_400_BAD_REQUEST
+                            )
                     else:
                         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
                 return Response(created_slots, status=status.HTTP_201_CREATED)
             else:
                 serializer = self.get_serializer(data=data)
                 if serializer.is_valid():
-                    serializer.save(doctor=doctor)
-                    return Response(serializer.data, status=status.HTTP_201_CREATED)
+                    try:
+                        serializer.save(doctor=doctor)
+                        return Response(serializer.data, status=status.HTTP_201_CREATED)
+                    except IntegrityError:
+                        return Response(
+                            {'error': 'A slot with this day and start time already exists.'},
+                            status=status.HTTP_400_BAD_REQUEST
+                        )
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
         except Doctor.DoesNotExist:

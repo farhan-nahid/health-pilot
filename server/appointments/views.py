@@ -96,6 +96,35 @@ class AppointmentViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
     
     @action(detail=True, methods=['post'])
+    def complete(self, request, pk=None):
+        """Complete an appointment (doctor only)"""
+        if request.user.user_type != 'doctor':
+            return Response(
+                {'error': 'Only doctors can complete appointments'},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        
+        appointment = self.get_object()
+        if appointment.doctor.user != request.user:
+            return Response(
+                {'error': 'You can only complete your own appointments'},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        
+        if appointment.status != 'accepted':
+            return Response(
+                {'error': 'Only accepted appointments can be marked as completed'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        appointment.status = 'completed'
+        appointment.doctor_notes = request.data.get('doctor_notes', appointment.doctor_notes)
+        appointment.save()
+        
+        serializer = AppointmentSerializer(appointment)
+        return Response(serializer.data)
+
+    @action(detail=True, methods=['post'])
     def cancel(self, request, pk=None):
         """Cancel an appointment (patient only)"""
         if request.user.user_type != 'patient':

@@ -7,6 +7,40 @@ class DoctorAvailabilitySerializer(serializers.ModelSerializer):
         fields = ('id', 'day_of_week', 'start_time', 'end_time', 'is_available')
         read_only_fields = ('id',)
 
+    def validate(self, data):
+        start_time = data.get('start_time')
+        end_time = data.get('end_time')
+        day_of_week = data.get('day_of_week')
+
+        if start_time and end_time and start_time >= end_time:
+            raise serializers.ValidationError("End time must be after start time.")
+
+        # Get doctor from context or request user
+        request = self.context.get('request')
+        if request and hasattr(request.user, 'doctor_profile'):
+            doctor = request.user.doctor_profile
+            
+            # Check for overlapping slots
+            # Note: This checks for EXACT match or overlaps for this doctor
+            # A slot overlaps if (new_start < existing_end) AND (new_end > existing_start)
+            overlapping = DoctorAvailability.objects.filter(
+                doctor=doctor,
+                day_of_week=day_of_week,
+                start_time__lt=end_time,
+                end_time__gt=start_time
+            )
+            
+            # If we are updating an existing instance, exclude it from overlap check
+            if self.instance:
+                overlapping = overlapping.exclude(pk=self.instance.pk)
+                
+            if overlapping.exists():
+                raise serializers.ValidationError(
+                    f"This time slot conflicts with an existing availability on {day_of_week.capitalize()}."
+                )
+
+        return data
+
 class DoctorSerializer(serializers.ModelSerializer):
     user = serializers.SerializerMethodField()
     availabilities = DoctorAvailabilitySerializer(many=True, read_only=True)
