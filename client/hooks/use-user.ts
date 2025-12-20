@@ -1,39 +1,32 @@
 "use client"
 
 import api from "@/lib/api";
-import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 
 export interface User {
   id: number;
   email: string;
   first_name: string;
   last_name: string;
-  user_type: 'patient' | 'doctor';
+  user_type: "doctor" | "patient";
   phone: string;
 }
 
 export function useUser() {
-  const [user, setUser] = useState<User | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { data, isLoading, error } = useQuery<User>({
+    queryKey: ["user"],
+    queryFn: async () => {
+      const { data } = await api.get("/auth/user/");
+      return data;
+    },
+    // Only fetch if a token exists in localStorage
+    enabled: typeof window !== "undefined" && !!localStorage.getItem("token"),
+    retry: false,
+  });
 
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        setIsLoading(true);
-        const { data } = await api.get("/auth/user/");
-        setUser(data);
-        setError(null);
-      } catch (err: any) {
-        setError(err.message || "Failed to fetch user");
-        setUser(null);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchUser();
-  }, []);
-
-  return { user, isLoading, error };
+  return {
+    user: data,
+    isLoading,
+    error: error ? (error as any).message : null,
+  };
 }

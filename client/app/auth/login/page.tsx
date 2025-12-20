@@ -1,8 +1,9 @@
 import { LoginForm } from "@/components/auth/login-form";
+import { Metadata } from "next";
 
-export const metadata = {
+export const metadata: Metadata = {
   title: "Login | Health Pilot",
-  description: "Sign in to access your health dashboard",
+  description: "Sign in to your account to manage your health.",
 };
 
 export default function LoginPage() {
