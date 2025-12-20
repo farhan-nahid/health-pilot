@@ -4,11 +4,22 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Switch } from "@/components/ui/switch";
-import { Monitor, Moon, Sun } from "lucide-react";
+import { useSettings } from "@/hooks/use-settings";
+import { showError, showSuccess } from "@/lib/notifications";
+import { Loader2, Monitor, Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
 
 export function SettingsClient() {
   const { theme, setTheme } = useTheme();
+  const { settings, isLoading, updateSettings } = useSettings();
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
@@ -89,7 +100,15 @@ export function SettingsClient() {
                 Receive notifications for your upcoming appointments.
               </p>
             </div>
-            <Switch defaultChecked />
+            <Switch 
+              checked={settings?.appointment_reminders} 
+              onCheckedChange={(checked) => {
+                updateSettings({ appointment_reminders: checked }, {
+                  onSuccess: () => showSuccess("Appointment reminders updated."),
+                  onError: (err) => showError(err),
+                });
+              }}
+            />
           </div>
           <div className="flex items-center justify-between border-t pt-4">
             <div className="space-y-0.5">
@@ -98,7 +117,15 @@ export function SettingsClient() {
                 Get personalized health insights and tips.
               </p>
             </div>
-            <Switch defaultChecked />
+            <Switch 
+              checked={settings?.health_tips} 
+              onCheckedChange={(checked) => {
+                updateSettings({ health_tips: checked }, {
+                  onSuccess: () => showSuccess("Health tips preference updated."),
+                  onError: (err) => showError(err),
+                });
+              }}
+            />
           </div>
           <div className="flex items-center justify-between border-t pt-4">
             <div className="space-y-0.5">
@@ -107,7 +134,15 @@ export function SettingsClient() {
                 Notifications about your account login and security.
               </p>
             </div>
-            <Switch defaultChecked disabled />
+            <Switch 
+              checked={settings?.security_alerts} 
+              onCheckedChange={(checked) => {
+                updateSettings({ security_alerts: checked }, {
+                  onSuccess: () => showSuccess("Security alerts preference updated."),
+                  onError: (err) => showError(err),
+                });
+              }}
+            />
           </div>
         </CardContent>
       </Card>
@@ -127,7 +162,15 @@ export function SettingsClient() {
                 Add an extra layer of security to your account.
               </p>
             </div>
-            <Switch />
+            <Switch 
+              checked={settings?.two_factor_auth}
+              onCheckedChange={(checked) => {
+                updateSettings({ two_factor_auth: checked }, {
+                  onSuccess: () => showSuccess("Two-factor authentication preference updated."),
+                  onError: (err) => showError(err),
+                });
+              }}
+            />
           </div>
         </CardContent>
       </Card>

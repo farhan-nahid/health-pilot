@@ -27,6 +27,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { useDoctors } from "@/hooks/use-doctors";
 import api from "@/lib/api";
+import { showError, showSuccess } from "@/lib/notifications";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { Calendar as CalendarIcon, Plus } from "lucide-react";
@@ -56,12 +57,14 @@ export function BookAppointmentDialog({ onSuccess }: { onSuccess?: () => void })
       return api.post("/appointments/", payload);
     },
     onSuccess: () => {
+      showSuccess("Appointment booked successfully! Waiting for doctor's approval.");
       queryClient.invalidateQueries({ queryKey: ["appointments"] });
       setOpen(false);
       resetForm();
       if (onSuccess) onSuccess();
     },
     onError: (err: any) => {
+      showError(err);
       setError(err.response?.data?.non_field_errors?.[0] || err.message || "Failed to book appointment");
     },
   });

@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { PasswordInput } from "@/components/ui/password-input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import api from "@/lib/api";
+import { showError, showSuccess } from "@/lib/notifications";
 import { ArrowRight, Mail, Phone, User, UserCircle } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -47,18 +48,19 @@ export function RegisterForm() {
       };
 
       const { data } = await api.post("/auth/registration/", payload);
+      showSuccess("Account created successfully! Welcome to Health Pilot.");
 
       if (data.key) {
         localStorage.setItem("token", data.key);
         router.push("/dashboard");
+        router.refresh();
       }
     } catch (err: any) {
-      let errorMessage = "Something went wrong";
-      const errorData = err.response?.data;
-      if (errorData) {
-      } else {
-        errorMessage = err.message;
-      }
+      showError(err);
+      const errorMessage = err.response?.data?.email?.[0] || 
+                          err.response?.data?.non_field_errors?.[0] || 
+                          err.message || 
+                          "Registration failed. Please check your information.";
       setError(errorMessage);
     } finally {
       setIsLoading(false);

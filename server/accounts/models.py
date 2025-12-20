@@ -34,3 +34,27 @@ class User(AbstractUser):
     
     def __str__(self):
         return self.email
+
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+
+class UserSettings(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='settings')
+    appointment_reminders = models.BooleanField(default=True)
+    health_tips = models.BooleanField(default=True)
+    security_alerts = models.BooleanField(default=True)
+    two_factor_auth = models.BooleanField(default=False)
+    
+    def __str__(self):
+        return f"Settings for {self.user.email}"
+
+@receiver(post_save, sender=User)
+def create_user_settings(sender, instance, created, **kwargs):
+    if created:
+        UserSettings.objects.create(user=instance)
+
+@receiver(post_save, sender=User)
+def save_user_settings(sender, instance, **kwargs):
+    if not hasattr(instance, 'settings'):
+        UserSettings.objects.create(user=instance)
+    instance.settings.save()

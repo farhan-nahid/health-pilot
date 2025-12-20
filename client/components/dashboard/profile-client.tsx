@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { usePatientProfile, useUpdatePatientProfile } from "@/hooks/use-patient";
 import { useUpdateUser, useUser } from "@/hooks/use-user";
+import { showError, showSuccess } from "@/lib/notifications";
 import { useEffect, useState } from "react";
 
 export function ProfileClient() {
@@ -73,8 +74,9 @@ export function ProfileClient() {
       }
 
       await Promise.all(promises);
-      setSuccess("Profile updated successfully!");
+      showSuccess("Profile updated successfully!");
     } catch (err: any) {
+      showError(err);
       setError(err.response?.data?.message || err.message || "Failed to update profile");
     }
   };

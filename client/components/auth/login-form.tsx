@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { PasswordInput } from "@/components/ui/password-input";
 import api from "@/lib/api";
+import { showError, showSuccess } from "@/lib/notifications";
 import { ArrowRight, Mail } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -18,21 +19,28 @@ export function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  // Note: The instruction provided a new onSubmit signature (values: z.infer<typeof loginSchema>).
+  // To maintain compatibility with the existing form structure (useState for email/password),
+  // I'm adapting the new logic to use the existing state variables.
+  // If a form library like react-hook-form with Zod is intended, further changes would be needed.
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(null);
     setIsLoading(true);
+    setError("");
 
     try {
       const { data } = await api.post("/auth/login/", { email, password });
-      
-      if (data.key) {
-        localStorage.setItem("token", data.key);
-        router.push("/dashboard");
-      }
+      localStorage.setItem("token", data.key);
+      showSuccess("Welcome back! You have successfully logged in.");
+      router.push("/dashboard");
+      router.refresh();
     } catch (err: any) {
-      const errorMessage = err.response?.data?.non_field_errors?.[0] || err.message || "Something went wrong";
-      setError(errorMessage);
+      showError(err);
+      if (err.response?.status === 400) {
+        setError("Invalid email or password.");
+      } else {
+        setError("Something went wrong. Please try again later.");
+      }
     } finally {
       setIsLoading(false);
     }

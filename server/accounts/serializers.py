@@ -40,3 +40,9 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ('id', 'email', 'first_name', 'last_name', 'user_type', 'phone')
         read_only_fields = ('id', 'email')
 
+
+class UserSettingsSerializer(serializers.ModelSerializer):
+    class Meta:
+        from .models import UserSettings
+        model = UserSettings
+        fields = ('appointment_reminders', 'health_tips', 'security_alerts', 'two_factor_auth')

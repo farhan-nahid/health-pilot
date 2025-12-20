@@ -16,8 +16,8 @@ import { usePathname } from "next/navigation";
 const navigation = [
   { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
   { name: 'Appointments', href: '/dashboard/appointments', icon: Calendar },
-  { name: 'Patients', href: '/dashboard/patients', icon: Users, role: 'doctor' },
-  { name: 'Medical Reports', href: '/dashboard/reports', icon: FileText },
+  { name: 'Patients', href: '/dashboard/patients', icon: Users, roles: ['doctor'] },
+  { name: 'Medical Reports', href: '/dashboard/reports', icon: FileText, roles: ['patient'] },
   { name: 'Profile', href: '/dashboard/profile', icon: UserCircle },
   { name: 'Settings', href: '/dashboard/settings', icon: Settings },
 ];
@@ -27,6 +27,12 @@ import { useUser } from "@/hooks/use-user";
 export function Sidebar({ className }: { className?: string }) {
   const pathname = usePathname();
   const { user, isLoading } = useUser();
+
+  const filteredNavigation = navigation.filter(item => {
+    if (!item.roles) return true;
+    if (isLoading || !user) return false;
+    return item.roles.includes(user.user_type);
+  });
 
   return (
     <div className={cn("flex flex-col w-64 border-r bg-card transition-all", className)}>
@@ -44,7 +50,7 @@ export function Sidebar({ className }: { className?: string }) {
         )}
       </div>
       <nav className="flex-1 px-4 py-6 space-y-1 overflow-y-auto">
-        {navigation.map((item) => {
+        {filteredNavigation.map((item) => {
           const isActive = pathname === item.href;
           return (
             <Link

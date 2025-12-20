@@ -14,6 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useUploadReport } from "@/hooks/use-medical-reports";
+import { showError, showSuccess } from "@/lib/notifications";
 import { CheckCircle2, Plus, Upload } from "lucide-react";
 import { useState } from "react";
 
@@ -53,11 +54,13 @@ export function UploadReportDialog({ onSuccess }: { onSuccess?: () => void }) {
       symptoms: symptoms,
     }, {
       onSuccess: () => {
+        showSuccess("Report uploaded successfully. AI analysis is in progress.");
         setOpen(false);
         resetForm();
         if (onSuccess) onSuccess();
       },
       onError: (err: any) => {
+        showError(err);
         setError(err.response?.data?.report_file?.[0] || err.message || "Failed to upload report");
       }
     });
