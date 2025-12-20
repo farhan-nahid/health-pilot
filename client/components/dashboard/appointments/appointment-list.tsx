@@ -76,15 +76,11 @@ export function AppointmentList({
                 <div className="flex items-center gap-3">
                   <Avatar className="h-8 w-8">
                     {isDoctor ? (
-                        <>
-                            <AvatarFallback>{apt.patient_name[0]}</AvatarFallback>
-                        </>
+                        <AvatarFallback>{apt.patient_name[0]}</AvatarFallback>
                     ) : (
-                        <>
-                            <AvatarImage src={apt.doctor_details.profile_picture || ""} />
-                            <AvatarFallback>{apt.doctor_details.doctor_name[0]}</AvatarFallback>
-                        </>
+                        <AvatarImage src={apt.doctor_details.profile_picture || ""} />
                     )}
+                    {!isDoctor && <AvatarFallback>{apt.doctor_details.doctor_name[0]}</AvatarFallback>}
                   </Avatar>
                   <div className="flex flex-col">
                     <span className="text-sm font-semibold">{isDoctor ? apt.patient_name : apt.doctor_details.doctor_name}</span>

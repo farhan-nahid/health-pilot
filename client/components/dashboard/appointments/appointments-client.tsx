@@ -5,9 +5,13 @@ import { useUser } from "@/hooks/use-user";
 import { AppointmentList } from "./appointment-list";
 import { BookAppointmentDialog } from "./book-appointment-dialog";
 
+import { useSearchParams } from "next/navigation";
+
 export function AppointmentsClient() {
+  const searchParams = useSearchParams();
+  const patientId = searchParams.get("patient_id");
   const { user } = useUser();
-  const { appointments, isLoading, refresh } = useAppointments();
+  const { appointments, isLoading, refresh } = useAppointments(patientId);
 
   const isPatient = user?.user_type === "patient";
 

@@ -40,11 +40,12 @@ export interface Appointment {
   updated_at: string;
 }
 
-export function useAppointments() {
+export function useAppointments(patientId?: string | null) {
   const { data, isLoading, error, refetch } = useQuery<Appointment[]>({
-    queryKey: ["appointments"],
+    queryKey: ["appointments", patientId],
     queryFn: async () => {
-      const { data } = await api.get("/appointments/");
+      const url = patientId ? `/appointments/?patient_id=${patientId}` : "/appointments/";
+      const { data } = await api.get(url);
       return Array.isArray(data) ? data : data.results || [];
     },
   });

@@ -122,20 +122,21 @@ export function AppointmentActions({
           )}
 
           {isDoctor && isPending && (
-             <>
-                <DropdownMenuItem 
-                    onClick={() => setShowAcceptAlert(true)}
-                    className="text-emerald-600 focus:text-emerald-600 focus:bg-emerald-50"
-                >
-                    <CheckCircle2 className="mr-2 h-4 w-4" /> Accept
-                </DropdownMenuItem>
-                <DropdownMenuItem 
-                    onClick={() => setShowRejectAlert(true)}
-                    className="text-rose-600 focus:text-rose-600 focus:bg-rose-50"
-                >
-                    <XCircle className="mr-2 h-4 w-4" /> Reject
-                </DropdownMenuItem>
-             </>
+            <DropdownMenuItem 
+              onClick={() => setShowAcceptAlert(true)}
+              className="text-emerald-600 focus:text-emerald-600 focus:bg-emerald-50"
+            >
+              <CheckCircle2 className="mr-2 h-4 w-4" /> Accept
+            </DropdownMenuItem>
+          )}
+          
+          {isDoctor && isPending && (
+            <DropdownMenuItem 
+              onClick={() => setShowRejectAlert(true)}
+              className="text-rose-600 focus:text-rose-600 focus:bg-rose-50"
+            >
+              <XCircle className="mr-2 h-4 w-4" /> Reject
+            </DropdownMenuItem>
           )}
 
           {isPatient && isCancellable && (

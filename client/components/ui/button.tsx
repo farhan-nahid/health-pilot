@@ -60,8 +60,14 @@ function Button({
       className={cn(buttonVariants({ variant, size, className }))}
       {...props}
     >
-      {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-      {props.children}
+      {asChild ? (
+        props.children
+      ) : (
+        <>
+          {loading && <Loader2 className="size-4 animate-spin" />}
+          {props.children}
+        </>
+      )}
     </Comp>
   )
 }
