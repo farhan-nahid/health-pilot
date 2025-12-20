@@ -1,3 +1,4 @@
+import { ThemeToggle } from "@/components/theme-toggle";
 import { Activity, ArrowRight, Shield, Users } from "lucide-react";
 import Link from "next/link";
 
@@ -14,13 +15,15 @@ export default function Home() {
             <span className="font-bold text-xl tracking-tight text-gray-900 dark:text-white">Health Pilot</span>
           </Link>
         </div>
-        <div className="flex flex-1 justify-end gap-x-6">
+        <div className="flex flex-1 justify-end items-center gap-x-6">
           <Link 
-            href="/auth" 
+            href="/auth/login" 
             className="text-sm font-semibold leading-6 text-gray-900 dark:text-gray-100 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
           >
             Log in <span aria-hidden="true">&rarr;</span>
           </Link>
+
+           <ThemeToggle />
         </div>
       </nav>
 
@@ -37,7 +40,7 @@ export default function Home() {
             </p>
             <div className="mt-10 flex items-center justify-center gap-x-6">
               <Link
-                href="/auth"
+                href="/auth/register"
                 className="rounded-full bg-blue-600 px-6 py-3.5 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 transition-all flex items-center gap-2 group"
               >
                 Get started
