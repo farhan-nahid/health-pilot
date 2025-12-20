@@ -1,5 +1,6 @@
 "use client"
 
+import { FormTextarea } from "@/components/form";
 import { Button } from "@/components/ui/button";
 import {
     Dialog,
@@ -10,53 +11,44 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog";
+import {
+    Field,
+    FieldContent,
+    FieldError,
+    FieldLabel,
+} from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { useUploadReport } from "@/hooks/use-medical-reports";
 import { showError, showSuccess } from "@/lib/notifications";
+import { uploadReportSchema, UploadReportValues } from "@/schemas/report";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { CheckCircle2, Plus, Upload } from "lucide-react";
 import { useState } from "react";
+import { Controller, useForm } from "react-hook-form";
 
 export function UploadReportDialog({ onSuccess }: { onSuccess?: () => void }) {
   const [open, setOpen] = useState(false);
-  const [file, setFile] = useState<File | null>(null);
-  const [symptoms, setSymptoms] = useState("");
   const [error, setError] = useState<string | null>(null);
 
   const uploadMutation = useUploadReport();
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedFile = e.target.files?.[0];
-    if (selectedFile) {
-      if (selectedFile.type !== "application/pdf") {
-        setError("Only PDF files are allowed.");
-        setFile(null);
-        return;
-      }
-      if (selectedFile.size > 10 * 1024 * 1024) {
-        setError("File size cannot exceed 10MB.");
-        setFile(null);
-        return;
-      }
-      setFile(selectedFile);
-      setError(null);
-    }
-  };
+  const form = useForm<UploadReportValues>({
+    resolver: zodResolver(uploadReportSchema),
+    defaultValues: {
+      symptoms: "",
+    },
+  });
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!file || !symptoms) return;
-
+  const onSubmit = async (values: UploadReportValues) => {
     setError(null);
     uploadMutation.mutate({
-      report_file: file,
-      symptoms: symptoms,
+      report_file: values.report_file,
+      symptoms: values.symptoms,
     }, {
       onSuccess: () => {
         showSuccess("Report uploaded successfully. AI analysis is in progress.");
         setOpen(false);
-        resetForm();
+        form.reset();
         if (onSuccess) onSuccess();
       },
       onError: (err: any) => {
@@ -64,12 +56,6 @@ export function UploadReportDialog({ onSuccess }: { onSuccess?: () => void }) {
         setError(err.response?.data?.report_file?.[0] || err.message || "Failed to upload report");
       }
     });
-  };
-
-  const resetForm = () => {
-    setFile(null);
-    setSymptoms("");
-    setError(null);
   };
 
   return (
@@ -87,39 +73,49 @@ export function UploadReportDialog({ onSuccess }: { onSuccess?: () => void }) {
             Upload your PDF report and provide your symptoms for AI analysis.
           </DialogDescription>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4 py-4">
-          <div className="space-y-2">
-            <Label htmlFor="report">PDF Report</Label>
-            <div className="flex items-center gap-4">
-              <div className="relative flex-1">
-                <Input
-                  id="report"
-                  type="file"
-                  accept=".pdf"
-                  onChange={handleFileChange}
-                  className="opacity-0 absolute inset-0 w-full h-full cursor-pointer z-10"
-                />
-                <Button variant="outline" className="w-full justify-start font-normal">
-                  <Upload className="mr-2 h-4 w-4" />
-                  {file ? file.name : "Choose PDF file"}
-                </Button>
-              </div>
-              {file && <CheckCircle2 className="h-5 w-5 text-emerald-500" />}
-            </div>
-            <p className="text-[10px] text-muted-foreground uppercase">Max size: 10MB. PDF only.</p>
-          </div>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 py-4">
+          <Controller
+            control={form.control}
+            name="report_file"
+            render={({ field: { onChange, value }, fieldState }) => (
+              <Field data-invalid={fieldState.invalid}>
+                <FieldLabel htmlFor="report">PDF Report</FieldLabel>
+                <FieldContent>
+                  <div className="flex items-center gap-4">
+                    <div className="relative flex-1">
+                      <Input
+                        id="report"
+                        type="file"
+                        accept=".pdf"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) onChange(file);
+                        }}
+                        className="opacity-0 absolute inset-0 w-full h-full cursor-pointer z-10"
+                      />
+                      <Button variant="outline" className="w-full justify-start font-normal">
+                        <Upload className="mr-2 h-4 w-4" />
+                        {value ? value.name : "Choose PDF file"}
+                      </Button>
+                    </div>
+                    {value && <CheckCircle2 className="h-5 w-5 text-emerald-500" />}
+                  </div>
+                  <p className="text-[10px] text-muted-foreground uppercase">Max size: 10MB. PDF only.</p>
+                  {fieldState.invalid && (
+                    <FieldError errors={[fieldState.error]} />
+                  )}
+                </FieldContent>
+              </Field>
+            )}
+          />
 
-          <div className="space-y-2">
-            <Label htmlFor="report-symptoms">Symptoms & Context</Label>
-            <Textarea
-              id="report-symptoms"
-              placeholder="What symptoms were you feeling when you got this report?"
-              className="resize-none h-32"
-              value={symptoms}
-              onChange={(e) => setSymptoms(e.target.value)}
-              required
-            />
-          </div>
+          <FormTextarea
+            control={form.control}
+            name="symptoms"
+            label="Symptoms & Context"
+            placeholder="What symptoms were you feeling when you got this report?"
+            className="h-32 resize-none"
+          />
 
           {error && (
             <div className="text-destructive text-sm font-medium bg-destructive/10 p-2 rounded border border-destructive/20">
@@ -131,7 +127,6 @@ export function UploadReportDialog({ onSuccess }: { onSuccess?: () => void }) {
             <Button 
               type="submit" 
               className="w-full" 
-              disabled={!file || !symptoms || uploadMutation.isPending}
               loading={uploadMutation.isPending}
             >
               Start AI Analysis

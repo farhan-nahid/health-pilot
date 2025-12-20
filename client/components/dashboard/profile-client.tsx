@@ -1,17 +1,17 @@
 "use client"
 
+import { FormInput, FormSelect, FormTextarea } from "@/components/form";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
-
+import { SelectItem } from "@/components/ui/select";
 import { useDoctorProfile, useUpdateDoctorProfile } from "@/hooks/use-doctors";
 import { usePatientProfile, useUpdatePatientProfile } from "@/hooks/use-patient";
 import { useUpdateUser, useUser } from "@/hooks/use-user";
 import { showError, showSuccess } from "@/lib/notifications";
+import { profileSchema, ProfileValues } from "@/schemas/profile";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
 
 const SPECIALIZATIONS = [
   { value: "cardiologist", label: "Cardiologist" },
@@ -38,80 +38,79 @@ export function ProfileClient() {
   const updatePatientMutation = useUpdatePatientProfile();
   const updateDoctorMutation = useUpdateDoctorProfile();
 
-  // Basic info
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [phone, setPhone] = useState("");
-  
-  // Patient info
-  const [dob, setDob] = useState("");
-  const [bloodGroup, setBloodGroup] = useState("");
-  const [address, setAddress] = useState("");
-  const [emergencyContact, setEmergencyContact] = useState("");
-
-  // Doctor info
-  const [specialization, setSpecialization] = useState("");
-  const [bio, setBio] = useState("");
-  const [experienceYears, setExperienceYears] = useState("");
-  const [consultationFee, setConsultationFee] = useState("");
-
   const [error, setError] = useState<string | null>(null);
+
+  const form = useForm<ProfileValues>({
+    resolver: zodResolver(profileSchema) as any,
+    defaultValues: {
+      first_name: "",
+      last_name: "",
+      phone: "",
+      date_of_birth: "",
+      blood_group: "",
+      address: "",
+      emergency_contact: "",
+      specialization: "",
+      bio: "",
+      experience_years: 0,
+      consultation_fee: "0.00",
+    },
+  });
 
   useEffect(() => {
     if (user) {
-      setFirstName(user.first_name || "");
-      setLastName(user.last_name || "");
-      setPhone(user.phone || "");
-    }
-  }, [user]);
+      const defaultValues: Partial<ProfileValues> = {
+        first_name: user.first_name || "",
+        last_name: user.last_name || "",
+        phone: user.phone || "",
+      };
 
-  useEffect(() => {
-    if (patientProfile && isPatient) {
-      setDob(patientProfile.date_of_birth || "");
-      setBloodGroup(patientProfile.blood_group || "");
-      setAddress(patientProfile.address || "");
-      setEmergencyContact(patientProfile.emergency_contact || "");
-    }
-  }, [patientProfile, isPatient]);
+      if (isPatient && patientProfile) {
+        defaultValues.date_of_birth = patientProfile.date_of_birth || "";
+        defaultValues.blood_group = patientProfile.blood_group || "";
+        defaultValues.address = patientProfile.address || "";
+        defaultValues.emergency_contact = patientProfile.emergency_contact || "";
+      }
 
-  useEffect(() => {
-    if (doctorProfile && isDoctor) {
-      setSpecialization(doctorProfile.specialization?.toLowerCase() || "");
-      setBio(doctorProfile.bio || "");
-      setExperienceYears(doctorProfile.experience_years?.toString() || "");
-      setConsultationFee(doctorProfile.consultation_fee || "");
-    }
-  }, [doctorProfile, isDoctor]);
+      if (isDoctor && doctorProfile) {
+        defaultValues.specialization = doctorProfile.specialization?.toLowerCase() || "";
+        defaultValues.bio = doctorProfile.bio || "";
+        defaultValues.experience_years = doctorProfile.experience_years || 0;
+        defaultValues.consultation_fee = doctorProfile.consultation_fee || "0.00";
+      }
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+      form.reset(defaultValues);
+    }
+  }, [user, patientProfile, doctorProfile, isPatient, isDoctor, form]);
+
+  const onSubmit = async (values: ProfileValues) => {
     setError(null);
 
     try {
       const promises = [
         updateUserMutation.mutateAsync({
-          first_name: firstName,
-          last_name: lastName,
-          phone: phone,
+          first_name: values.first_name,
+          last_name: values.last_name,
+          phone: values.phone,
         })
       ];
 
       if (isPatient) {
         promises.push(
           updatePatientMutation.mutateAsync({
-            date_of_birth: dob || null,
-            blood_group: bloodGroup || null,
-            address: address || null,
-            emergency_contact: emergencyContact || null,
+            date_of_birth: values.date_of_birth || null,
+            blood_group: values.blood_group || null,
+            address: values.address || null,
+            emergency_contact: values.emergency_contact || null,
           })
         );
       } else if (isDoctor) {
         promises.push(
           updateDoctorMutation.mutateAsync({
-            specialization: specialization as any,
-            bio: bio || null,
-            experience_years: parseInt(experienceYears) || 0,
-            consultation_fee: consultationFee || "0.00",
+            specialization: values.specialization as any,
+            bio: values.bio || null,
+            experience_years: values.experience_years || 0,
+            consultation_fee: values.consultation_fee || "0.00",
           })
         );
       }
@@ -136,7 +135,7 @@ export function ProfileClient() {
 
   return (
     <div className="max-w-2xl mx-auto space-y-6">
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={form.handleSubmit(onSubmit as any)} className="space-y-6">
         <Card>
           <CardHeader>
             <CardTitle>Account Information</CardTitle>
@@ -146,51 +145,36 @@ export function ProfileClient() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="firstName">First Name</Label>
-                <Input
-                  id="firstName"
-                  value={firstName}
-                  onChange={(e) => setFirstName(e.target.value)}
-                  placeholder="John"
-                  required
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="lastName">Last Name</Label>
-                <Input
-                  id="lastName"
-                  value={lastName}
-                  onChange={(e) => setLastName(e.target.value)}
-                  placeholder="Doe"
-                  required
-                />
-              </div>
+              <FormInput
+                control={form.control}
+                name="first_name"
+                label="First Name"
+                placeholder="John"
+              />
+              <FormInput
+                control={form.control}
+                name="last_name"
+                label="Last Name"
+                placeholder="Doe"
+              />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="email">Email Address</Label>
-              <Input
-                id="email"
-                type="email"
-                value={user?.email || ""}
-                disabled
-                className="bg-muted cursor-not-allowed"
-              />
+              <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">Email Address</label>
+              <div className="flex h-10 w-full rounded-md border border-input bg-muted px-3 py-2 text-sm text-muted-foreground cursor-not-allowed">
+                {user?.email || ""}
+              </div>
               <p className="text-[10px] text-muted-foreground uppercase">Email cannot be changed.</p>
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="phone">Phone Number</Label>
-              <Input
-                id="phone"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                placeholder="+1 234 567 890"
-              />
-            </div>
+            <FormInput
+              control={form.control}
+              name="phone"
+              label="Phone Number"
+              placeholder="+1 234 567 890"
+            />
           </CardContent>
         </Card>
 
-        {user?.user_type === 'patient' && (
+        {isPatient && (
           <Card>
             <CardHeader>
               <CardTitle>Clinical Profile</CardTitle>
@@ -200,48 +184,36 @@ export function ProfileClient() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="dob">Date of Birth</Label>
-                  <Input
-                    id="dob"
-                    type="date"
-                    value={dob}
-                    onChange={(e) => setDob(e.target.value)}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="bloodGroup">Blood Group</Label>
-                  <Select value={bloodGroup} onValueChange={setBloodGroup}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select blood group" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"].map((bg) => (
-                        <SelectItem key={bg} value={bg}>{bg}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="emergencyContact">Emergency Contact</Label>
-                <Input
-                  id="emergencyContact"
-                  value={emergencyContact}
-                  onChange={(e) => setEmergencyContact(e.target.value)}
-                  placeholder="Name and Phone Number"
+                <FormInput
+                  control={form.control}
+                  name="date_of_birth"
+                  label="Date of Birth"
+                  type="date"
                 />
+                <FormSelect
+                  control={form.control}
+                  name="blood_group"
+                  label="Blood Group"
+                  placeholder="Select blood group"
+                >
+                  {["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"].map((bg) => (
+                    <SelectItem key={bg} value={bg}>{bg}</SelectItem>
+                  ))}
+                </FormSelect>
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="address">Residential Address</Label>
-                <Textarea
-                  id="address"
-                  value={address}
-                  onChange={(e) => setAddress(e.target.value)}
-                  placeholder="Detailed address..."
-                  className="resize-none h-24"
-                />
-              </div>
+              <FormInput
+                control={form.control}
+                name="emergency_contact"
+                label="Emergency Contact"
+                placeholder="Name and Phone Number"
+              />
+              <FormTextarea
+                control={form.control}
+                name="address"
+                label="Residential Address"
+                placeholder="Detailed address..."
+                className="resize-none h-24"
+              />
             </CardContent>
           </Card>
         )}
@@ -256,55 +228,38 @@ export function ProfileClient() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="specialization">Specialization</Label>
-                  <Select 
-                    key={doctorProfile ? 'loaded' : 'loading'} 
-                    value={specialization} 
-                    onValueChange={setSpecialization}
-                  >
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Select specialization" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {SPECIALIZATIONS.map((spec) => (
-                        <SelectItem key={spec.value} value={spec.value}>{spec.label}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="experienceYears">Experience (Years)</Label>
-                  <Input
-                    id="experienceYears"
-                    type="number"
-                    value={experienceYears}
-                    onChange={(e) => setExperienceYears(e.target.value)}
-                    placeholder="5"
-                  />
-                </div>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="consultationFee">Consultation Fee ($)</Label>
-                <Input
-                  id="consultationFee"
+                <FormSelect
+                  control={form.control}
+                  name="specialization"
+                  label="Specialization"
+                  placeholder="Select specialization"
+                >
+                  {SPECIALIZATIONS.map((spec) => (
+                    <SelectItem key={spec.value} value={spec.value}>{spec.label}</SelectItem>
+                  ))}
+                </FormSelect>
+                <FormInput
+                  control={form.control}
+                  name="experience_years"
+                  label="Experience (Years)"
                   type="number"
-                  step="0.01"
-                  value={consultationFee}
-                  onChange={(e) => setConsultationFee(e.target.value)}
-                  placeholder="100.00"
+                  placeholder="5"
                 />
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="bio">Professional Bio</Label>
-                <Textarea
-                  id="bio"
-                  value={bio}
-                  onChange={(e) => setBio(e.target.value)}
-                  placeholder="Tell patients about your background and expertise..."
-                  className="resize-none h-32"
-                />
-              </div>
+              <FormInput
+                control={form.control}
+                name="consultation_fee"
+                label="Consultation Fee ($)"
+                type="number"
+                step="0.01"
+              />
+              <FormTextarea
+                control={form.control}
+                name="bio"
+                label="Professional Bio"
+                placeholder="Tell patients about your background and expertise..."
+                className="resize-none h-32"
+              />
             </CardContent>
           </Card>
         )}

@@ -1,50 +1,49 @@
 "use client";
 
+import { FormInput, FormPasswordInput, FormSelect } from "@/components/form";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { PasswordInput } from "@/components/ui/password-input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { SelectItem } from "@/components/ui/select";
 import api from "@/lib/api";
 import { showError, showSuccess } from "@/lib/notifications";
-import { ArrowRight, Mail, Phone, User, UserCircle } from "lucide-react";
+import { registerSchema, RegisterValues } from "@/schemas/auth";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { useForm } from "react-hook-form";
 
 export function RegisterForm() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-    firstName: "",
-    lastName: "",
-    userType: "patient",
-    phone: "",
+  const form = useForm<RegisterValues>({
+    resolver: zodResolver(registerSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+      firstName: "",
+      lastName: "",
+      userType: "patient",
+      phone: "",
+    },
   });
 
-  const handleChange = (field: string, value: string) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const onSubmit = async (values: RegisterValues) => {
     setError(null);
     setIsLoading(true);
 
     try {
       const payload = {
-        email: formData.email,
-        password1: formData.password,
-        password2: formData.password,
-        user_type: formData.userType,
-        first_name: formData.firstName,
-        last_name: formData.lastName,
-        phone: formData.phone,
+        email: values.email,
+        password1: values.password,
+        password2: values.password,
+        user_type: values.userType,
+        first_name: values.firstName,
+        last_name: values.lastName,
+        phone: values.phone,
       };
 
       const { data } = await api.post("/auth/registration/", payload);
@@ -75,96 +74,54 @@ export function RegisterForm() {
           Join Health Pilot today and take control of your health
         </CardDescription>
       </CardHeader>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={form.handleSubmit(onSubmit)}>
         <CardContent className="space-y-4 px-0">
           <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="firstName">First Name</Label>
-              <div className="relative">
-                <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                <Input
-                  id="firstName"
-                  placeholder="John"
-                  className="pl-10"
-                  value={formData.firstName}
-                  onChange={(e) => handleChange("firstName", e.target.value)}
-                  required
-                />
-              </div>
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="lastName">Last Name</Label>
-              <div className="relative">
-                <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                <Input
-                  id="lastName"
-                  placeholder="Doe"
-                  className="pl-10"
-                  value={formData.lastName}
-                  onChange={(e) => handleChange("lastName", e.target.value)}
-                  required
-                />
-              </div>
-            </div>
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="email">Email address</Label>
-            <div className="relative">
-              <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-              <Input
-                id="email"
-                type="email"
-                placeholder="name@example.com"
-                className="pl-10"
-                value={formData.email}
-                onChange={(e) => handleChange("email", e.target.value)}
-                required
-              />
-            </div>
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="password">Password</Label>
-            <PasswordInput
-              id="password"
-              value={formData.password}
-              onChange={(e) => handleChange("password", e.target.value)}
-              required
+            <FormInput
+              control={form.control}
+              name="firstName"
+              label="First Name"
+              placeholder="John"
+            />
+            <FormInput
+              control={form.control}
+              name="lastName"
+              label="Last Name"
+              placeholder="Doe"
             />
           </div>
-          <div className="space-y-2 grid grid-cols-6 gap-4">
-            <div className="space-y-2 col-span-4">
-            <Label htmlFor="phone">Phone Number</Label>
-            <div className="relative">
-              <Phone className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-              <Input
-                id="phone"
+          <FormInput
+            control={form.control}
+            name="email"
+            label="Email address"
+            type="email"
+            placeholder="name@example.com"
+          />
+          <FormPasswordInput
+            control={form.control}
+            name="password"
+            label="Password"
+          />
+          <div className="grid grid-cols-6 gap-4">
+            <div className="col-span-4">
+              <FormInput
+                control={form.control}
+                name="phone"
+                label="Phone Number"
                 type="tel"
                 placeholder="+1 (555) 000-0000"
-                className="pl-10"
-                value={formData.phone}
-                onChange={(e) => handleChange("phone", e.target.value)}
-                required
               />
             </div>
-          </div>
-          <div className="space-y-2 col-span-2">
-            <Label htmlFor="userType">Type</Label>
-            <div className="relative">
-              <UserCircle className="absolute left-3 top-3 h-4 w-4 text-muted-foreground z-10" />
-              <Select
-                value={formData.userType}
-                onValueChange={(value) => handleChange("userType", value)}
+            <div className="col-span-2">
+              <FormSelect
+                control={form.control}
+                name="userType"
+                label="Type"
               >
-                <SelectTrigger id="userType" className="pl-10">
-                  <SelectValue placeholder="Select user type" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="patient">Patient</SelectItem>
-                  <SelectItem value="doctor">Doctor</SelectItem>
-                </SelectContent>
-              </Select>
+                <SelectItem value="patient">Patient</SelectItem>
+                <SelectItem value="doctor">Doctor</SelectItem>
+              </FormSelect>
             </div>
-          </div>
           </div>
           {error && (
             <div className="text-destructive text-sm font-medium text-center bg-destructive/10 py-2 rounded-md border border-destructive/20">

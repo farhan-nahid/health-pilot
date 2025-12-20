@@ -1,39 +1,40 @@
 "use client"
 
+import { FormSelect, FormTextarea } from "@/components/form";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
 } from "@/components/ui/dialog";
-import { Label } from "@/components/ui/label";
 import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
+    Field,
+    FieldContent,
+    FieldError,
+    FieldLabel,
+} from "@/components/ui/field";
+import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
 } from "@/components/ui/popover";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
+import { SelectItem } from "@/components/ui/select";
 import { useDoctors } from "@/hooks/use-doctors";
 import api from "@/lib/api";
 import { showError, showSuccess } from "@/lib/notifications";
 import { cn } from "@/lib/utils";
+import { appointmentSchema, AppointmentValues } from "@/schemas/appointment";
 import { Appointment } from "@/types";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { Calendar as CalendarIcon } from "lucide-react";
-import { useState } from "react";
-
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
+import { Controller, useForm } from "react-hook-form";
 
 const TIME_SLOTS = [
   "09:00", "09:30", "10:00", "10:30", "11:00", "11:30",
@@ -52,14 +53,32 @@ export function EditAppointmentDialog({
   onOpenChange: (open: boolean) => void;
   onSuccess: () => void;
 }) {
-  const [date, setDate] = useState<Date | undefined>(new Date(appointment.appointment_date));
-  const [doctor, setDoctor] = useState(appointment.doctor.toString());
-  const [time, setTime] = useState(appointment.appointment_time.substring(0, 5));
-  const [symptoms, setSymptoms] = useState(appointment.symptoms);
   const [error, setError] = useState<string | null>(null);
 
   const queryClient = useQueryClient();
   const { doctors, isLoading: loadingDoctors } = useDoctors();
+
+  const form = useForm<AppointmentValues>({
+    resolver: zodResolver(appointmentSchema),
+    defaultValues: {
+      doctor: appointment.doctor.toString(),
+      appointment_date: new Date(appointment.appointment_date),
+      appointment_time: appointment.appointment_time.substring(0, 5),
+      symptoms: appointment.symptoms,
+    },
+  });
+
+  // Reset form when appointment changes or dialog opens
+  useEffect(() => {
+    if (open) {
+      form.reset({
+        doctor: appointment.doctor.toString(),
+        appointment_date: new Date(appointment.appointment_date),
+        appointment_time: appointment.appointment_time.substring(0, 5),
+        symptoms: appointment.symptoms,
+      });
+    }
+  }, [appointment, open, form]);
 
   const mutation = useMutation({
     mutationFn: async (payload: any) => {
@@ -77,16 +96,13 @@ export function EditAppointmentDialog({
     },
   });
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!date || !doctor || !time || !symptoms) return;
-
+  const onSubmit = async (values: AppointmentValues) => {
     setError(null);
     mutation.mutate({
-      doctor: parseInt(doctor),
-      appointment_date: format(date, "yyyy-MM-dd"),
-      appointment_time: `${time}:00`,
-      symptoms: symptoms,
+      doctor: parseInt(values.doctor),
+      appointment_date: format(values.appointment_date, "yyyy-MM-dd"),
+      appointment_time: `${values.appointment_time}:00`,
+      symptoms: values.symptoms,
     });
   };
 
@@ -99,75 +115,82 @@ export function EditAppointmentDialog({
             Modify your consultation details or reschedule.
           </DialogDescription>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4 py-4">
-          <div className="space-y-2">
-            <Label htmlFor="edit-doctor">Doctor</Label>
-            <Select value={doctor} onValueChange={setDoctor} required>
-              <SelectTrigger className="w-full" id="edit-doctor">
-                <SelectValue placeholder={loadingDoctors ? "Loading..." : "Select doctor"} />
-              </SelectTrigger>
-              <SelectContent>
-                {doctors.map((doc) => (
-                  <SelectItem key={doc.id} value={doc.id.toString()}>
-                    {doc.doctor_name} ({doc.specialization})
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 py-4">
+          <FormSelect
+            control={form.control}
+            name="doctor"
+            label="Doctor"
+            placeholder={loadingDoctors ? "Loading..." : "Select doctor"}
+          >
+            {doctors.map((doc) => (
+              <SelectItem key={doc.id} value={doc.id.toString()}>
+                {doc.doctor_name} ({doc.specialization})
+              </SelectItem>
+            ))}
+          </FormSelect>
+          <div className="grid grid-cols-6 gap-4">
+            <div className="col-span-4">
+              <Controller
+                control={form.control}
+                name="appointment_date"
+                render={({ field, fieldState }) => (
+                  <Field data-invalid={fieldState.invalid}>
+                    <FieldLabel>Date</FieldLabel>
+                    <FieldContent>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button
+                            variant={"outline"}
+                            className={cn(
+                              "w-full justify-start text-left font-normal",
+                              !field.value && "text-muted-foreground"
+                            )}
+                          >
+                            <CalendarIcon className="mr-2 h-4 w-4" />
+                            {field.value ? (
+                              <span suppressHydrationWarning>{format(field.value, "PPP")}</span>
+                            ) : (
+                              <span>Pick a date</span>
+                            )}
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                          <Calendar
+                            mode="single"
+                            selected={field.value}
+                            onSelect={field.onChange}
+                            initialFocus
+                            disabled={(date) => date < new Date() || date.getDay() === 0}
+                          />
+                        </PopoverContent>
+                      </Popover>
+                      {fieldState.invalid && (
+                        <FieldError errors={[fieldState.error]} />
+                      )}
+                    </FieldContent>
+                  </Field>
+                )}
+              />
+            </div>
+            <div className="col-span-2">
+              <FormSelect
+                control={form.control}
+                name="appointment_time"
+                label="Time Slot"
+              >
+                {TIME_SLOTS.map((t) => (
+                  <SelectItem key={t} value={t}>
+                    {t}
                   </SelectItem>
                 ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="grid grid-cols-6 gap-4">
-            <div className="col-span-4 space-y-2">
-              <Label>Date</Label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant={"outline"}
-                    className={cn(
-                      "w-full justify-start text-left font-normal",
-                      !date && "text-muted-foreground"
-                    )}
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {date ? <span suppressHydrationWarning>{format(date, "PPP")}</span> : <span>Pick a date</span>}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={date}
-                    onSelect={setDate}
-                    initialFocus
-                    disabled={(date) => date < new Date() || date.getDay() === 0}
-                  />
-                </PopoverContent>
-              </Popover>
-            </div>
-            <div className="col-span-2 space-y-2">
-              <Label htmlFor="edit-time">Time Slot</Label>
-              <Select value={time} onValueChange={setTime} required>
-                <SelectTrigger className="w-full" id="edit-time">
-                  <SelectValue placeholder="Time" />
-                </SelectTrigger>
-                <SelectContent>
-                  {TIME_SLOTS.map((t) => (
-                    <SelectItem key={t} value={t}>
-                      {t}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              </FormSelect>
             </div>
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="edit-symptoms">Symptoms</Label>
-            <Textarea
-              id="edit-symptoms"
-              className="resize-none"
-              value={symptoms}
-              onChange={(e) => setSymptoms(e.target.value)}
-              required
-            />
-          </div>
+          <FormTextarea
+            control={form.control}
+            name="symptoms"
+            label="Symptoms"
+          />
           {error && (
             <div className="text-destructive text-sm font-medium bg-destructive/10 p-2 rounded border border-destructive/20">
               {error}
