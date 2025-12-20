@@ -6,29 +6,56 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+
+import { useDoctorProfile, useUpdateDoctorProfile } from "@/hooks/use-doctors";
 import { usePatientProfile, useUpdatePatientProfile } from "@/hooks/use-patient";
 import { useUpdateUser, useUser } from "@/hooks/use-user";
 import { showError, showSuccess } from "@/lib/notifications";
 import { useEffect, useState } from "react";
 
+const SPECIALIZATIONS = [
+  { value: "cardiologist", label: "Cardiologist" },
+  { value: "neurologist", label: "Neurologist" },
+  { value: "dermatologist", label: "Dermatologist" },
+  { value: "orthopedic", label: "Orthopedic" },
+  { value: "pediatrician", label: "Pediatrician" },
+  { value: "psychiatrist", label: "Psychiatrist" },
+  { value: "gynecologist", label: "Gynecologist" },
+  { value: "oncologist", label: "Oncologist" },
+  { value: "gastroenterologist", label: "Gastroenterologist" },
+  { value: "general_physician", label: "General Physician" },
+];
+
 export function ProfileClient() {
   const { user, isLoading: userLoading } = useUser();
-  const { profile, isLoading: profileLoading } = usePatientProfile();
+  const isPatient = user?.user_type === 'patient';
+  const isDoctor = user?.user_type === 'doctor';
+
+  const { profile: patientProfile, isLoading: patientLoading } = usePatientProfile();
+  const { profile: doctorProfile, isLoading: doctorLoading } = useDoctorProfile();
   
   const updateUserMutation = useUpdateUser();
   const updatePatientMutation = useUpdatePatientProfile();
+  const updateDoctorMutation = useUpdateDoctorProfile();
 
+  // Basic info
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [phone, setPhone] = useState("");
   
+  // Patient info
   const [dob, setDob] = useState("");
   const [bloodGroup, setBloodGroup] = useState("");
   const [address, setAddress] = useState("");
   const [emergencyContact, setEmergencyContact] = useState("");
 
+  // Doctor info
+  const [specialization, setSpecialization] = useState("");
+  const [bio, setBio] = useState("");
+  const [experienceYears, setExperienceYears] = useState("");
+  const [consultationFee, setConsultationFee] = useState("");
+
   const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
 
   useEffect(() => {
     if (user) {
@@ -39,21 +66,28 @@ export function ProfileClient() {
   }, [user]);
 
   useEffect(() => {
-    if (profile) {
-      setDob(profile.date_of_birth || "");
-      setBloodGroup(profile.blood_group || "");
-      setAddress(profile.address || "");
-      setEmergencyContact(profile.emergency_contact || "");
+    if (patientProfile && isPatient) {
+      setDob(patientProfile.date_of_birth || "");
+      setBloodGroup(patientProfile.blood_group || "");
+      setAddress(patientProfile.address || "");
+      setEmergencyContact(patientProfile.emergency_contact || "");
     }
-  }, [profile]);
+  }, [patientProfile, isPatient]);
+
+  useEffect(() => {
+    if (doctorProfile && isDoctor) {
+      setSpecialization(doctorProfile.specialization?.toLowerCase() || "");
+      setBio(doctorProfile.bio || "");
+      setExperienceYears(doctorProfile.experience_years?.toString() || "");
+      setConsultationFee(doctorProfile.consultation_fee || "");
+    }
+  }, [doctorProfile, isDoctor]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
-    setSuccess(null);
 
     try {
-      // Parallel updates
       const promises = [
         updateUserMutation.mutateAsync({
           first_name: firstName,
@@ -62,13 +96,22 @@ export function ProfileClient() {
         })
       ];
 
-      if (user?.user_type === 'patient') {
+      if (isPatient) {
         promises.push(
           updatePatientMutation.mutateAsync({
             date_of_birth: dob || null,
             blood_group: bloodGroup || null,
             address: address || null,
             emergency_contact: emergencyContact || null,
+          })
+        );
+      } else if (isDoctor) {
+        promises.push(
+          updateDoctorMutation.mutateAsync({
+            specialization: specialization as any,
+            bio: bio || null,
+            experience_years: parseInt(experienceYears) || 0,
+            consultation_fee: consultationFee || "0.00",
           })
         );
       }
@@ -81,7 +124,7 @@ export function ProfileClient() {
     }
   };
 
-  const isLoading = userLoading || (user?.user_type === 'patient' && profileLoading);
+  const isLoading = userLoading || (isPatient && patientLoading) || (isDoctor && doctorLoading);
 
   if (isLoading) {
     return (
@@ -203,6 +246,69 @@ export function ProfileClient() {
           </Card>
         )}
 
+        {isDoctor && (
+          <Card>
+            <CardHeader>
+              <CardTitle>Professional Profile</CardTitle>
+              <CardDescription>
+                Credentials and professional background.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="specialization">Specialization</Label>
+                  <Select 
+                    key={doctorProfile ? 'loaded' : 'loading'} 
+                    value={specialization} 
+                    onValueChange={setSpecialization}
+                  >
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select specialization" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {SPECIALIZATIONS.map((spec) => (
+                        <SelectItem key={spec.value} value={spec.value}>{spec.label}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="experienceYears">Experience (Years)</Label>
+                  <Input
+                    id="experienceYears"
+                    type="number"
+                    value={experienceYears}
+                    onChange={(e) => setExperienceYears(e.target.value)}
+                    placeholder="5"
+                  />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="consultationFee">Consultation Fee ($)</Label>
+                <Input
+                  id="consultationFee"
+                  type="number"
+                  step="0.01"
+                  value={consultationFee}
+                  onChange={(e) => setConsultationFee(e.target.value)}
+                  placeholder="100.00"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="bio">Professional Bio</Label>
+                <Textarea
+                  id="bio"
+                  value={bio}
+                  onChange={(e) => setBio(e.target.value)}
+                  placeholder="Tell patients about your background and expertise..."
+                  className="resize-none h-32"
+                />
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
         <div className="space-y-4">
           {error && (
             <div className="text-destructive text-sm font-medium bg-destructive/10 p-2 rounded border border-destructive/20">
@@ -210,18 +316,19 @@ export function ProfileClient() {
             </div>
           )}
 
-          {success && (
-            <div className="text-emerald-600 text-sm font-medium bg-emerald-500/10 p-2 rounded border border-emerald-500/20">
-              {success}
-            </div>
-          )}
-
           <Button
             type="submit"
-            className="w-full"
-            loading={updateUserMutation.isPending || updatePatientMutation.isPending}
+            className="w-full font-semibold"
+            loading={
+              updateUserMutation.isPending || 
+              updatePatientMutation.isPending || 
+              updateDoctorMutation.isPending
+            }
           >
-            Save Complete Profile
+            {updateUserMutation.isPending || updatePatientMutation.isPending || updateDoctorMutation.isPending 
+              ? "Saving Changes..." 
+              : "Update Profile"
+            }
           </Button>
         </div>
       </form>
