@@ -20,5 +20,8 @@
   "css.lint.unknownAtRules": "ignore",
   "prettier.enable": false,
   "biome.enabled": true,
-  "cSpell.words": ["bunx"]
+  "cSpell.words": [
+    "bunx",
+    "turbopack"
+  ]
 }
