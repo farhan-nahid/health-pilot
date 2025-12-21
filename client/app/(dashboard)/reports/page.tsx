@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import { ReportsClient } from "@/components/dashboard/reports/reports-client";
+import { ReportsClient } from "./_components/reports-client";
 
 export const metadata: Metadata = {
   title: "Medical Reports",
