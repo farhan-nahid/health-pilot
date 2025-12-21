@@ -1,14 +1,14 @@
-"use client"
+"use client";
 
 import { Button } from "@/components/ui/button";
 import { DataTablePagination } from "@/components/ui/pagination";
 import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from "@/components/ui/table";
 import { useUser } from "@/hooks/use-user";
 import { MedicalReport } from "@/types";
@@ -17,21 +17,21 @@ import { Eye, FileText } from "lucide-react";
 import { useState } from "react";
 import { ViewReportDialog } from "./view-report-dialog";
 
-export function ReportList({ 
-  reports, 
+export function ReportList({
+  reports,
   isLoading,
   count,
   page,
   onPageChange,
-}: { 
-  reports: MedicalReport[]; 
+}: {
+  reports: MedicalReport[];
   isLoading: boolean;
   count: number;
   page: number;
   onPageChange: (page: number) => void;
 }) {
   const { user } = useUser();
-  const isDoctor = user?.user_type === 'doctor';
+  const isDoctor = user?.user_type === "doctor";
   const [selectedReport, setSelectedReport] = useState<MedicalReport | null>(null);
 
   if (isLoading) {
@@ -48,7 +48,9 @@ export function ReportList({
       <div className="flex flex-col items-center justify-center p-12 rounded-lg border-2 border-dashed border-border bg-card/50">
         <FileText className="h-10 w-10 text-muted-foreground mb-4" />
         <p className="text-muted-foreground font-medium">No medical reports found.</p>
-        <p className="text-sm text-muted-foreground mt-1">Upload your first PDF report for AI analysis.</p>
+        <p className="text-sm text-muted-foreground mt-1">
+          Upload your first PDF report for AI analysis.
+        </p>
       </div>
     );
   }
@@ -72,21 +74,17 @@ export function ReportList({
                 {format(new Date(report.uploaded_at), "PPP")}
               </TableCell>
               {isDoctor && (
-                <TableCell className="font-semibold">
-                  {report.patient_name}
-                </TableCell>
+                <TableCell className="font-semibold">{report.patient_name}</TableCell>
               )}
-              <TableCell className="max-w-[300px] truncate">
-                {report.symptoms}
-              </TableCell>
+              <TableCell className="max-w-[300px] truncate">{report.symptoms}</TableCell>
               <TableCell>
                 <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase border bg-primary/10 text-primary border-primary/20">
                   {report.ai_specialization || "Processing..."}
                 </span>
               </TableCell>
               <TableCell className="text-right">
-                <Button 
-                  variant="ghost" 
+                <Button
+                  variant="ghost"
                   size="sm"
                   onClick={() => setSelectedReport(report)}
                 >
@@ -100,10 +98,10 @@ export function ReportList({
       </Table>
 
       {selectedReport && (
-        <ViewReportDialog 
-          report={selectedReport} 
-          open={!!selectedReport} 
-          onOpenChange={(open) => !open && setSelectedReport(null)} 
+        <ViewReportDialog
+          report={selectedReport}
+          open={!!selectedReport}
+          onOpenChange={(open) => !open && setSelectedReport(null)}
         />
       )}
       <DataTablePagination

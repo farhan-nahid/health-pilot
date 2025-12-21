@@ -1,27 +1,18 @@
-"use client"
+"use client";
 
 import { FormSelect, FormTextarea } from "@/components/form";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
 } from "@/components/ui/dialog";
-import {
-    Field,
-    FieldContent,
-    FieldError,
-    FieldLabel,
-} from "@/components/ui/field";
-import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
-} from "@/components/ui/popover";
+import { Field, FieldContent, FieldError, FieldLabel } from "@/components/ui/field";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { SelectItem } from "@/components/ui/select";
 import { useDoctors } from "@/hooks/use-doctors";
 import api from "@/lib/api";
@@ -37,19 +28,31 @@ import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 
 const TIME_SLOTS = [
-  "09:00", "09:30", "10:00", "10:30", "11:00", "11:30",
-  "12:00", "12:30", "14:00", "14:30", "15:00", "15:30",
-  "16:00", "16:30", "17:00"
+  "09:00",
+  "09:30",
+  "10:00",
+  "10:30",
+  "11:00",
+  "11:30",
+  "12:00",
+  "12:30",
+  "14:00",
+  "14:30",
+  "15:00",
+  "15:30",
+  "16:00",
+  "16:30",
+  "17:00",
 ];
 
-export function EditAppointmentDialog({ 
-  appointment, 
-  open, 
-  onOpenChange, 
-  onSuccess 
-}: { 
-  appointment: Appointment; 
-  open: boolean; 
+export function EditAppointmentDialog({
+  appointment,
+  open,
+  onOpenChange,
+  onSuccess,
+}: {
+  appointment: Appointment;
+  open: boolean;
   onOpenChange: (open: boolean) => void;
   onSuccess: () => void;
 }) {
@@ -92,7 +95,11 @@ export function EditAppointmentDialog({
     },
     onError: (err: any) => {
       showError(err);
-      setError(err.response?.data?.non_field_errors?.[0] || err.message || "Failed to update appointment");
+      setError(
+        err.response?.data?.non_field_errors?.[0] ||
+          err.message ||
+          "Failed to update appointment",
+      );
     },
   });
 
@@ -143,12 +150,14 @@ export function EditAppointmentDialog({
                             variant={"outline"}
                             className={cn(
                               "w-full justify-start text-left font-normal",
-                              !field.value && "text-muted-foreground"
+                              !field.value && "text-muted-foreground",
                             )}
                           >
                             <CalendarIcon className="mr-2 h-4 w-4" />
                             {field.value ? (
-                              <span suppressHydrationWarning>{format(field.value, "PPP")}</span>
+                              <span suppressHydrationWarning>
+                                {format(field.value, "PPP")}
+                              </span>
                             ) : (
                               <span>Pick a date</span>
                             )}
@@ -164,9 +173,7 @@ export function EditAppointmentDialog({
                           />
                         </PopoverContent>
                       </Popover>
-                      {fieldState.invalid && (
-                        <FieldError errors={[fieldState.error]} />
-                      )}
+                      {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                     </FieldContent>
                   </Field>
                 )}
@@ -186,11 +193,7 @@ export function EditAppointmentDialog({
               </FormSelect>
             </div>
           </div>
-          <FormTextarea
-            control={form.control}
-            name="symptoms"
-            label="Symptoms"
-          />
+          <FormTextarea control={form.control} name="symptoms" label="Symptoms" />
           {error && (
             <div className="text-destructive text-sm font-medium bg-destructive/10 p-2 rounded border border-destructive/20">
               {error}

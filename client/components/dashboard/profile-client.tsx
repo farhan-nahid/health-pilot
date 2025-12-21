@@ -1,8 +1,14 @@
-"use client"
+"use client";
 
 import { FormInput, FormSelect, FormTextarea } from "@/components/form";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { SelectItem } from "@/components/ui/select";
 import { useDoctorProfile, useUpdateDoctorProfile } from "@/hooks/use-doctors";
 import { usePatientProfile, useUpdatePatientProfile } from "@/hooks/use-patient";
@@ -28,12 +34,12 @@ const SPECIALIZATIONS = [
 
 export function ProfileClient() {
   const { user, isLoading: userLoading } = useUser();
-  const isPatient = user?.user_type === 'patient';
-  const isDoctor = user?.user_type === 'doctor';
+  const isPatient = user?.user_type === "patient";
+  const isDoctor = user?.user_type === "doctor";
 
   const { profile: patientProfile, isLoading: patientLoading } = usePatientProfile();
   const { profile: doctorProfile, isLoading: doctorLoading } = useDoctorProfile();
-  
+
   const updateUserMutation = useUpdateUser();
   const updatePatientMutation = useUpdatePatientProfile();
   const updateDoctorMutation = useUpdateDoctorProfile();
@@ -92,7 +98,7 @@ export function ProfileClient() {
           first_name: values.first_name,
           last_name: values.last_name,
           phone: values.phone,
-        })
+        }),
       ];
 
       if (isPatient) {
@@ -102,7 +108,7 @@ export function ProfileClient() {
             blood_group: values.blood_group || null,
             address: values.address || null,
             emergency_contact: values.emergency_contact || null,
-          })
+          }),
         );
       } else if (isDoctor) {
         promises.push(
@@ -111,7 +117,7 @@ export function ProfileClient() {
             bio: values.bio || null,
             experience_years: values.experience_years || 0,
             consultation_fee: values.consultation_fee || "0.00",
-          })
+          }),
         );
       }
 
@@ -123,7 +129,8 @@ export function ProfileClient() {
     }
   };
 
-  const isLoading = userLoading || (isPatient && patientLoading) || (isDoctor && doctorLoading);
+  const isLoading =
+    userLoading || (isPatient && patientLoading) || (isDoctor && doctorLoading);
 
   if (isLoading) {
     return (
@@ -139,9 +146,7 @@ export function ProfileClient() {
         <Card>
           <CardHeader>
             <CardTitle>Account Information</CardTitle>
-            <CardDescription>
-              Basic identity and contact details.
-            </CardDescription>
+            <CardDescription>Basic identity and contact details.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
@@ -159,11 +164,15 @@ export function ProfileClient() {
               />
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">Email Address</label>
+              <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                Email Address
+              </label>
               <div className="flex h-10 w-full rounded-md border border-input bg-muted px-3 py-2 text-sm text-muted-foreground cursor-not-allowed">
                 {user?.email || ""}
               </div>
-              <p className="text-[10px] text-muted-foreground uppercase">Email cannot be changed.</p>
+              <p className="text-[10px] text-muted-foreground uppercase">
+                Email cannot be changed.
+              </p>
             </div>
             <FormInput
               control={form.control}
@@ -197,7 +206,9 @@ export function ProfileClient() {
                   placeholder="Select blood group"
                 >
                   {["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"].map((bg) => (
-                    <SelectItem key={bg} value={bg}>{bg}</SelectItem>
+                    <SelectItem key={bg} value={bg}>
+                      {bg}
+                    </SelectItem>
                   ))}
                 </FormSelect>
               </div>
@@ -222,9 +233,7 @@ export function ProfileClient() {
           <Card>
             <CardHeader>
               <CardTitle>Professional Profile</CardTitle>
-              <CardDescription>
-                Credentials and professional background.
-              </CardDescription>
+              <CardDescription>Credentials and professional background.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
@@ -235,7 +244,9 @@ export function ProfileClient() {
                   placeholder="Select specialization"
                 >
                   {SPECIALIZATIONS.map((spec) => (
-                    <SelectItem key={spec.value} value={spec.value}>{spec.label}</SelectItem>
+                    <SelectItem key={spec.value} value={spec.value}>
+                      {spec.label}
+                    </SelectItem>
                   ))}
                 </FormSelect>
                 <FormInput
@@ -275,19 +286,19 @@ export function ProfileClient() {
             type="submit"
             className="w-full font-semibold"
             loading={
-              updateUserMutation.isPending || 
-              updatePatientMutation.isPending || 
+              updateUserMutation.isPending ||
+              updatePatientMutation.isPending ||
               updateDoctorMutation.isPending
             }
           >
-            {updateUserMutation.isPending || updatePatientMutation.isPending || updateDoctorMutation.isPending 
-              ? "Saving Changes..." 
-              : "Update Profile"
-            }
+            {updateUserMutation.isPending ||
+            updatePatientMutation.isPending ||
+            updateDoctorMutation.isPending
+              ? "Saving Changes..."
+              : "Update Profile"}
           </Button>
         </div>
       </form>
     </div>
   );
 }
-

@@ -19,7 +19,7 @@ export interface DashboardSummary {
   upcoming_consultations: Appointment[];
   recent_activity: {
     id: string;
-    type: 'appointment' | 'report';
+    type: "appointment" | "report";
     title: string;
     detail: string;
     date: string;

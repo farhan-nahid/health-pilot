@@ -2,7 +2,14 @@
 
 import { FormPasswordInput } from "@/components/form";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { useAuth } from "@/hooks/use-auth";
 import { changePasswordSchema, ChangePasswordValues } from "@/schemas/auth";
 import { zodResolver } from "@hookform/resolvers/zod";

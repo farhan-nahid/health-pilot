@@ -11,9 +11,7 @@ export default function ProfilePage() {
     <div className="space-y-8">
       <div>
         <h2 className="text-3xl font-bold tracking-tight">Profile</h2>
-        <p className="text-muted-foreground">
-          View and manage your account details.
-        </p>
+        <p className="text-muted-foreground">View and manage your account details.</p>
       </div>
 
       <ProfileClient />

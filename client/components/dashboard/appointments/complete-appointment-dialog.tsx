@@ -1,18 +1,21 @@
-"use client"
+"use client";
 
 import { FormTextarea } from "@/components/form";
 import { Button } from "@/components/ui/button";
 import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
 } from "@/components/ui/dialog";
 import api from "@/lib/api";
 import { showError, showSuccess } from "@/lib/notifications";
-import { completeAppointmentSchema, CompleteAppointmentValues } from "@/schemas/appointment";
+import {
+  completeAppointmentSchema,
+  CompleteAppointmentValues,
+} from "@/schemas/appointment";
 import { Appointment } from "@/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -24,7 +27,7 @@ export function CompleteAppointmentDialog({
   appointment,
   open,
   onOpenChange,
-  onSuccess
+  onSuccess,
 }: {
   appointment: Appointment;
   open: boolean;
@@ -74,7 +77,8 @@ export function CompleteAppointmentDialog({
             Complete Appointment
           </DialogTitle>
           <DialogDescription>
-            Finish this session with patient <strong>{appointment.patient_name}</strong>. Add any final clinical notes or recommendations.
+            Finish this session with patient <strong>{appointment.patient_name}</strong>.
+            Add any final clinical notes or recommendations.
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 py-4">
@@ -89,7 +93,7 @@ export function CompleteAppointmentDialog({
             <Button variant="outline" type="button" onClick={() => onOpenChange(false)}>
               Cancel
             </Button>
-            <Button 
+            <Button
               type="submit"
               className="bg-emerald-600 hover:bg-emerald-700"
               loading={mutation.isPending}

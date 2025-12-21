@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import api from "@/lib/api";
 import { showError, showSuccess } from "@/lib/notifications";
@@ -8,7 +8,7 @@ import {
   LoginValues,
   RegisterValues,
   ResetPasswordValues,
-  VerifyEmailValues
+  VerifyEmailValues,
 } from "@/schemas/auth";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
@@ -94,7 +94,7 @@ export function useAuth() {
   });
 
   const resetPasswordConfirmMutation = useMutation({
-    mutationFn: async (payload: ResetPasswordValues & { uid: string, token: string }) => {
+    mutationFn: async (payload: ResetPasswordValues & { uid: string; token: string }) => {
       await api.post("/auth/password/reset/confirm/", {
         uid: payload.uid,
         token: payload.token,

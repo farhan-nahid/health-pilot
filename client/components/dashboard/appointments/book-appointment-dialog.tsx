@@ -1,27 +1,19 @@
-"use client"
+"use client";
 
 import { FormSelect, FormTextarea } from "@/components/form";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
 } from "@/components/ui/dialog";
-import {
-    Field,
-    FieldContent,
-    FieldError, FieldLabel
-} from "@/components/ui/field";
-import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
-} from "@/components/ui/popover";
+import { Field, FieldContent, FieldError, FieldLabel } from "@/components/ui/field";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { SelectItem } from "@/components/ui/select";
 import { useDoctors } from "@/hooks/use-doctors";
 import api from "@/lib/api";
@@ -36,9 +28,21 @@ import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 
 const TIME_SLOTS = [
-  "09:00", "09:30", "10:00", "10:30", "11:00", "11:30",
-  "12:00", "12:30", "14:00", "14:30", "15:00", "15:30",
-  "16:00", "16:30", "17:00"
+  "09:00",
+  "09:30",
+  "10:00",
+  "10:30",
+  "11:00",
+  "11:30",
+  "12:00",
+  "12:30",
+  "14:00",
+  "14:30",
+  "15:00",
+  "15:30",
+  "16:00",
+  "16:30",
+  "17:00",
 ];
 
 export function BookAppointmentDialog({ onSuccess }: { onSuccess?: () => void }) {
@@ -70,7 +74,11 @@ export function BookAppointmentDialog({ onSuccess }: { onSuccess?: () => void })
     },
     onError: (err: any) => {
       showError(err);
-      setError(err.response?.data?.non_field_errors?.[0] || err.message || "Failed to book appointment");
+      setError(
+        err.response?.data?.non_field_errors?.[0] ||
+          err.message ||
+          "Failed to book appointment",
+      );
     },
   });
 
@@ -127,12 +135,14 @@ export function BookAppointmentDialog({ onSuccess }: { onSuccess?: () => void })
                           variant={"outline"}
                           className={cn(
                             "w-full justify-start text-left font-normal",
-                            !field.value && "text-muted-foreground"
+                            !field.value && "text-muted-foreground",
                           )}
                         >
                           <CalendarIcon className="mr-2 h-4 w-4" />
                           {field.value ? (
-                            <span suppressHydrationWarning>{format(field.value, "PPP")}</span>
+                            <span suppressHydrationWarning>
+                              {format(field.value, "PPP")}
+                            </span>
                           ) : (
                             <span>Pick a date</span>
                           )}
@@ -148,19 +158,13 @@ export function BookAppointmentDialog({ onSuccess }: { onSuccess?: () => void })
                         />
                       </PopoverContent>
                     </Popover>
-                    {fieldState.invalid && (
-                      <FieldError errors={[fieldState.error]} />
-                    )}
+                    {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                   </FieldContent>
                 </Field>
               )}
             />
 
-            <FormSelect
-              control={form.control}
-              name="appointment_time"
-              label="Time Slot"
-            >
+            <FormSelect control={form.control} name="appointment_time" label="Time Slot">
               {TIME_SLOTS.map((t) => (
                 <SelectItem key={t} value={t}>
                   {t}

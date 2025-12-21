@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { useUser } from "@/hooks/use-user";
 import { cn } from "@/lib/utils";
@@ -10,27 +10,31 @@ import {
   LayoutDashboard,
   Settings,
   UserCircle,
-  Users
+  Users,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const navigation = [
-  { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
-  { name: 'Appointments', href: '/dashboard/appointments', icon: Calendar },
-  { name: 'Patients', href: '/dashboard/patients', icon: Users, roles: ['doctor'] },
-  { name: 'Medical Reports', href: '/dashboard/reports', icon: FileText, roles: ['patient', 'doctor'] },
-  { name: 'Schedule', href: '/dashboard/schedule', icon: Clock, roles: ['doctor'] },
-  { name: 'Profile', href: '/dashboard/profile', icon: UserCircle },
-  { name: 'Settings', href: '/dashboard/settings', icon: Settings },
+  { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
+  { name: "Appointments", href: "/dashboard/appointments", icon: Calendar },
+  { name: "Patients", href: "/dashboard/patients", icon: Users, roles: ["doctor"] },
+  {
+    name: "Medical Reports",
+    href: "/dashboard/reports",
+    icon: FileText,
+    roles: ["patient", "doctor"],
+  },
+  { name: "Schedule", href: "/dashboard/schedule", icon: Clock, roles: ["doctor"] },
+  { name: "Profile", href: "/dashboard/profile", icon: UserCircle },
+  { name: "Settings", href: "/dashboard/settings", icon: Settings },
 ];
-
 
 export function Sidebar({ className }: { className?: string }) {
   const pathname = usePathname();
   const { user, isLoading } = useUser();
 
-  const filteredNavigation = navigation.filter(item => {
+  const filteredNavigation = navigation.filter((item) => {
     if (!item.roles) return true;
     if (isLoading || !user) return false;
     return item.roles.includes(user.user_type);
@@ -60,15 +64,19 @@ export function Sidebar({ className }: { className?: string }) {
               href={item.href}
               className={cn(
                 "flex items-center px-4 py-2 text-sm font-medium rounded-lg transition-colors group",
-                isActive 
-                  ? "bg-primary text-primary-foreground" 
-                  : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                isActive
+                  ? "bg-primary text-primary-foreground"
+                  : "text-muted-foreground hover:bg-accent hover:text-accent-foreground",
               )}
             >
-              <item.icon className={cn(
-                "h-5 w-5 mr-3 transition-colors",
-                isActive ? "text-primary-foreground" : "text-muted-foreground group-hover:text-accent-foreground"
-              )} />
+              <item.icon
+                className={cn(
+                  "h-5 w-5 mr-3 transition-colors",
+                  isActive
+                    ? "text-primary-foreground"
+                    : "text-muted-foreground group-hover:text-accent-foreground",
+                )}
+              />
               {item.name}
             </Link>
           );

@@ -10,9 +10,11 @@ export const uploadReportSchema = z.object({
     .refine((file) => file?.size <= MAX_FILE_SIZE, `Max file size is 10MB.`)
     .refine(
       (file) => ACCEPTED_FILE_TYPES.includes(file?.type),
-      "Only .pdf format is supported."
+      "Only .pdf format is supported.",
     ),
-  symptoms: z.string().min(10, "Please provide context about your symptoms (min 10 characters)"),
+  symptoms: z
+    .string()
+    .min(10, "Please provide context about your symptoms (min 10 characters)"),
 });
 
 export type UploadReportValues = z.infer<typeof uploadReportSchema>;

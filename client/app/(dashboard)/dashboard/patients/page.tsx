@@ -9,7 +9,11 @@ export const metadata: Metadata = {
 
 export default function PatientsPage() {
   return (
-    <Suspense fallback={<div className="flex items-center justify-center p-8">Loading patients...</div>}>
+    <Suspense
+      fallback={
+        <div className="flex items-center justify-center p-8">Loading patients...</div>
+      }
+    >
       <PatientsClient />
     </Suspense>
   );

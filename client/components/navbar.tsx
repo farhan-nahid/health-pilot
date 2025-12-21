@@ -10,19 +10,36 @@ export function Navbar() {
           <div className="h-8 w-8 bg-blue-600 rounded-lg flex items-center justify-center">
             <Activity className="h-5 w-5 text-white" />
           </div>
-          <span className="font-bold text-xl tracking-tight text-gray-900 dark:text-white">Health Pilot</span>
+          <span className="font-bold text-xl tracking-tight text-gray-900 dark:text-white">
+            Health Pilot
+          </span>
         </Link>
-        
+
         <div className="hidden lg:flex gap-x-8">
-          <Link href="/features" className="text-sm font-semibold leading-6 text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Features</Link>
-          <Link href="/about" className="text-sm font-semibold leading-6 text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">About</Link>
-          <Link href="/contact" className="text-sm font-semibold leading-6 text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Contact</Link>
+          <Link
+            href="/features"
+            className="text-sm font-semibold leading-6 text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+          >
+            Features
+          </Link>
+          <Link
+            href="/about"
+            className="text-sm font-semibold leading-6 text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+          >
+            About
+          </Link>
+          <Link
+            href="/contact"
+            className="text-sm font-semibold leading-6 text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+          >
+            Contact
+          </Link>
         </div>
       </div>
-      
+
       <div className="flex flex-1 justify-end items-center gap-x-6">
-        <Link 
-          href="/auth/login" 
+        <Link
+          href="/auth/login"
           className="text-sm font-semibold leading-6 text-gray-900 dark:text-gray-100 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
         >
           Log in <span aria-hidden="true">&rarr;</span>

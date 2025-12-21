@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { useAppointments } from "@/hooks/use-appointments";
 import { useUser } from "@/hooks/use-user";
@@ -10,9 +10,9 @@ import { BookAppointmentDialog } from "./book-appointment-dialog";
 function AppointmentsContent() {
   const [page, setPage] = useQueryState(
     "page",
-    parseAsInteger.withDefault(1).withOptions({ shallow: false })
+    parseAsInteger.withDefault(1).withOptions({ shallow: false }),
   );
-  
+
   const { user } = useUser();
   const { appointments, count, isLoading, refresh } = useAppointments(null, page);
 
@@ -24,7 +24,7 @@ function AppointmentsContent() {
         <div>
           <h2 className="text-3xl font-bold tracking-tight">Appointments</h2>
           <p className="text-muted-foreground">
-            {isPatient 
+            {isPatient
               ? "Manage your doctor consultations and health sessions."
               : "View and manage your upcoming consultations with patients."}
           </p>
@@ -33,9 +33,9 @@ function AppointmentsContent() {
       </div>
 
       <div className="space-y-4">
-        <AppointmentList 
-          appointments={appointments} 
-          isLoading={isLoading} 
+        <AppointmentList
+          appointments={appointments}
+          isLoading={isLoading}
           onRefresh={refresh}
           userType={user?.user_type as any}
           count={count}

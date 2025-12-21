@@ -1,6 +1,12 @@
-"use client"
+"use client";
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Switch } from "@/components/ui/switch";
@@ -34,17 +40,13 @@ export function SettingsClient() {
         <CardContent className="space-y-6">
           <div className="space-y-4">
             <Label>Interface Theme</Label>
-            <RadioGroup 
-              value={theme} 
+            <RadioGroup
+              value={theme}
               onValueChange={setTheme}
               className="grid grid-cols-3 gap-4"
             >
               <div>
-                <RadioGroupItem
-                  value="light"
-                  id="light"
-                  className="peer sr-only"
-                />
+                <RadioGroupItem value="light" id="light" className="peer sr-only" />
                 <Label
                   htmlFor="light"
                   className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary"
@@ -54,11 +56,7 @@ export function SettingsClient() {
                 </Label>
               </div>
               <div>
-                <RadioGroupItem
-                  value="dark"
-                  id="dark"
-                  className="peer sr-only"
-                />
+                <RadioGroupItem value="dark" id="dark" className="peer sr-only" />
                 <Label
                   htmlFor="dark"
                   className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary"
@@ -68,11 +66,7 @@ export function SettingsClient() {
                 </Label>
               </div>
               <div>
-                <RadioGroupItem
-                  value="system"
-                  id="system"
-                  className="peer sr-only"
-                />
+                <RadioGroupItem value="system" id="system" className="peer sr-only" />
                 <Label
                   htmlFor="system"
                   className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary"
@@ -91,9 +85,7 @@ export function SettingsClient() {
       <Card>
         <CardHeader>
           <CardTitle>Notifications</CardTitle>
-          <CardDescription>
-            Choose what updates you want to receive.
-          </CardDescription>
+          <CardDescription>Choose what updates you want to receive.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex items-center justify-between">
@@ -103,13 +95,16 @@ export function SettingsClient() {
                 Receive notifications for your upcoming appointments.
               </p>
             </div>
-            <Switch 
-              checked={settings?.appointment_reminders} 
+            <Switch
+              checked={settings?.appointment_reminders}
               onCheckedChange={(checked) => {
-                updateSettings({ appointment_reminders: checked }, {
-                  onSuccess: () => showSuccess("Appointment reminders updated."),
-                  onError: (err) => showError(err),
-                });
+                updateSettings(
+                  { appointment_reminders: checked },
+                  {
+                    onSuccess: () => showSuccess("Appointment reminders updated."),
+                    onError: (err) => showError(err),
+                  },
+                );
               }}
             />
           </div>
@@ -120,13 +115,16 @@ export function SettingsClient() {
                 Get personalized health insights and tips.
               </p>
             </div>
-            <Switch 
-              checked={settings?.health_tips} 
+            <Switch
+              checked={settings?.health_tips}
               onCheckedChange={(checked) => {
-                updateSettings({ health_tips: checked }, {
-                  onSuccess: () => showSuccess("Health tips preference updated."),
-                  onError: (err) => showError(err),
-                });
+                updateSettings(
+                  { health_tips: checked },
+                  {
+                    onSuccess: () => showSuccess("Health tips preference updated."),
+                    onError: (err) => showError(err),
+                  },
+                );
               }}
             />
           </div>
@@ -137,13 +135,16 @@ export function SettingsClient() {
                 Notifications about your account login and security.
               </p>
             </div>
-            <Switch 
-              checked={settings?.security_alerts} 
+            <Switch
+              checked={settings?.security_alerts}
               onCheckedChange={(checked) => {
-                updateSettings({ security_alerts: checked }, {
-                  onSuccess: () => showSuccess("Security alerts preference updated."),
-                  onError: (err) => showError(err),
-                });
+                updateSettings(
+                  { security_alerts: checked },
+                  {
+                    onSuccess: () => showSuccess("Security alerts preference updated."),
+                    onError: (err) => showError(err),
+                  },
+                );
               }}
             />
           </div>
@@ -153,9 +154,7 @@ export function SettingsClient() {
       <Card>
         <CardHeader>
           <CardTitle>Account Data</CardTitle>
-          <CardDescription>
-            Manage your personal data and account status.
-          </CardDescription>
+          <CardDescription>Manage your personal data and account status.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex items-center justify-between">
@@ -165,13 +164,17 @@ export function SettingsClient() {
                 Add an extra layer of security to your account.
               </p>
             </div>
-            <Switch 
+            <Switch
               checked={settings?.two_factor_auth}
               onCheckedChange={(checked) => {
-                updateSettings({ two_factor_auth: checked }, {
-                  onSuccess: () => showSuccess("Two-factor authentication preference updated."),
-                  onError: (err) => showError(err),
-                });
+                updateSettings(
+                  { two_factor_auth: checked },
+                  {
+                    onSuccess: () =>
+                      showSuccess("Two-factor authentication preference updated."),
+                    onError: (err) => showError(err),
+                  },
+                );
               }}
             />
           </div>

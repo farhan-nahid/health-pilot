@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { Input } from "@/components/ui/input";
 import { usePatients } from "@/hooks/use-patient";
@@ -10,12 +10,12 @@ import { PatientList } from "./patient-list";
 export function PatientsClient() {
   const [page, setPage] = useQueryState(
     "page",
-    parseAsInteger.withDefault(1).withOptions({ shallow: false })
+    parseAsInteger.withDefault(1).withOptions({ shallow: false }),
   );
   const { patients, count, isLoading } = usePatients(page);
   const [search, setSearch] = useState("");
 
-  const filteredPatients = patients.filter(patient => {
+  const filteredPatients = patients.filter((patient) => {
     const fullName = `${patient.user.first_name} ${patient.user.last_name}`.toLowerCase();
     const email = patient.user.email.toLowerCase();
     const query = search.toLowerCase();
@@ -43,9 +43,9 @@ export function PatientsClient() {
         />
       </div>
 
-      <PatientList 
-        patients={filteredPatients} 
-        isLoading={isLoading} 
+      <PatientList
+        patients={filteredPatients}
+        isLoading={isLoading}
         count={count}
         page={page}
         onPageChange={setPage}

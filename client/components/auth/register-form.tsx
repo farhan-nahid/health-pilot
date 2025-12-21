@@ -2,7 +2,14 @@
 
 import { FormInput, FormPasswordInput, FormSelect } from "@/components/form";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { SelectItem } from "@/components/ui/select";
 import { useAuth } from "@/hooks/use-auth";
 import { registerSchema, RegisterValues } from "@/schemas/auth";
@@ -30,11 +37,11 @@ export function RegisterForm() {
     register.mutate(values);
   };
 
-  const errorMessage = register.error ? 
-    ((register.error as any).response?.data?.email?.[0] || 
-     (register.error as any).response?.data?.non_field_errors?.[0] || 
-     (register.error as any).message || 
-     "Registration failed. Please check your information.") 
+  const errorMessage = register.error
+    ? (register.error as any).response?.data?.email?.[0] ||
+      (register.error as any).response?.data?.non_field_errors?.[0] ||
+      (register.error as any).message ||
+      "Registration failed. Please check your information."
     : null;
 
   return (
@@ -68,11 +75,7 @@ export function RegisterForm() {
             type="email"
             placeholder="name@example.com"
           />
-          <FormPasswordInput
-            control={form.control}
-            name="password"
-            label="Password"
-          />
+          <FormPasswordInput control={form.control} name="password" label="Password" />
           <div className="grid grid-cols-6 gap-4">
             <div className="col-span-4">
               <FormInput
@@ -84,11 +87,7 @@ export function RegisterForm() {
               />
             </div>
             <div className="col-span-2">
-              <FormSelect
-                control={form.control}
-                name="userType"
-                label="Type"
-              >
+              <FormSelect control={form.control} name="userType" label="Type">
                 <SelectItem value="patient">Patient</SelectItem>
                 <SelectItem value="doctor">Doctor</SelectItem>
               </FormSelect>

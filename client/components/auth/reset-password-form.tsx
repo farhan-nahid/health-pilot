@@ -2,7 +2,14 @@
 
 import { FormPasswordInput } from "@/components/form";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { useAuth } from "@/hooks/use-auth";
 import { resetPasswordSchema, ResetPasswordValues } from "@/schemas/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -75,7 +82,11 @@ export function ResetPasswordForm() {
           />
         </CardContent>
         <CardFooter className="px-0 pt-6">
-          <Button type="submit" className="w-full" loading={resetPasswordConfirm.isPending}>
+          <Button
+            type="submit"
+            className="w-full"
+            loading={resetPasswordConfirm.isPending}
+          >
             Reset password
             <ArrowRight className="ml-2 h-4 w-4" />
           </Button>

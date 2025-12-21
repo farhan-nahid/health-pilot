@@ -10,7 +10,7 @@ export interface Appointment {
   doctor_details: Doctor;
   appointment_date: string;
   appointment_time: string;
-  status: 'pending' | 'accepted' | 'rejected' | 'completed' | 'cancelled';
+  status: "pending" | "accepted" | "rejected" | "completed" | "cancelled";
   symptoms: string;
   doctor_notes: string | null;
   rejection_reason: string | null;

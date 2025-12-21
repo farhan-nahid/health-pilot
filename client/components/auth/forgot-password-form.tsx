@@ -2,7 +2,14 @@
 
 import { FormInput } from "@/components/form";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { useAuth } from "@/hooks/use-auth";
 import { forgotPasswordSchema, ForgotPasswordValues } from "@/schemas/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -42,9 +49,9 @@ export function ForgotPasswordForm() {
           </p>
         </CardContent>
         <CardFooter className="px-0 pt-6">
-          <Button 
-            variant="outline" 
-            className="w-full" 
+          <Button
+            variant="outline"
+            className="w-full"
             onClick={() => forgotPassword.reset()}
           >
             Try another email
@@ -71,7 +78,10 @@ export function ForgotPasswordForm() {
             placeholder="name@example.com"
           />
           <div className="text-center text-sm">
-            <Link href="/auth/login" className="text-primary hover:underline font-medium inline-flex items-center">
+            <Link
+              href="/auth/login"
+              className="text-primary hover:underline font-medium inline-flex items-center"
+            >
               Back to sign in
             </Link>
           </div>

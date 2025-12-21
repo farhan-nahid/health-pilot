@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import { format } from "date-fns";
 
 import {
@@ -30,12 +30,12 @@ import { CompleteAppointmentDialog } from "./complete-appointment-dialog";
 import { EditAppointmentDialog } from "./edit-appointment-dialog";
 import { ViewAppointmentDialog } from "./view-appointment-dialog";
 
-export function AppointmentActions({ 
-  appointment, 
+export function AppointmentActions({
+  appointment,
   onRefresh,
-  userType
-}: { 
-  appointment: Appointment; 
+  userType,
+}: {
+  appointment: Appointment;
   onRefresh: () => void;
   userType?: "doctor" | "patient";
 }) {
@@ -120,7 +120,7 @@ export function AppointmentActions({
           <DropdownMenuItem onClick={() => setShowView(true)}>
             <Eye className="mr-2 h-4 w-4" /> View details
           </DropdownMenuItem>
-          
+
           {isPatient && isCancellable && (
             <DropdownMenuItem onClick={() => setShowEdit(true)}>
               <Edit className="mr-2 h-4 w-4" /> Edit
@@ -128,7 +128,7 @@ export function AppointmentActions({
           )}
 
           {isDoctor && isPending && (
-            <DropdownMenuItem 
+            <DropdownMenuItem
               onClick={() => setShowAcceptAlert(true)}
               className="text-emerald-600 focus:text-emerald-600 focus:bg-emerald-50"
             >
@@ -137,16 +137,16 @@ export function AppointmentActions({
           )}
 
           {isDoctor && appointment.status === "accepted" && (
-            <DropdownMenuItem 
+            <DropdownMenuItem
               onClick={() => setShowComplete(true)}
               className="text-emerald-600 focus:text-emerald-600 focus:bg-emerald-50"
             >
               <CheckCircle2 className="mr-2 h-4 w-4" /> Mark Completed
             </DropdownMenuItem>
           )}
-          
+
           {isDoctor && isPending && (
-            <DropdownMenuItem 
+            <DropdownMenuItem
               onClick={() => setShowRejectAlert(true)}
               className="text-rose-600 focus:text-rose-600 focus:bg-rose-50"
             >
@@ -155,7 +155,7 @@ export function AppointmentActions({
           )}
 
           {isPatient && isCancellable && (
-            <DropdownMenuItem 
+            <DropdownMenuItem
               onClick={() => setShowCancelAlert(true)}
               className="text-rose-600 focus:text-rose-600 focus:bg-rose-50"
             >
@@ -164,27 +164,27 @@ export function AppointmentActions({
           )}
           <DropdownMenuSeparator />
           {isPatient && (
-            <DropdownMenuItem 
-                onClick={() => setShowDeleteAlert(true)}
-                className="text-rose-600 focus:text-rose-600 focus:bg-rose-50"
+            <DropdownMenuItem
+              onClick={() => setShowDeleteAlert(true)}
+              className="text-rose-600 focus:text-rose-600 focus:bg-rose-50"
             >
-                <Trash2 className="mr-2 h-4 w-4" /> Delete
+              <Trash2 className="mr-2 h-4 w-4" /> Delete
             </DropdownMenuItem>
           )}
         </DropdownMenuContent>
       </DropdownMenu>
 
-      <ViewAppointmentDialog 
-        appointment={appointment} 
-        open={showView} 
-        onOpenChange={setShowView} 
+      <ViewAppointmentDialog
+        appointment={appointment}
+        open={showView}
+        onOpenChange={setShowView}
         userType={userType}
       />
 
-      <EditAppointmentDialog 
-        appointment={appointment} 
-        open={showEdit} 
-        onOpenChange={setShowEdit} 
+      <EditAppointmentDialog
+        appointment={appointment}
+        open={showEdit}
+        onOpenChange={setShowEdit}
         onSuccess={onRefresh}
       />
 
@@ -201,13 +201,13 @@ export function AppointmentActions({
           <AlertDialogHeader>
             <AlertDialogTitle>Are you sure?</AlertDialogTitle>
             <AlertDialogDescription>
-              This will cancel your appointment with {appointment.doctor_details.doctor_name}. 
-              This action cannot be undone.
+              This will cancel your appointment with{" "}
+              {appointment.doctor_details.doctor_name}. This action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Go Back</AlertDialogCancel>
-            <AlertDialogAction 
+            <AlertDialogAction
               onClick={(e: React.MouseEvent) => {
                 e.preventDefault();
                 cancelMutation.mutate();
@@ -227,13 +227,13 @@ export function AppointmentActions({
           <AlertDialogHeader>
             <AlertDialogTitle>Delete Appointment?</AlertDialogTitle>
             <AlertDialogDescription>
-              This will permanently remove this appointment from your history. 
-              This action is irreversible.
+              This will permanently remove this appointment from your history. This action
+              is irreversible.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction 
+            <AlertDialogAction
               onClick={(e: React.MouseEvent) => {
                 e.preventDefault();
                 deleteMutation.mutate();
@@ -253,12 +253,14 @@ export function AppointmentActions({
           <AlertDialogHeader>
             <AlertDialogTitle>Accept Appointment?</AlertDialogTitle>
             <AlertDialogDescription>
-              This will confirm your appointment with {appointment.patient_name} on {format(new Date(appointment.appointment_date), "PPP")} at {appointment.appointment_time}.
+              This will confirm your appointment with {appointment.patient_name} on{" "}
+              {format(new Date(appointment.appointment_date), "PPP")} at{" "}
+              {appointment.appointment_time}.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction 
+            <AlertDialogAction
               onClick={(e: React.MouseEvent) => {
                 e.preventDefault();
                 acceptMutation.mutate();
@@ -278,12 +280,13 @@ export function AppointmentActions({
           <AlertDialogHeader>
             <AlertDialogTitle>Reject Appointment?</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to reject the appointment request from {appointment.patient_name}?
+              Are you sure you want to reject the appointment request from{" "}
+              {appointment.patient_name}?
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Go Back</AlertDialogCancel>
-            <AlertDialogAction 
+            <AlertDialogAction
               onClick={(e: React.MouseEvent) => {
                 e.preventDefault();
                 rejectMutation.mutate();

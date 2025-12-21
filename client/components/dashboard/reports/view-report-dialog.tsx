@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -13,13 +13,13 @@ import { MedicalReport } from "@/types";
 import { format } from "date-fns";
 import { Download, FileText, Info, Stethoscope } from "lucide-react";
 
-export function ViewReportDialog({ 
-  report, 
-  open, 
-  onOpenChange 
-}: { 
-  report: MedicalReport; 
-  open: boolean; 
+export function ViewReportDialog({
+  report,
+  open,
+  onOpenChange,
+}: {
+  report: MedicalReport;
+  open: boolean;
   onOpenChange: (open: boolean) => void;
 }) {
   return (
@@ -36,16 +36,18 @@ export function ViewReportDialog({
             Uploaded on {format(new Date(report.uploaded_at), "PPP")}
           </DialogDescription>
         </DialogHeader>
-        
+
         <div className="space-y-6 pt-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="p-4 rounded-lg bg-primary/5 border border-primary/10 space-y-2">
               <div className="flex items-center text-xs font-bold text-primary uppercase">
                 <Stethoscope className="h-3 w-3 mr-2" /> Recommended Specialization
               </div>
-              <p className="text-lg font-bold text-primary">{report.ai_specialization || "General Physician"}</p>
+              <p className="text-lg font-bold text-primary">
+                {report.ai_specialization || "General Physician"}
+              </p>
             </div>
-            
+
             <div className="p-4 rounded-lg bg-accent/30 border border-border space-y-2">
               <div className="flex items-center text-xs font-bold text-muted-foreground uppercase">
                 <FileText className="h-3 w-3 mr-2" /> Symptoms Provided
@@ -77,9 +79,7 @@ export function ViewReportDialog({
           <Separator />
 
           <div className="flex items-center justify-between pt-2">
-            <div className="text-xs text-muted-foreground">
-              Report ID: #{report.id}
-            </div>
+            <div className="text-xs text-muted-foreground">Report ID: #{report.id}</div>
             <Button variant="outline" size="sm" asChild>
               <a href={report.report_file} target="_blank" rel="noopener noreferrer">
                 <Download className="h-4 w-4 mr-2" />

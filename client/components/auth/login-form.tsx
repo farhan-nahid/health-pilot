@@ -2,7 +2,14 @@
 
 import { FormInput, FormPasswordInput } from "@/components/form";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { useAuth } from "@/hooks/use-auth";
 import { loginSchema, LoginValues } from "@/schemas/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -25,17 +32,17 @@ export function LoginForm() {
     login.mutate(values);
   };
 
-  const errorMessage = login.error ? 
-    ((login.error as any).response?.status === 400 ? "Invalid email or password." : "Something went wrong. Please try again.") 
+  const errorMessage = login.error
+    ? (login.error as any).response?.status === 400
+      ? "Invalid email or password."
+      : "Something went wrong. Please try again."
     : null;
 
   return (
     <Card className="border-none shadow-none bg-transparent">
       <CardHeader className="space-y-1 pb-6 px-0 text-center">
         <CardTitle className="text-2xl font-bold">Welcome back</CardTitle>
-        <CardDescription>
-          Sign in to access your health dashboard
-        </CardDescription>
+        <CardDescription>Sign in to access your health dashboard</CardDescription>
       </CardHeader>
       <form onSubmit={form.handleSubmit(onSubmit)}>
         <CardContent className="space-y-4 px-0">
@@ -46,14 +53,10 @@ export function LoginForm() {
             placeholder="name@example.com"
           />
           <div className="space-y-1">
-            <FormPasswordInput
-              control={form.control}
-              name="password"
-              label="Password"
-            />
+            <FormPasswordInput control={form.control} name="password" label="Password" />
             <div className="flex justify-end">
-              <Link 
-                href="/auth/forgot-password" 
+              <Link
+                href="/auth/forgot-password"
                 className="text-xs text-primary hover:underline font-medium"
               >
                 Forgot password?
@@ -67,7 +70,10 @@ export function LoginForm() {
           )}
           <div className="text-center text-sm">
             <span className="text-muted-foreground">Don't have an account? </span>
-            <Link href="/auth/register" className="text-primary hover:underline font-medium">
+            <Link
+              href="/auth/register"
+              className="text-primary hover:underline font-medium"
+            >
               Sign up
             </Link>
           </div>

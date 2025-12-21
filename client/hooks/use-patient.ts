@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import api from "@/lib/api";
 import { PaginatedResponse, Patient } from "@/types";
@@ -36,7 +36,7 @@ export function usePatients(page: number = 1) {
         count: (data as Patient[]).length,
         next: null,
         previous: null,
-        results: data as Patient[]
+        results: data as Patient[],
       };
     },
   });

@@ -1,16 +1,16 @@
-"use client"
+"use client";
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { DataTablePagination } from "@/components/ui/pagination";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from "@/components/ui/table";
 import { Patient } from "@/types";
 import { format } from "date-fns";
@@ -66,9 +66,12 @@ export function PatientList({
           {patients.map((patient) => {
             const fullName = `${patient.user.first_name} ${patient.user.last_name}`;
             const initials = `${patient.user.first_name[0]}${patient.user.last_name[0]}`;
-            
+
             return (
-              <TableRow key={patient.id} className="group hover:bg-muted/30 transition-colors">
+              <TableRow
+                key={patient.id}
+                className="group hover:bg-muted/30 transition-colors"
+              >
                 <TableCell className="font-medium">
                   <div className="flex items-center gap-3">
                     <Avatar className="h-10 w-10 border border-border group-hover:border-primary/50 transition-colors">
@@ -78,7 +81,9 @@ export function PatientList({
                     </Avatar>
                     <div className="flex flex-col">
                       <span className="text-sm font-semibold">{fullName}</span>
-                      <span className="text-[10px] text-muted-foreground uppercase tracking-wider">Patient #{patient.id}</span>
+                      <span className="text-[10px] text-muted-foreground uppercase tracking-wider">
+                        Patient #{patient.id}
+                      </span>
                     </div>
                   </div>
                 </TableCell>
@@ -97,22 +102,31 @@ export function PatientList({
                   </div>
                 </TableCell>
                 <TableCell>
-                   {patient.blood_group ? (
-                     <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-rose-50 text-rose-700 border border-rose-100 uppercase">
-                       {patient.blood_group}
-                     </span>
-                   ) : (
-                     <span className="text-xs text-muted-foreground italic">Not specified</span>
-                   )}
+                  {patient.blood_group ? (
+                    <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-rose-50 text-rose-700 border border-rose-100 uppercase">
+                      {patient.blood_group}
+                    </span>
+                  ) : (
+                    <span className="text-xs text-muted-foreground italic">
+                      Not specified
+                    </span>
+                  )}
                 </TableCell>
                 <TableCell>
                   <div className="flex items-center text-xs text-muted-foreground">
                     <Calendar className="h-3 w-3 mr-2 text-primary/70" />
-                    {patient.date_of_birth ? format(new Date(patient.date_of_birth), "PP") : "Not specified"}
+                    {patient.date_of_birth
+                      ? format(new Date(patient.date_of_birth), "PP")
+                      : "Not specified"}
                   </div>
                 </TableCell>
                 <TableCell className="text-right">
-                  <Button variant="ghost" size="sm" asChild className="opacity-0 group-hover:opacity-100 transition-opacity">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    asChild
+                    className="opacity-0 group-hover:opacity-100 transition-opacity"
+                  >
                     <Link href={`/dashboard/appointments?patient_id=${patient.id}`}>
                       View Appointments
                     </Link>

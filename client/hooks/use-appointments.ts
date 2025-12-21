@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import api from "@/lib/api";
 import { Appointment, PaginatedResponse } from "@/types";
@@ -23,7 +23,7 @@ export function useAppointments(patientId?: string | null, page: number = 1) {
         count: (data as Appointment[]).length,
         next: null,
         previous: null,
-        results: data as Appointment[]
+        results: data as Appointment[],
       };
     },
   });
@@ -35,6 +35,6 @@ export function useAppointments(patientId?: string | null, page: number = 1) {
     previous: data?.previous,
     isLoading,
     error: error ? (error as any).message : null,
-    refresh: refetch
+    refresh: refetch,
   };
 }

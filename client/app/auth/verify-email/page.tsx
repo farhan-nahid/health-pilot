@@ -1,7 +1,13 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { useAuth } from "@/hooks/use-auth";
 import { CheckCircle2, Loader2, XCircle } from "lucide-react";
 import { useSearchParams } from "next/navigation";
@@ -26,9 +32,7 @@ function VerifyEmailContent() {
             <XCircle className="h-6 w-6 text-destructive" />
           </div>
           <CardTitle className="text-2xl font-bold">Verification Failed</CardTitle>
-          <CardDescription>
-            No verification key was provided.
-          </CardDescription>
+          <CardDescription>No verification key was provided.</CardDescription>
         </CardHeader>
         <CardFooter className="px-0 pt-6">
           <Button asChild className="w-full">
@@ -44,7 +48,9 @@ function VerifyEmailContent() {
       <Card className="border-none shadow-none bg-transparent text-center py-8">
         <Loader2 className="h-12 w-12 animate-spin text-primary mx-auto mb-4" />
         <CardTitle>Verifying your email...</CardTitle>
-        <CardDescription>Please wait a moment while we confirm your account.</CardDescription>
+        <CardDescription>
+          Please wait a moment while we confirm your account.
+        </CardDescription>
       </Card>
     );
   }

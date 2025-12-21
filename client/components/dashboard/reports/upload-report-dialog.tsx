@@ -1,22 +1,17 @@
-"use client"
+"use client";
 
 import { FormTextarea } from "@/components/form";
 import { Button } from "@/components/ui/button";
 import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
 } from "@/components/ui/dialog";
-import {
-    Field,
-    FieldContent,
-    FieldError,
-    FieldLabel,
-} from "@/components/ui/field";
+import { Field, FieldContent, FieldError, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { useUploadReport } from "@/hooks/use-medical-reports";
 import { showError, showSuccess } from "@/lib/notifications";
@@ -41,21 +36,28 @@ export function UploadReportDialog({ onSuccess }: { onSuccess?: () => void }) {
 
   const onSubmit = async (values: UploadReportValues) => {
     setError(null);
-    uploadMutation.mutate({
-      report_file: values.report_file,
-      symptoms: values.symptoms,
-    }, {
-      onSuccess: () => {
-        showSuccess("Report uploaded successfully. AI analysis is in progress.");
-        setOpen(false);
-        form.reset();
-        if (onSuccess) onSuccess();
+    uploadMutation.mutate(
+      {
+        report_file: values.report_file,
+        symptoms: values.symptoms,
       },
-      onError: (err: any) => {
-        showError(err);
-        setError(err.response?.data?.report_file?.[0] || err.message || "Failed to upload report");
-      }
-    });
+      {
+        onSuccess: () => {
+          showSuccess("Report uploaded successfully. AI analysis is in progress.");
+          setOpen(false);
+          form.reset();
+          if (onSuccess) onSuccess();
+        },
+        onError: (err: any) => {
+          showError(err);
+          setError(
+            err.response?.data?.report_file?.[0] ||
+              err.message ||
+              "Failed to upload report",
+          );
+        },
+      },
+    );
   };
 
   return (
@@ -93,17 +95,20 @@ export function UploadReportDialog({ onSuccess }: { onSuccess?: () => void }) {
                         }}
                         className="opacity-0 absolute inset-0 w-full h-full cursor-pointer z-10"
                       />
-                      <Button variant="outline" className="w-full justify-start font-normal">
+                      <Button
+                        variant="outline"
+                        className="w-full justify-start font-normal"
+                      >
                         <Upload className="mr-2 h-4 w-4" />
                         {value ? value.name : "Choose PDF file"}
                       </Button>
                     </div>
                     {value && <CheckCircle2 className="h-5 w-5 text-emerald-500" />}
                   </div>
-                  <p className="text-[10px] text-muted-foreground uppercase">Max size: 10MB. PDF only.</p>
-                  {fieldState.invalid && (
-                    <FieldError errors={[fieldState.error]} />
-                  )}
+                  <p className="text-[10px] text-muted-foreground uppercase">
+                    Max size: 10MB. PDF only.
+                  </p>
+                  {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                 </FieldContent>
               </Field>
             )}
@@ -124,11 +129,7 @@ export function UploadReportDialog({ onSuccess }: { onSuccess?: () => void }) {
           )}
 
           <DialogFooter>
-            <Button 
-              type="submit" 
-              className="w-full" 
-              loading={uploadMutation.isPending}
-            >
+            <Button type="submit" className="w-full" loading={uploadMutation.isPending}>
               Start AI Analysis
             </Button>
           </DialogFooter>

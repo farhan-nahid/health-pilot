@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import api from "@/lib/api";
 import { UserSettings } from "@/types";
@@ -7,7 +7,11 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 export function useSettings() {
   const queryClient = useQueryClient();
 
-  const { data: settings, isLoading, error } = useQuery<UserSettings>({
+  const {
+    data: settings,
+    isLoading,
+    error,
+  } = useQuery<UserSettings>({
     queryKey: ["user-settings"],
     queryFn: async () => {
       const { data } = await api.get("/user/settings/");

@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import api from "@/lib/api";
 import { Doctor } from "@/types";
@@ -16,7 +16,7 @@ export function useDoctors() {
   return {
     doctors: data || [],
     isLoading,
-    error: error ? (error as any).message : null
+    error: error ? (error as any).message : null,
   };
 }
 

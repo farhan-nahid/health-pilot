@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import api from "@/lib/api";
 import { MedicalReport, PaginatedResponse, UploadReportPayload } from "@/types";
@@ -18,7 +18,7 @@ export function useMedicalReports(page: number = 1) {
         count: (data as MedicalReport[]).length,
         next: null,
         previous: null,
-        results: data as MedicalReport[]
+        results: data as MedicalReport[],
       };
     },
   });
@@ -30,7 +30,7 @@ export function useMedicalReports(page: number = 1) {
     previous: data?.previous,
     isLoading,
     error: error ? (error as any).message : null,
-    refresh: refetch
+    refresh: refetch,
   };
 }
 

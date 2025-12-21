@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useMedicalReports } from "@/hooks/use-medical-reports";
@@ -11,10 +11,10 @@ import { UploadReportDialog } from "./upload-report-dialog";
 export function ReportsClient() {
   const [page, setPage] = useQueryState(
     "page",
-    parseAsInteger.withDefault(1).withOptions({ shallow: false })
+    parseAsInteger.withDefault(1).withOptions({ shallow: false }),
   );
   const { user } = useUser();
-  const isDoctor = user?.user_type === 'doctor';
+  const isDoctor = user?.user_type === "doctor";
   const { reports, count, isLoading, refresh, error } = useMedicalReports(page);
 
   return (
@@ -23,7 +23,7 @@ export function ReportsClient() {
         <div>
           <h2 className="text-3xl font-bold tracking-tight">Medical Reports</h2>
           <p className="text-muted-foreground">
-            {isDoctor 
+            {isDoctor
               ? "Review AI-powered summaries of medical reports shared by your patients."
               : "View AI-powered summaries and analyses of your clinical documents."}
           </p>
@@ -35,16 +35,14 @@ export function ReportsClient() {
         <Alert variant="destructive">
           <AlertCircle className="h-4 w-4" />
           <AlertTitle>Error</AlertTitle>
-          <AlertDescription>
-            {error}
-          </AlertDescription>
+          <AlertDescription>{error}</AlertDescription>
         </Alert>
       )}
 
       <div className="space-y-4">
-        <ReportList 
-          reports={reports} 
-          isLoading={isLoading} 
+        <ReportList
+          reports={reports}
+          isLoading={isLoading}
           count={count}
           page={page}
           onPageChange={setPage}

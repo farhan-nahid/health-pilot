@@ -9,7 +9,11 @@ export const metadata: Metadata = {
 
 export default function ReportsPage() {
   return (
-    <Suspense fallback={<div className="flex items-center justify-center p-8">Loading reports...</div>}>
+    <Suspense
+      fallback={
+        <div className="flex items-center justify-center p-8">Loading reports...</div>
+      }
+    >
       <ReportsClient />
     </Suspense>
   );
