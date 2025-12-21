@@ -127,7 +127,7 @@ export function PatientList({
                     asChild
                     className="opacity-0 transition-opacity group-hover:opacity-100"
                   >
-                    <Link href={`/dashboard/appointments?patient_id=${patient.id}`}>
+                    <Link href={`/appointments?patient_id=${patient.id}`}>
                       View Appointments
                     </Link>
                   </Button>

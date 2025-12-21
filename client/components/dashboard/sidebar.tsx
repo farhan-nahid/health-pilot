@@ -17,17 +17,17 @@ import { cn } from "@/lib/utils";
 
 const navigation = [
   { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-  { name: "Appointments", href: "/dashboard/appointments", icon: Calendar },
-  { name: "Patients", href: "/dashboard/patients", icon: Users, roles: ["doctor"] },
+  { name: "Appointments", href: "/appointments", icon: Calendar },
+  { name: "Patients", href: "`/patients", icon: Users, roles: ["doctor"] },
   {
     name: "Medical Reports",
-    href: "/dashboard/reports",
+    href: "/reports",
     icon: FileText,
     roles: ["patient", "doctor"],
   },
-  { name: "Schedule", href: "/dashboard/schedule", icon: Clock, roles: ["doctor"] },
-  { name: "Profile", href: "/dashboard/profile", icon: UserCircle },
-  { name: "Settings", href: "/dashboard/settings", icon: Settings },
+  { name: "Schedule", href: "/schedule", icon: Clock, roles: ["doctor"] },
+  { name: "Profile", href: "/profile", icon: UserCircle },
+  { name: "Settings", href: "/settings", icon: Settings },
 ];
 
 export function Sidebar({ className }: { className?: string }) {
