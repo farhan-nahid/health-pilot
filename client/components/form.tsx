@@ -15,7 +15,13 @@ import {
 } from "./ui/field";
 import { Input } from "./ui/input";
 import { PasswordInput } from "./ui/password-input";
-import { Select, SelectContent, SelectTrigger, SelectValue } from "./ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "./ui/select";
 import { Textarea } from "./ui/textarea";
 
 type FormControlProps<
@@ -150,6 +156,14 @@ export const FormSelect: FormControlFunc<{
         );
       }}
     </FormBase>
+  );
+};
+
+export const FormSelectItem: FormControlFunc<React.ComponentProps<typeof SelectItem>> = ({
+  ...props
+}) => {
+  return (
+    <FormBase {...props}>{(field) => <SelectItem {...field} {...props} />}</FormBase>
   );
 };
 

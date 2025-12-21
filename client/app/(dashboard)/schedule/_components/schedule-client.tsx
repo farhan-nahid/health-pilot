@@ -19,18 +19,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { DAYS_OF_WEEK as DAYS } from "@/constants";
 import { useAvailability } from "@/hooks/use-availability";
 import { showError, showSuccess } from "@/lib/notifications";
-
-const DAYS = [
-  "monday",
-  "tuesday",
-  "wednesday",
-  "thursday",
-  "friday",
-  "saturday",
-  "sunday",
-];
 
 export function ScheduleClient() {
   const { availability, isLoading, updateAvailability, deleteSlot } = useAvailability();

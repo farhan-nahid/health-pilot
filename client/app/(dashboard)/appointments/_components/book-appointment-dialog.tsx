@@ -21,29 +21,12 @@ import {
 import { Field, FieldContent, FieldError, FieldLabel } from "@/components/ui/field";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { SelectItem } from "@/components/ui/select";
+import { TIME_SLOTS } from "@/constants";
 import { useDoctors } from "@/hooks/use-doctors";
 import api from "@/lib/api";
 import { showError, showSuccess } from "@/lib/notifications";
 import { cn } from "@/lib/utils";
 import { type AppointmentValues, appointmentSchema } from "@/schemas/appointment";
-
-const TIME_SLOTS = [
-  "09:00",
-  "09:30",
-  "10:00",
-  "10:30",
-  "11:00",
-  "11:30",
-  "12:00",
-  "12:30",
-  "14:00",
-  "14:30",
-  "15:00",
-  "15:30",
-  "16:00",
-  "16:30",
-  "17:00",
-];
 
 export function BookAppointmentDialog({ onSuccess }: { onSuccess?: () => void }) {
   const [open, setOpen] = useState(false);
