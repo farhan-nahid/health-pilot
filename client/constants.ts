@@ -1,3 +1,21 @@
+export const BLOOD_GROUPS = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
+
+export const TIME_SLOTS = Array.from({ length: 48 }, (_, i) => {
+  const hours = String(Math.floor(i / 2)).padStart(2, "0");
+  const minutes = i % 2 === 0 ? "00" : "30";
+  return `${hours}:${minutes}`;
+});
+
+export const DAYS_OF_WEEK = [
+  { value: "monday", label: "Monday" },
+  { value: "tuesday", label: "Tuesday" },
+  { value: "wednesday", label: "Wednesday" },
+  { value: "thursday", label: "Thursday" },
+  { value: "friday", label: "Friday" },
+  { value: "saturday", label: "Saturday" },
+  { value: "sunday", label: "Sunday" },
+];
+
 export const SPECIALIZATIONS = [
   { value: "cardiologist", label: "Cardiologist" },
   { value: "neurologist", label: "Neurologist" },
@@ -9,34 +27,4 @@ export const SPECIALIZATIONS = [
   { value: "oncologist", label: "Oncologist" },
   { value: "gastroenterologist", label: "Gastroenterologist" },
   { value: "general_physician", label: "General Physician" },
-];
-
-export const BLOOD_GROUPS = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
-
-export const TIME_SLOTS = [
-  "09:00",
-  "09:30",
-  "10:00",
-  "10:30",
-  "11:00",
-  "11:30",
-  "12:00",
-  "12:30",
-  "14:00",
-  "14:30",
-  "15:00",
-  "15:30",
-  "16:00",
-  "16:30",
-  "17:00",
-];
-
-export const DAYS_OF_WEEK = [
-  "monday",
-  "tuesday",
-  "wednesday",
-  "thursday",
-  "friday",
-  "saturday",
-  "sunday",
 ];

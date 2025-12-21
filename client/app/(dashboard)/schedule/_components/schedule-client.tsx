@@ -19,7 +19,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { DAYS_OF_WEEK as DAYS } from "@/constants";
+import { DAYS_OF_WEEK } from "@/constants";
 import { useAvailability } from "@/hooks/use-availability";
 import { showError, showSuccess } from "@/lib/notifications";
 
@@ -75,13 +75,13 @@ export function ScheduleClient() {
             <div className="space-y-2">
               <Label>Day of Week</Label>
               <Select value={newDay} onValueChange={setNewDay}>
-                <SelectTrigger>
+                <SelectTrigger className="w-full">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {DAYS.map((day) => (
-                    <SelectItem key={day} value={day} className="capitalize">
-                      {day}
+                  {DAYS_OF_WEEK.map((day) => (
+                    <SelectItem key={day.value} value={day.value}>
+                      {day.label}
                     </SelectItem>
                   ))}
                 </SelectContent>

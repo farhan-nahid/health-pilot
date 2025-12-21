@@ -18,8 +18,6 @@ export function DataTablePagination({
 }: DataTablePaginationProps) {
   const totalPages = Math.ceil(totalCount / pageSize);
 
-  if (totalPages <= 1) return null;
-
   return (
     <div className="flex items-center justify-between px-2 py-4">
       <div className="flex-1 text-muted-foreground text-sm">
