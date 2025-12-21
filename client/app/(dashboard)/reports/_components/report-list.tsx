@@ -64,7 +64,7 @@ export function ReportList({
             {isDoctor && <TableHead>Patient</TableHead>}
             <TableHead>Symptoms</TableHead>
             <TableHead>AI Specialization</TableHead>
-            <TableHead className="w-[100px] text-right">Action</TableHead>
+            <TableHead className="w-25 text-right">Action</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -76,7 +76,7 @@ export function ReportList({
               {isDoctor && (
                 <TableCell className="font-semibold">{report.patient_name}</TableCell>
               )}
-              <TableCell className="max-w-[300px] truncate">{report.symptoms}</TableCell>
+              <TableCell className="max-w-75 truncate">{report.symptoms}</TableCell>
               <TableCell>
                 <span className="inline-flex items-center rounded-full border border-primary/20 bg-primary/10 px-2 py-0.5 font-bold text-[10px] text-primary uppercase">
                   {report.ai_specialization || "Processing..."}

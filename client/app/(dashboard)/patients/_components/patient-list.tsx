@@ -55,7 +55,7 @@ export function PatientList({
       <Table>
         <TableHeader>
           <TableRow className="bg-muted/50 hover:bg-muted/50">
-            <TableHead className="w-[300px]">Patient</TableHead>
+            <TableHead className="w-75">Patient</TableHead>
             <TableHead>Contact Information</TableHead>
             <TableHead>Blood Group</TableHead>
             <TableHead>Date of Birth</TableHead>

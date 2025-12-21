@@ -115,7 +115,7 @@ export function EditAppointmentDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-106.25">
         <DialogHeader>
           <DialogTitle>Edit Appointment</DialogTitle>
           <DialogDescription>
@@ -136,49 +136,48 @@ export function EditAppointmentDialog({
             ))}
           </FormSelect>
           <div className="grid grid-cols-6 gap-4">
-            <div className="col-span-4">
-              <Controller
-                control={form.control}
-                name="appointment_date"
-                render={({ field, fieldState }) => (
-                  <Field data-invalid={fieldState.invalid}>
-                    <FieldLabel>Date</FieldLabel>
-                    <FieldContent>
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <Button
-                            variant={"outline"}
-                            className={cn(
-                              "w-full justify-start text-left font-normal",
-                              !field.value && "text-muted-foreground",
-                            )}
-                          >
-                            <CalendarIcon className="mr-2 h-4 w-4" />
-                            {field.value ? (
-                              <span suppressHydrationWarning>
-                                {format(field.value, "PPP")}
-                              </span>
-                            ) : (
-                              <span>Pick a date</span>
-                            )}
-                          </Button>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0" align="start">
-                          <Calendar
-                            mode="single"
-                            selected={field.value}
-                            onSelect={field.onChange}
-                            initialFocus
-                            disabled={(date) => date < new Date() || date.getDay() === 0}
-                          />
-                        </PopoverContent>
-                      </Popover>
-                      {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-                    </FieldContent>
-                  </Field>
-                )}
-              />
-            </div>
+            <Controller
+              control={form.control}
+              name="appointment_date"
+              render={({ field, fieldState }) => (
+                <Field className="col-span-4" data-invalid={fieldState.invalid}>
+                  <FieldLabel>Date</FieldLabel>
+                  <FieldContent>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant={"outline"}
+                          className={cn(
+                            "w-full justify-start text-left font-normal",
+                            !field.value && "text-muted-foreground",
+                          )}
+                        >
+                          <CalendarIcon className="mr-2 h-4 w-4" />
+                          {field.value ? (
+                            <span suppressHydrationWarning>
+                              {format(field.value, "PPP")}
+                            </span>
+                          ) : (
+                            <span>Pick a date</span>
+                          )}
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                          mode="single"
+                          selected={field.value}
+                          onSelect={field.onChange}
+                          initialFocus
+                          disabled={(date) => date < new Date() || date.getDay() === 0}
+                        />
+                      </PopoverContent>
+                    </Popover>
+                    {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                  </FieldContent>
+                </Field>
+              )}
+            />
+
             <div className="col-span-2">
               <FormSelect
                 control={form.control}

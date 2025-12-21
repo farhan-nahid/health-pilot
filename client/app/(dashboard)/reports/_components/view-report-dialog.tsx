@@ -24,7 +24,7 @@ export function ViewReportDialog({
 }) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-[600px]">
+      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-150">
         <DialogHeader>
           <DialogTitle className="flex items-center justify-between">
             Medical Report Analysis
@@ -70,7 +70,7 @@ export function ViewReportDialog({
               <div className="flex items-center font-bold text-muted-foreground text-xs uppercase">
                 <FileText className="mr-2 h-3 w-3" /> Extracted Text (OCR)
               </div>
-              <div className="max-h-[200px] overflow-y-auto whitespace-pre-wrap rounded-lg border border-border bg-muted/30 p-4 font-mono text-[12px]">
+              <div className="max-h-50 overflow-y-auto whitespace-pre-wrap rounded-lg border border-border bg-muted/30 p-4 font-mono text-[12px]">
                 {report.extracted_text}
               </div>
             </div>

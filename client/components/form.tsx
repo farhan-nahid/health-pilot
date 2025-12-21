@@ -132,18 +132,23 @@ export const FormSelect: FormControlFunc<{
 }> = ({ children, placeholder, ...props }) => {
   return (
     <FormBase {...props}>
-      {({ onChange, onBlur, ...field }) => (
-        <Select {...field} onValueChange={onChange}>
-          <SelectTrigger
-            aria-invalid={field["aria-invalid"]}
-            id={field.id}
-            onBlur={onBlur}
-          >
-            <SelectValue placeholder={placeholder} />
-          </SelectTrigger>
-          <SelectContent>{children}</SelectContent>
-        </Select>
-      )}
+      {({ onChange, onBlur, value, name, ...field }) => {
+        // Radix Select usually prefers a string or undefined for unselected
+        const controlledValue =
+          value === null || value === "" ? undefined : String(value);
+        return (
+          <Select value={controlledValue} onValueChange={onChange}>
+            <SelectTrigger
+              aria-invalid={field["aria-invalid"]}
+              id={field.id}
+              onBlur={onBlur}
+            >
+              <SelectValue placeholder={placeholder} />
+            </SelectTrigger>
+            <SelectContent>{children}</SelectContent>
+          </Select>
+        );
+      }}
     </FormBase>
   );
 };

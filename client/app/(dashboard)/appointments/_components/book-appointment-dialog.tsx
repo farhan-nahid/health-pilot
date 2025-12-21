@@ -100,7 +100,7 @@ export function BookAppointmentDialog({ onSuccess }: { onSuccess?: () => void })
           Book Appointment
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-106.25">
         <DialogHeader>
           <DialogTitle>Book a New Appointment</DialogTitle>
           <DialogDescription>
@@ -121,12 +121,12 @@ export function BookAppointmentDialog({ onSuccess }: { onSuccess?: () => void })
             ))}
           </FormSelect>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-6 gap-4">
             <Controller
               control={form.control}
               name="appointment_date"
               render={({ field, fieldState }) => (
-                <Field data-invalid={fieldState.invalid}>
+                <Field className="col-span-4" data-invalid={fieldState.invalid}>
                   <FieldLabel>Date</FieldLabel>
                   <FieldContent>
                     <Popover>
@@ -164,13 +164,20 @@ export function BookAppointmentDialog({ onSuccess }: { onSuccess?: () => void })
               )}
             />
 
-            <FormSelect control={form.control} name="appointment_time" label="Time Slot">
-              {TIME_SLOTS.map((t) => (
-                <SelectItem key={t} value={t}>
-                  {t}
-                </SelectItem>
-              ))}
-            </FormSelect>
+            <div className="col-span-2">
+              <FormSelect
+                control={form.control}
+                name="appointment_time"
+                label="Time Slot"
+                placeholder="Select an slot"
+              >
+                {TIME_SLOTS.map((t) => (
+                  <SelectItem key={t} value={t}>
+                    {t}
+                  </SelectItem>
+                ))}
+              </FormSelect>
+            </div>
           </div>
 
           <FormTextarea

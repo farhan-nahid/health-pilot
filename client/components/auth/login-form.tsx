@@ -1,5 +1,9 @@
 "use client";
 
+import { zodResolver } from "@hookform/resolvers/zod";
+import { ArrowRight } from "lucide-react";
+import Link from "next/link";
+import { useForm } from "react-hook-form";
 import { FormInput, FormPasswordInput } from "@/components/form";
 import { Button } from "@/components/ui/button";
 import {
@@ -12,10 +16,6 @@ import {
 } from "@/components/ui/card";
 import { useAuth } from "@/hooks/use-auth";
 import { type LoginValues, loginSchema } from "@/schemas/auth";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { ArrowRight } from "lucide-react";
-import Link from "next/link";
-import { useForm } from "react-hook-form";
 
 export function LoginForm() {
   const { login } = useAuth();

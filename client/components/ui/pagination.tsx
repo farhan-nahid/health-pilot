@@ -27,7 +27,7 @@ export function DataTablePagination({
         {Math.min(page * pageSize, totalCount)} of {totalCount} entries
       </div>
       <div className="flex items-center space-x-6 lg:space-x-8">
-        <div className="flex w-[100px] items-center justify-center font-medium text-sm">
+        <div className="flex w-25 items-center justify-center font-medium text-sm">
           Page {page} of {totalPages}
         </div>
         <div className="flex items-center space-x-2">

@@ -76,11 +76,11 @@ export function AppointmentList({
       <Table>
         <TableHeader>
           <TableRow className="bg-muted/50 hover:bg-muted/50">
-            <TableHead className="w-[250px]">{isDoctor ? "Patient" : "Doctor"}</TableHead>
+            <TableHead className="w-62.5">{isDoctor ? "Patient" : "Doctor"}</TableHead>
             <TableHead>Date & Time</TableHead>
             <TableHead>Status</TableHead>
-            <TableHead className="max-w-[200px]">Symptoms</TableHead>
-            <TableHead className="w-[50px]"></TableHead>
+            <TableHead className="max-w-50">Symptoms</TableHead>
+            <TableHead className="w-12.5"></TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -135,7 +135,7 @@ export function AppointmentList({
                   {apt.status}
                 </div>
               </TableCell>
-              <TableCell className="max-w-[200px] truncate text-muted-foreground text-sm">
+              <TableCell className="max-w-50 truncate text-muted-foreground text-sm">
                 {apt.symptoms}
               </TableCell>
               <TableCell>

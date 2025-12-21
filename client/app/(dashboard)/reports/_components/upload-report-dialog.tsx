@@ -68,7 +68,7 @@ export function UploadReportDialog({ onSuccess }: { onSuccess?: () => void }) {
           Upload Report
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-106.25">
         <DialogHeader>
           <DialogTitle>Upload Medical Report</DialogTitle>
           <DialogDescription>

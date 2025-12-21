@@ -34,9 +34,6 @@ const DAYS = [
 
 export function ScheduleClient() {
   const { availability, isLoading, updateAvailability, deleteSlot } = useAvailability();
-
-  console.log(availability);
-
   const [newDay, setNewDay] = useState<string>("monday");
   const [startTime, setStartTime] = useState("09:00");
   const [endTime, setEndTime] = useState("17:00");
