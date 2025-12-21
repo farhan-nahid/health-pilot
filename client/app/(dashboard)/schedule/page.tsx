@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { ScheduleClient } from "@/components/dashboard/schedule/schedule-client";
+import { ScheduleClient } from "./_components/schedule-client";
 
 export const metadata: Metadata = {
   title: "My Schedule",
