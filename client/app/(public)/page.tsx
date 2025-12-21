@@ -26,7 +26,7 @@ export default function Home() {
             </p>
             <div className="mt-10 flex items-center justify-center gap-x-6">
               <Link
-                href="/auth/register"
+                href="/register"
                 className="group flex items-center gap-2 rounded-full bg-blue-600 px-6 py-3.5 font-semibold text-sm text-white shadow-sm transition-all hover:bg-blue-500"
               >
                 Get started for free
@@ -209,7 +209,7 @@ export default function Home() {
           </p>
           <div className="mt-10 flex items-center justify-center gap-x-6">
             <Link
-              href="/auth/register"
+              href="/register"
               className="rounded-full bg-blue-600 px-10 py-4 font-semibold text-base text-white shadow-sm transition-all hover:bg-blue-500"
             >
               Get Started Now

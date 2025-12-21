@@ -53,7 +53,7 @@ export function ResetPasswordForm() {
         </CardHeader>
         <CardFooter className="px-0 pt-6">
           <Button asChild className="w-full">
-            <a href="/auth/forgot-password">Request new link</a>
+            <a href="/forgot-password">Request new link</a>
           </Button>
         </CardFooter>
       </Card>

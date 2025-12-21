@@ -1,9 +1,5 @@
 "use client";
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { ArrowRight } from "lucide-react";
-import Link from "next/link";
-import { useForm } from "react-hook-form";
 import { FormInput, FormPasswordInput } from "@/components/form";
 import { Button } from "@/components/ui/button";
 import {
@@ -16,6 +12,10 @@ import {
 } from "@/components/ui/card";
 import { useAuth } from "@/hooks/use-auth";
 import { type LoginValues, loginSchema } from "@/schemas/auth";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { ArrowRight } from "lucide-react";
+import Link from "next/link";
+import { useForm } from "react-hook-form";
 
 export function LoginForm() {
   const { login } = useAuth();
@@ -56,7 +56,7 @@ export function LoginForm() {
             <FormPasswordInput control={form.control} name="password" label="Password" />
             <div className="flex justify-end">
               <Link
-                href="/auth/forgot-password"
+                href="/forgot-password"
                 className="font-medium text-primary text-xs hover:underline"
               >
                 Forgot password?
@@ -70,10 +70,7 @@ export function LoginForm() {
           )}
           <div className="text-center text-sm">
             <span className="text-muted-foreground">Don't have an account? </span>
-            <Link
-              href="/auth/register"
-              className="font-medium text-primary hover:underline"
-            >
+            <Link href="/register" className="font-medium text-primary hover:underline">
               Sign up
             </Link>
           </div>

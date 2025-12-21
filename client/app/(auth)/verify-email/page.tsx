@@ -36,7 +36,7 @@ function VerifyEmailContent() {
         </CardHeader>
         <CardFooter className="px-0 pt-6">
           <Button asChild className="w-full">
-            <a href="/auth/login">Back to Sign In</a>
+            <a href="/login">Back to Sign In</a>
           </Button>
         </CardFooter>
       </Card>
@@ -69,7 +69,7 @@ function VerifyEmailContent() {
         </CardHeader>
         <CardFooter className="px-0 pt-6">
           <Button asChild className="w-full">
-            <a href="/auth/register">Try Registering Again</a>
+            <a href="/register">Try Registering Again</a>
           </Button>
         </CardFooter>
       </Card>
@@ -90,7 +90,7 @@ function VerifyEmailContent() {
         </CardHeader>
         <CardFooter className="px-0 pt-6">
           <Button asChild className="w-full">
-            <a href="/auth/login">Sign In Now</a>
+            <a href="/login">Sign In Now</a>
           </Button>
         </CardFooter>
       </Card>

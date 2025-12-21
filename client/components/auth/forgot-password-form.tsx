@@ -79,7 +79,7 @@ export function ForgotPasswordForm() {
           />
           <div className="text-center text-sm">
             <Link
-              href="/auth/login"
+              href="/login"
               className="inline-flex items-center font-medium text-primary hover:underline"
             >
               Back to sign in

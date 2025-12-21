@@ -55,7 +55,7 @@ export function useAuth() {
         router.push("/dashboard");
         router.refresh();
       } else {
-        router.push("/auth/login?message=check-email");
+        router.push("/login?message=check-email");
       }
     },
     onError: (error: any) => {
@@ -71,13 +71,14 @@ export function useAuth() {
       localStorage.removeItem("token");
       queryClient.clear();
       showSuccess("Logged out successfully.");
-      router.push("/auth/login");
+      router.push("/");
       router.refresh();
     },
     onError: (_error: any) => {
       localStorage.removeItem("token");
+      showSuccess("Logged out successfully.");
       queryClient.clear();
-      router.push("/auth/login");
+      router.push("/");
     },
   });
 
@@ -104,7 +105,7 @@ export function useAuth() {
     },
     onSuccess: () => {
       showSuccess("Password reset successfully. You can now login.");
-      router.push("/auth/login");
+      router.push("/login");
     },
     onError: (error: any) => {
       showError(error);
@@ -117,7 +118,7 @@ export function useAuth() {
     },
     onSuccess: () => {
       showSuccess("Email verified successfully!");
-      router.push("/auth/login");
+      router.push("/login");
     },
     onError: (error: any) => {
       showError(error);

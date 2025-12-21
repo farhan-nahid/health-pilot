@@ -39,13 +39,13 @@ export function Navbar() {
 
       <div className="flex flex-1 items-center justify-end gap-x-6">
         <Link
-          href="/auth/login"
+          href="/login"
           className="font-semibold text-gray-900 text-sm leading-6 transition-colors hover:text-blue-600 dark:text-gray-100 dark:hover:text-blue-400"
         >
           Log in <span aria-hidden="true">&rarr;</span>
         </Link>
         <Link
-          href="/auth/register"
+          href="/register"
           className="hidden rounded-full bg-blue-600 px-4 py-2 font-semibold text-sm text-white shadow-sm transition-all hover:bg-blue-500 sm:block"
         >
           Sign up
