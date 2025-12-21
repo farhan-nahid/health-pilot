@@ -1,6 +1,6 @@
-import { ReportsClient } from "@/components/dashboard/reports/reports-client";
-import { Metadata } from "next";
+import type { Metadata } from "next";
 import { Suspense } from "react";
+import { ReportsClient } from "@/components/dashboard/reports/reports-client";
 
 export const metadata: Metadata = {
   title: "Medical Reports",

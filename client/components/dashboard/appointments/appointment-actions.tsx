@@ -1,6 +1,8 @@
 "use client";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { format } from "date-fns";
-
+import { CheckCircle2, Edit, Eye, MoreHorizontal, Trash2, XCircle } from "lucide-react";
+import { useState } from "react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -22,10 +24,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import api from "@/lib/api";
 import { showError, showSuccess } from "@/lib/notifications";
-import { Appointment } from "@/types";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { CheckCircle2, Edit, Eye, MoreHorizontal, Trash2, XCircle } from "lucide-react";
-import { useState } from "react";
+import type { Appointment } from "@/types";
 import { CompleteAppointmentDialog } from "./complete-appointment-dialog";
 import { EditAppointmentDialog } from "./edit-appointment-dialog";
 import { ViewAppointmentDialog } from "./view-appointment-dialog";
@@ -130,7 +129,7 @@ export function AppointmentActions({
           {isDoctor && isPending && (
             <DropdownMenuItem
               onClick={() => setShowAcceptAlert(true)}
-              className="text-emerald-600 focus:text-emerald-600 focus:bg-emerald-50"
+              className="text-emerald-600 focus:bg-emerald-50 focus:text-emerald-600"
             >
               <CheckCircle2 className="mr-2 h-4 w-4" /> Accept
             </DropdownMenuItem>
@@ -139,7 +138,7 @@ export function AppointmentActions({
           {isDoctor && appointment.status === "accepted" && (
             <DropdownMenuItem
               onClick={() => setShowComplete(true)}
-              className="text-emerald-600 focus:text-emerald-600 focus:bg-emerald-50"
+              className="text-emerald-600 focus:bg-emerald-50 focus:text-emerald-600"
             >
               <CheckCircle2 className="mr-2 h-4 w-4" /> Mark Completed
             </DropdownMenuItem>
@@ -148,7 +147,7 @@ export function AppointmentActions({
           {isDoctor && isPending && (
             <DropdownMenuItem
               onClick={() => setShowRejectAlert(true)}
-              className="text-rose-600 focus:text-rose-600 focus:bg-rose-50"
+              className="text-rose-600 focus:bg-rose-50 focus:text-rose-600"
             >
               <XCircle className="mr-2 h-4 w-4" /> Reject
             </DropdownMenuItem>
@@ -157,7 +156,7 @@ export function AppointmentActions({
           {isPatient && isCancellable && (
             <DropdownMenuItem
               onClick={() => setShowCancelAlert(true)}
-              className="text-rose-600 focus:text-rose-600 focus:bg-rose-50"
+              className="text-rose-600 focus:bg-rose-50 focus:text-rose-600"
             >
               <XCircle className="mr-2 h-4 w-4" /> Cancel
             </DropdownMenuItem>
@@ -166,7 +165,7 @@ export function AppointmentActions({
           {isPatient && (
             <DropdownMenuItem
               onClick={() => setShowDeleteAlert(true)}
-              className="text-rose-600 focus:text-rose-600 focus:bg-rose-50"
+              className="text-rose-600 focus:bg-rose-50 focus:text-rose-600"
             >
               <Trash2 className="mr-2 h-4 w-4" /> Delete
             </DropdownMenuItem>
@@ -265,7 +264,7 @@ export function AppointmentActions({
                 e.preventDefault();
                 acceptMutation.mutate();
               }}
-              className="bg-emerald-600 hover:bg-emerald-700 font-semibold"
+              className="bg-emerald-600 font-semibold hover:bg-emerald-700"
               disabled={acceptMutation.isPending}
             >
               {acceptMutation.isPending ? "Accepting..." : "Yes, Accept"}
@@ -291,7 +290,7 @@ export function AppointmentActions({
                 e.preventDefault();
                 rejectMutation.mutate();
               }}
-              className="bg-rose-600 hover:bg-rose-700 font-semibold"
+              className="bg-rose-600 font-semibold hover:bg-rose-700"
               disabled={rejectMutation.isPending}
             >
               {rejectMutation.isPending ? "Rejecting..." : "Yes, Reject"}

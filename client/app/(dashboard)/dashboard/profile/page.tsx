@@ -1,5 +1,5 @@
+import type { Metadata } from "next";
 import { ProfileClient } from "@/components/dashboard/profile-client";
-import { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Profile",
@@ -10,7 +10,7 @@ export default function ProfilePage() {
   return (
     <div className="space-y-8">
       <div>
-        <h2 className="text-3xl font-bold tracking-tight">Profile</h2>
+        <h2 className="font-bold text-3xl tracking-tight">Profile</h2>
         <p className="text-muted-foreground">View and manage your account details.</p>
       </div>
 

@@ -1,8 +1,10 @@
 "use client";
 
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
 import api from "@/lib/api";
 import { showError, showSuccess } from "@/lib/notifications";
-import {
+import type {
   ChangePasswordValues,
   ForgotPasswordValues,
   LoginValues,
@@ -10,8 +12,6 @@ import {
   ResetPasswordValues,
   VerifyEmailValues,
 } from "@/schemas/auth";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useRouter } from "next/navigation";
 
 export function useAuth() {
   const router = useRouter();
@@ -74,7 +74,7 @@ export function useAuth() {
       router.push("/auth/login");
       router.refresh();
     },
-    onError: (error: any) => {
+    onError: (_error: any) => {
       localStorage.removeItem("token");
       queryClient.clear();
       router.push("/auth/login");

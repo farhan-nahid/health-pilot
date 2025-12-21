@@ -1,5 +1,5 @@
-import { Doctor } from "./doctor";
-import { Patient } from "./patient";
+import type { Doctor } from "./doctor";
+import type { Patient } from "./patient";
 
 export interface Appointment {
   id: number;

@@ -1,5 +1,8 @@
 "use client";
 
+import { format } from "date-fns";
+import { Eye, FileText } from "lucide-react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { DataTablePagination } from "@/components/ui/pagination";
 import {
@@ -11,10 +14,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useUser } from "@/hooks/use-user";
-import { MedicalReport } from "@/types";
-import { format } from "date-fns";
-import { Eye, FileText } from "lucide-react";
-import { useState } from "react";
+import type { MedicalReport } from "@/types";
 import { ViewReportDialog } from "./view-report-dialog";
 
 export function ReportList({
@@ -37,18 +37,18 @@ export function ReportList({
   if (isLoading) {
     return (
       <div className="rounded-md border border-border bg-card p-8 text-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
-        <p className="mt-4 text-sm text-muted-foreground">Loading reports...</p>
+        <div className="mx-auto h-8 w-8 animate-spin rounded-full border-primary border-b-2"></div>
+        <p className="mt-4 text-muted-foreground text-sm">Loading reports...</p>
       </div>
     );
   }
 
   if (reports.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center p-12 rounded-lg border-2 border-dashed border-border bg-card/50">
-        <FileText className="h-10 w-10 text-muted-foreground mb-4" />
-        <p className="text-muted-foreground font-medium">No medical reports found.</p>
-        <p className="text-sm text-muted-foreground mt-1">
+      <div className="flex flex-col items-center justify-center rounded-lg border-2 border-border border-dashed bg-card/50 p-12">
+        <FileText className="mb-4 h-10 w-10 text-muted-foreground" />
+        <p className="font-medium text-muted-foreground">No medical reports found.</p>
+        <p className="mt-1 text-muted-foreground text-sm">
           Upload your first PDF report for AI analysis.
         </p>
       </div>
@@ -56,7 +56,7 @@ export function ReportList({
   }
 
   return (
-    <div className="rounded-md border border-border bg-card overflow-hidden">
+    <div className="overflow-hidden rounded-md border border-border bg-card">
       <Table>
         <TableHeader>
           <TableRow className="bg-muted/50 hover:bg-muted/50">
@@ -78,7 +78,7 @@ export function ReportList({
               )}
               <TableCell className="max-w-[300px] truncate">{report.symptoms}</TableCell>
               <TableCell>
-                <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase border bg-primary/10 text-primary border-primary/20">
+                <span className="inline-flex items-center rounded-full border border-primary/20 bg-primary/10 px-2 py-0.5 font-bold text-[10px] text-primary uppercase">
                   {report.ai_specialization || "Processing..."}
                 </span>
               </TableCell>
@@ -88,7 +88,7 @@ export function ReportList({
                   size="sm"
                   onClick={() => setSelectedReport(report)}
                 >
-                  <Eye className="h-4 w-4 mr-2" />
+                  <Eye className="mr-2 h-4 w-4" />
                   View
                 </Button>
               </TableCell>

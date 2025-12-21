@@ -1,4 +1,4 @@
-import { Metadata } from "next";
+import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "FAQ",
@@ -30,15 +30,15 @@ export default function FAQPage() {
   ];
 
   return (
-    <div className="py-24 px-6 lg:px-8 max-w-3xl mx-auto">
-      <h1 className="text-4xl font-bold mb-12 text-center">Frequently Asked Questions</h1>
+    <div className="mx-auto max-w-3xl px-6 py-24 lg:px-8">
+      <h1 className="mb-12 text-center font-bold text-4xl">Frequently Asked Questions</h1>
       <div className="space-y-8">
         {faqs.map((faq, idx) => (
           <div
             key={idx}
-            className="p-6 bg-gray-50 dark:bg-zinc-900 rounded-2xl border border-gray-100 dark:border-zinc-800"
+            className="rounded-2xl border border-gray-100 bg-gray-50 p-6 dark:border-zinc-800 dark:bg-zinc-900"
           >
-            <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-2">
+            <h2 className="mb-2 font-bold text-gray-900 text-lg dark:text-white">
               {faq.question}
             </h2>
             <p className="text-gray-600 dark:text-gray-400">{faq.answer}</p>

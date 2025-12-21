@@ -1,5 +1,9 @@
 "use client";
 
+import { zodResolver } from "@hookform/resolvers/zod";
+import { ArrowRight, Lock } from "lucide-react";
+import { useSearchParams } from "next/navigation";
+import { useForm } from "react-hook-form";
 import { FormPasswordInput } from "@/components/form";
 import { Button } from "@/components/ui/button";
 import {
@@ -11,11 +15,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { useAuth } from "@/hooks/use-auth";
-import { resetPasswordSchema, ResetPasswordValues } from "@/schemas/auth";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { ArrowRight, Lock } from "lucide-react";
-import { useSearchParams } from "next/navigation";
-import { useForm } from "react-hook-form";
+import { type ResetPasswordValues, resetPasswordSchema } from "@/schemas/auth";
 
 export function ResetPasswordForm() {
   const { resetPasswordConfirm } = useAuth();
@@ -41,12 +41,12 @@ export function ResetPasswordForm() {
 
   if (!uid || !token) {
     return (
-      <Card className="border-none shadow-none bg-transparent text-center">
+      <Card className="border-none bg-transparent text-center shadow-none">
         <CardHeader className="px-0">
-          <div className="mx-auto w-12 h-12 bg-destructive/10 rounded-full flex items-center justify-center mb-4">
+          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-destructive/10">
             <Lock className="h-6 w-6 text-destructive" />
           </div>
-          <CardTitle className="text-2xl font-bold">Invalid Reset Link</CardTitle>
+          <CardTitle className="font-bold text-2xl">Invalid Reset Link</CardTitle>
           <CardDescription>
             This password reset link is invalid or has expired.
           </CardDescription>
@@ -61,9 +61,9 @@ export function ResetPasswordForm() {
   }
 
   return (
-    <Card className="border-none shadow-none bg-transparent">
-      <CardHeader className="space-y-1 pb-6 px-0 text-center">
-        <CardTitle className="text-2xl font-bold">Set new password</CardTitle>
+    <Card className="border-none bg-transparent shadow-none">
+      <CardHeader className="space-y-1 px-0 pb-6 text-center">
+        <CardTitle className="font-bold text-2xl">Set new password</CardTitle>
         <CardDescription>
           Choose a strong password to protect your account
         </CardDescription>

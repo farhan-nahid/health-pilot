@@ -1,10 +1,10 @@
 "use client";
 
-import { Input } from "@/components/ui/input";
-import { usePatients } from "@/hooks/use-patient";
 import { Search } from "lucide-react";
 import { parseAsInteger, useQueryState } from "nuqs";
 import { useState } from "react";
+import { Input } from "@/components/ui/input";
+import { usePatients } from "@/hooks/use-patient";
 import { PatientList } from "./patient-list";
 
 export function PatientsClient() {
@@ -26,7 +26,7 @@ export function PatientsClient() {
     <div className="space-y-6">
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Patients</h1>
+          <h1 className="font-bold text-2xl tracking-tight">Patients</h1>
           <p className="text-muted-foreground">
             Manage and view details of all registered patients.
           </p>
@@ -34,7 +34,7 @@ export function PatientsClient() {
       </div>
 
       <div className="relative max-w-sm">
-        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+        <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
         <Input
           placeholder="Search patients by name or email..."
           value={search}

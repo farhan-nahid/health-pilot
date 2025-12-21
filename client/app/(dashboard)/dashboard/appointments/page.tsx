@@ -1,6 +1,6 @@
-import { AppointmentsClient } from "@/components/dashboard/appointments/appointments-client";
-import { Metadata } from "next";
+import type { Metadata } from "next";
 import { Suspense } from "react";
+import { AppointmentsClient } from "@/components/dashboard/appointments/appointments-client";
 
 export const metadata: Metadata = {
   title: "Appointments",

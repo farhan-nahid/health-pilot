@@ -1,5 +1,6 @@
 "use client";
 
+import { format } from "date-fns";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DataTablePagination } from "@/components/ui/pagination";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -12,8 +13,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
-import { Appointment } from "@/types";
-import { format } from "date-fns";
+import type { Appointment } from "@/types";
 import { AppointmentActions } from "./appointment-actions";
 
 const statusVariants: Record<string, string> = {
@@ -49,7 +49,7 @@ export function AppointmentList({
   if (isLoading) {
     return (
       <div className="rounded-md border border-border bg-card">
-        <div className="p-4 space-y-4">
+        <div className="space-y-4 p-4">
           {[1, 2, 3].map((i) => (
             <Skeleton key={i} className="h-16 w-full" />
           ))}
@@ -60,9 +60,9 @@ export function AppointmentList({
 
   if (appointments.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center p-12 rounded-lg border-2 border-dashed border-border bg-card/50">
-        <p className="text-muted-foreground font-medium">No appointments found.</p>
-        <p className="text-sm text-muted-foreground mt-1">
+      <div className="flex flex-col items-center justify-center rounded-lg border-2 border-border border-dashed bg-card/50 p-12">
+        <p className="font-medium text-muted-foreground">No appointments found.</p>
+        <p className="mt-1 text-muted-foreground text-sm">
           Book your first session to get started.
         </p>
       </div>
@@ -72,7 +72,7 @@ export function AppointmentList({
   const isDoctor = userType === "doctor";
 
   return (
-    <div className="rounded-md border border-border bg-card overflow-hidden">
+    <div className="overflow-hidden rounded-md border border-border bg-card">
       <Table>
         <TableHeader>
           <TableRow className="bg-muted/50 hover:bg-muted/50">
@@ -99,7 +99,7 @@ export function AppointmentList({
                     )}
                   </Avatar>
                   <div className="flex flex-col">
-                    <span className="text-sm font-semibold">
+                    <span className="font-semibold text-sm">
                       {isDoctor ? apt.patient_name : apt.doctor_details.doctor_name}
                     </span>
                     {!isDoctor && (
@@ -120,7 +120,7 @@ export function AppointmentList({
                   <span className="text-sm" suppressHydrationWarning>
                     {format(new Date(apt.appointment_date), "PPP")}
                   </span>
-                  <span className="text-xs text-muted-foreground">
+                  <span className="text-muted-foreground text-xs">
                     {apt.appointment_time}
                   </span>
                 </div>
@@ -128,14 +128,14 @@ export function AppointmentList({
               <TableCell>
                 <div
                   className={cn(
-                    "inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase border",
+                    "inline-flex items-center rounded-full border px-2 py-0.5 font-bold text-[10px] uppercase",
                     statusVariants[apt.status],
                   )}
                 >
                   {apt.status}
                 </div>
               </TableCell>
-              <TableCell className="text-sm text-muted-foreground truncate max-w-[200px]">
+              <TableCell className="max-w-[200px] truncate text-muted-foreground text-sm">
                 {apt.symptoms}
               </TableCell>
               <TableCell>

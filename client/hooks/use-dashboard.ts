@@ -1,8 +1,8 @@
 "use client";
 
-import api from "@/lib/api";
-import { DashboardSummary } from "@/types";
 import { useQuery } from "@tanstack/react-query";
+import api from "@/lib/api";
+import type { DashboardSummary } from "@/types";
 
 export function useDashboardSummary(userType?: string) {
   const { data, isLoading, error, refetch } = useQuery<DashboardSummary>({

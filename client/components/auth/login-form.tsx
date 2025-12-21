@@ -1,5 +1,9 @@
 "use client";
 
+import { zodResolver } from "@hookform/resolvers/zod";
+import { ArrowRight } from "lucide-react";
+import Link from "next/link";
+import { useForm } from "react-hook-form";
 import { FormInput, FormPasswordInput } from "@/components/form";
 import { Button } from "@/components/ui/button";
 import {
@@ -11,11 +15,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { useAuth } from "@/hooks/use-auth";
-import { loginSchema, LoginValues } from "@/schemas/auth";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { ArrowRight } from "lucide-react";
-import Link from "next/link";
-import { useForm } from "react-hook-form";
+import { type LoginValues, loginSchema } from "@/schemas/auth";
 
 export function LoginForm() {
   const { login } = useAuth();
@@ -39,9 +39,9 @@ export function LoginForm() {
     : null;
 
   return (
-    <Card className="border-none shadow-none bg-transparent">
-      <CardHeader className="space-y-1 pb-6 px-0 text-center">
-        <CardTitle className="text-2xl font-bold">Welcome back</CardTitle>
+    <Card className="border-none bg-transparent shadow-none">
+      <CardHeader className="space-y-1 px-0 pb-6 text-center">
+        <CardTitle className="font-bold text-2xl">Welcome back</CardTitle>
         <CardDescription>Sign in to access your health dashboard</CardDescription>
       </CardHeader>
       <form onSubmit={form.handleSubmit(onSubmit)}>
@@ -57,14 +57,14 @@ export function LoginForm() {
             <div className="flex justify-end">
               <Link
                 href="/auth/forgot-password"
-                className="text-xs text-primary hover:underline font-medium"
+                className="font-medium text-primary text-xs hover:underline"
               >
                 Forgot password?
               </Link>
             </div>
           </div>
           {errorMessage && (
-            <div className="text-destructive text-sm font-medium text-center bg-destructive/10 py-2 rounded-md border border-destructive/20">
+            <div className="rounded-md border border-destructive/20 bg-destructive/10 py-2 text-center font-medium text-destructive text-sm">
               {errorMessage}
             </div>
           )}
@@ -72,7 +72,7 @@ export function LoginForm() {
             <span className="text-muted-foreground">Don't have an account? </span>
             <Link
               href="/auth/register"
-              className="text-primary hover:underline font-medium"
+              className="font-medium text-primary hover:underline"
             >
               Sign up
             </Link>

@@ -1,5 +1,7 @@
 "use client";
 
+import { Loader2, Monitor, Moon, Sun } from "lucide-react";
+import { useTheme } from "next-themes";
 import {
   Card,
   CardContent,
@@ -12,8 +14,6 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Switch } from "@/components/ui/switch";
 import { useSettings } from "@/hooks/use-settings";
 import { showError, showSuccess } from "@/lib/notifications";
-import { Loader2, Monitor, Moon, Sun } from "lucide-react";
-import { useTheme } from "next-themes";
 import { ChangePasswordForm } from "./change-password-form";
 
 export function SettingsClient() {
@@ -22,14 +22,14 @@ export function SettingsClient() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-[400px]">
+      <div className="flex min-h-[400px] items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
     );
   }
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6">
+    <div className="mx-auto max-w-4xl space-y-6">
       <Card>
         <CardHeader>
           <CardTitle>Appearance</CardTitle>
@@ -52,7 +52,7 @@ export function SettingsClient() {
                   className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary"
                 >
                   <Sun className="mb-3 h-6 w-6" />
-                  <span className="text-sm font-medium">Light</span>
+                  <span className="font-medium text-sm">Light</span>
                 </Label>
               </div>
               <div>
@@ -62,7 +62,7 @@ export function SettingsClient() {
                   className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary"
                 >
                   <Moon className="mb-3 h-6 w-6" />
-                  <span className="text-sm font-medium">Dark</span>
+                  <span className="font-medium text-sm">Dark</span>
                 </Label>
               </div>
               <div>
@@ -72,7 +72,7 @@ export function SettingsClient() {
                   className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary"
                 >
                   <Monitor className="mb-3 h-6 w-6" />
-                  <span className="text-sm font-medium">System</span>
+                  <span className="font-medium text-sm">System</span>
                 </Label>
               </div>
             </RadioGroup>
@@ -91,7 +91,7 @@ export function SettingsClient() {
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
               <Label>Appointment Reminders</Label>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-muted-foreground text-xs">
                 Receive notifications for your upcoming appointments.
               </p>
             </div>
@@ -111,7 +111,7 @@ export function SettingsClient() {
           <div className="flex items-center justify-between border-t pt-4">
             <div className="space-y-0.5">
               <Label>Health Tips</Label>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-muted-foreground text-xs">
                 Get personalized health insights and tips.
               </p>
             </div>
@@ -131,7 +131,7 @@ export function SettingsClient() {
           <div className="flex items-center justify-between border-t pt-4">
             <div className="space-y-0.5">
               <Label>Security Alerts</Label>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-muted-foreground text-xs">
                 Notifications about your account login and security.
               </p>
             </div>
@@ -160,7 +160,7 @@ export function SettingsClient() {
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
               <Label>Two-Factor Authentication</Label>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-muted-foreground text-xs">
                 Add an extra layer of security to your account.
               </p>
             </div>

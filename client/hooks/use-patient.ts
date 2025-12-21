@@ -1,8 +1,8 @@
 "use client";
 
-import api from "@/lib/api";
-import { PaginatedResponse, Patient } from "@/types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import api from "@/lib/api";
+import type { PaginatedResponse, Patient } from "@/types";
 
 export function usePatientProfile() {
   const { data, isLoading, error } = useQuery<Patient>({

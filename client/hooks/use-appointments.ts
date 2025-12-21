@@ -1,8 +1,8 @@
 "use client";
 
-import api from "@/lib/api";
-import { Appointment, PaginatedResponse } from "@/types";
 import { useQuery } from "@tanstack/react-query";
+import api from "@/lib/api";
+import type { Appointment, PaginatedResponse } from "@/types";
 
 export function useAppointments(patientId?: string | null, page: number = 1) {
   const { data, isLoading, error, refetch } = useQuery<PaginatedResponse<Appointment>>({

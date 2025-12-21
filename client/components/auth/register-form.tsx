@@ -1,5 +1,9 @@
 "use client";
 
+import { zodResolver } from "@hookform/resolvers/zod";
+import { ArrowRight } from "lucide-react";
+import Link from "next/link";
+import { useForm } from "react-hook-form";
 import { FormInput, FormPasswordInput, FormSelect } from "@/components/form";
 import { Button } from "@/components/ui/button";
 import {
@@ -12,11 +16,7 @@ import {
 } from "@/components/ui/card";
 import { SelectItem } from "@/components/ui/select";
 import { useAuth } from "@/hooks/use-auth";
-import { registerSchema, RegisterValues } from "@/schemas/auth";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { ArrowRight } from "lucide-react";
-import Link from "next/link";
-import { useForm } from "react-hook-form";
+import { type RegisterValues, registerSchema } from "@/schemas/auth";
 
 export function RegisterForm() {
   const { register } = useAuth();
@@ -45,9 +45,9 @@ export function RegisterForm() {
     : null;
 
   return (
-    <Card className="border-none shadow-none bg-transparent">
-      <CardHeader className="space-y-1 pb-6 px-0 text-center">
-        <CardTitle className="text-2xl font-bold">Create an account</CardTitle>
+    <Card className="border-none bg-transparent shadow-none">
+      <CardHeader className="space-y-1 px-0 pb-6 text-center">
+        <CardTitle className="font-bold text-2xl">Create an account</CardTitle>
         <CardDescription>
           Join Health Pilot today and take control of your health
         </CardDescription>
@@ -94,13 +94,13 @@ export function RegisterForm() {
             </div>
           </div>
           {errorMessage && (
-            <div className="text-destructive text-sm font-medium text-center bg-destructive/10 py-2 rounded-md border border-destructive/20">
+            <div className="rounded-md border border-destructive/20 bg-destructive/10 py-2 text-center font-medium text-destructive text-sm">
               {errorMessage}
             </div>
           )}
           <div className="text-center text-sm">
             <span className="text-muted-foreground">Already have an account? </span>
-            <Link href="/auth/login" className="text-primary hover:underline font-medium">
+            <Link href="/auth/login" className="font-medium text-primary hover:underline">
               Sign in
             </Link>
           </div>

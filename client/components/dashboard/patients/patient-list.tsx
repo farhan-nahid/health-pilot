@@ -1,5 +1,8 @@
 "use client";
 
+import { format } from "date-fns";
+import { Calendar, Mail, Phone } from "lucide-react";
+import Link from "next/link";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { DataTablePagination } from "@/components/ui/pagination";
@@ -12,10 +15,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Patient } from "@/types";
-import { format } from "date-fns";
-import { Calendar, Mail, Phone } from "lucide-react";
-import Link from "next/link";
+import type { Patient } from "@/types";
 
 export function PatientList({
   patients,
@@ -33,7 +33,7 @@ export function PatientList({
   if (isLoading) {
     return (
       <div className="rounded-md border border-border bg-card">
-        <div className="p-4 space-y-4">
+        <div className="space-y-4 p-4">
           {[1, 2, 3].map((i) => (
             <Skeleton key={i} className="h-16 w-full" />
           ))}
@@ -44,14 +44,14 @@ export function PatientList({
 
   if (patients.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center p-12 rounded-lg border-2 border-dashed border-border bg-card/50">
-        <p className="text-muted-foreground font-medium">No patients found.</p>
+      <div className="flex flex-col items-center justify-center rounded-lg border-2 border-border border-dashed bg-card/50 p-12">
+        <p className="font-medium text-muted-foreground">No patients found.</p>
       </div>
     );
   }
 
   return (
-    <div className="rounded-md border border-border bg-card overflow-hidden">
+    <div className="overflow-hidden rounded-md border border-border bg-card">
       <Table>
         <TableHeader>
           <TableRow className="bg-muted/50 hover:bg-muted/50">
@@ -70,17 +70,17 @@ export function PatientList({
             return (
               <TableRow
                 key={patient.id}
-                className="group hover:bg-muted/30 transition-colors"
+                className="group transition-colors hover:bg-muted/30"
               >
                 <TableCell className="font-medium">
                   <div className="flex items-center gap-3">
-                    <Avatar className="h-10 w-10 border border-border group-hover:border-primary/50 transition-colors">
-                      <AvatarFallback className="bg-primary/5 text-primary font-bold">
+                    <Avatar className="h-10 w-10 border border-border transition-colors group-hover:border-primary/50">
+                      <AvatarFallback className="bg-primary/5 font-bold text-primary">
                         {initials}
                       </AvatarFallback>
                     </Avatar>
                     <div className="flex flex-col">
-                      <span className="text-sm font-semibold">{fullName}</span>
+                      <span className="font-semibold text-sm">{fullName}</span>
                       <span className="text-[10px] text-muted-foreground uppercase tracking-wider">
                         Patient #{patient.id}
                       </span>
@@ -89,13 +89,13 @@ export function PatientList({
                 </TableCell>
                 <TableCell>
                   <div className="flex flex-col gap-1">
-                    <div className="flex items-center text-xs text-muted-foreground">
-                      <Mail className="h-3 w-3 mr-2 text-primary/70" />
+                    <div className="flex items-center text-muted-foreground text-xs">
+                      <Mail className="mr-2 h-3 w-3 text-primary/70" />
                       {patient.user.email}
                     </div>
                     {patient.user.phone && (
-                      <div className="flex items-center text-xs text-muted-foreground">
-                        <Phone className="h-3 w-3 mr-2 text-primary/70" />
+                      <div className="flex items-center text-muted-foreground text-xs">
+                        <Phone className="mr-2 h-3 w-3 text-primary/70" />
                         {patient.user.phone}
                       </div>
                     )}
@@ -103,18 +103,18 @@ export function PatientList({
                 </TableCell>
                 <TableCell>
                   {patient.blood_group ? (
-                    <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-rose-50 text-rose-700 border border-rose-100 uppercase">
+                    <span className="inline-flex items-center rounded border border-rose-100 bg-rose-50 px-2 py-0.5 font-bold text-[10px] text-rose-700 uppercase">
                       {patient.blood_group}
                     </span>
                   ) : (
-                    <span className="text-xs text-muted-foreground italic">
+                    <span className="text-muted-foreground text-xs italic">
                       Not specified
                     </span>
                   )}
                 </TableCell>
                 <TableCell>
-                  <div className="flex items-center text-xs text-muted-foreground">
-                    <Calendar className="h-3 w-3 mr-2 text-primary/70" />
+                  <div className="flex items-center text-muted-foreground text-xs">
+                    <Calendar className="mr-2 h-3 w-3 text-primary/70" />
                     {patient.date_of_birth
                       ? format(new Date(patient.date_of_birth), "PP")
                       : "Not specified"}
@@ -125,7 +125,7 @@ export function PatientList({
                     variant="ghost"
                     size="sm"
                     asChild
-                    className="opacity-0 group-hover:opacity-100 transition-opacity"
+                    className="opacity-0 transition-opacity group-hover:opacity-100"
                   >
                     <Link href={`/dashboard/appointments?patient_id=${patient.id}`}>
                       View Appointments

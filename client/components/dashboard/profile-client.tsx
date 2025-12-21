@@ -1,5 +1,8 @@
 "use client";
 
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
 import { FormInput, FormSelect, FormTextarea } from "@/components/form";
 import { Button } from "@/components/ui/button";
 import {
@@ -14,10 +17,7 @@ import { useDoctorProfile, useUpdateDoctorProfile } from "@/hooks/use-doctors";
 import { usePatientProfile, useUpdatePatientProfile } from "@/hooks/use-patient";
 import { useUpdateUser, useUser } from "@/hooks/use-user";
 import { showError, showSuccess } from "@/lib/notifications";
-import { profileSchema, ProfileValues } from "@/schemas/profile";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
+import { type ProfileValues, profileSchema } from "@/schemas/profile";
 
 const SPECIALIZATIONS = [
   { value: "cardiologist", label: "Cardiologist" },
@@ -134,14 +134,14 @@ export function ProfileClient() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      <div className="flex min-h-[400px] items-center justify-center">
+        <div className="h-8 w-8 animate-spin rounded-full border-primary border-b-2"></div>
       </div>
     );
   }
 
   return (
-    <div className="max-w-2xl mx-auto space-y-6">
+    <div className="mx-auto max-w-2xl space-y-6">
       <form onSubmit={form.handleSubmit(onSubmit as any)} className="space-y-6">
         <Card>
           <CardHeader>
@@ -164,10 +164,10 @@ export function ProfileClient() {
               />
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+              <label className="font-medium text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
                 Email Address
               </label>
-              <div className="flex h-10 w-full rounded-md border border-input bg-muted px-3 py-2 text-sm text-muted-foreground cursor-not-allowed">
+              <div className="flex h-10 w-full cursor-not-allowed rounded-md border border-input bg-muted px-3 py-2 text-muted-foreground text-sm">
                 {user?.email || ""}
               </div>
               <p className="text-[10px] text-muted-foreground uppercase">
@@ -223,7 +223,7 @@ export function ProfileClient() {
                 name="address"
                 label="Residential Address"
                 placeholder="Detailed address..."
-                className="resize-none h-24"
+                className="h-24 resize-none"
               />
             </CardContent>
           </Card>
@@ -269,7 +269,7 @@ export function ProfileClient() {
                 name="bio"
                 label="Professional Bio"
                 placeholder="Tell patients about your background and expertise..."
-                className="resize-none h-32"
+                className="h-32 resize-none"
               />
             </CardContent>
           </Card>
@@ -277,7 +277,7 @@ export function ProfileClient() {
 
         <div className="space-y-4">
           {error && (
-            <div className="text-destructive text-sm font-medium bg-destructive/10 p-2 rounded border border-destructive/20">
+            <div className="rounded border border-destructive/20 bg-destructive/10 p-2 font-medium text-destructive text-sm">
               {error}
             </div>
           )}

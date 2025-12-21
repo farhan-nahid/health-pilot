@@ -1,5 +1,8 @@
 "use client";
 
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Lock } from "lucide-react";
+import { useForm } from "react-hook-form";
 import { FormPasswordInput } from "@/components/form";
 import { Button } from "@/components/ui/button";
 import {
@@ -11,10 +14,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { useAuth } from "@/hooks/use-auth";
-import { changePasswordSchema, ChangePasswordValues } from "@/schemas/auth";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Lock } from "lucide-react";
-import { useForm } from "react-hook-form";
+import { type ChangePasswordValues, changePasswordSchema } from "@/schemas/auth";
 
 export function ChangePasswordForm() {
   const { changePassword } = useAuth();
@@ -54,7 +54,7 @@ export function ChangePasswordForm() {
             name="old_password"
             label="Current Password"
           />
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <FormPasswordInput
               control={form.control}
               name="new_password1"
@@ -67,7 +67,7 @@ export function ChangePasswordForm() {
             />
           </div>
         </CardContent>
-        <CardFooter className="border-t px-6 py-4 flex justify-end">
+        <CardFooter className="flex justify-end border-t px-6 py-4">
           <Button type="submit" loading={changePassword.isPending}>
             Update Password
           </Button>

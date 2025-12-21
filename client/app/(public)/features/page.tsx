@@ -1,5 +1,5 @@
 import { Bell, Calendar, Lock, PieChart, Search, Zap } from "lucide-react";
-import { Metadata } from "next";
+import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Features",
@@ -13,13 +13,13 @@ export default function FeaturesPage() {
       <section className="py-24 sm:py-32">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <div className="mx-auto max-w-2xl lg:text-center">
-            <h2 className="text-base font-semibold leading-7 text-blue-600">
+            <h2 className="font-semibold text-base text-blue-600 leading-7">
               Enterprise Features
             </h2>
-            <p className="mt-2 text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl">
+            <p className="mt-2 font-bold text-3xl text-gray-900 tracking-tight sm:text-4xl dark:text-white">
               Powerful tools for modern healthcare
             </p>
-            <p className="mt-6 text-lg leading-8 text-gray-600 dark:text-gray-400">
+            <p className="mt-6 text-gray-600 text-lg leading-8 dark:text-gray-400">
               A comprehensive suite of features designed to streamline every aspect of
               patient care and clinical management.
             </p>
@@ -67,15 +67,15 @@ export default function FeaturesPage() {
               ].map((feature, idx) => (
                 <div
                   key={idx}
-                  className="flex flex-col p-8 bg-gray-50 dark:bg-zinc-900 rounded-3xl border border-gray-100 dark:border-zinc-800 transition-all hover:border-blue-500/50"
+                  className="flex flex-col rounded-3xl border border-gray-100 bg-gray-50 p-8 transition-all hover:border-blue-500/50 dark:border-zinc-800 dark:bg-zinc-900"
                 >
-                  <div className="h-12 w-12 bg-blue-600/10 rounded-xl flex items-center justify-center mb-6">
+                  <div className="mb-6 flex h-12 w-12 items-center justify-center rounded-xl bg-blue-600/10">
                     <feature.icon className="h-6 w-6 text-blue-600" />
                   </div>
-                  <dt className="text-base font-semibold leading-7 text-gray-900 dark:text-white">
+                  <dt className="font-semibold text-base text-gray-900 leading-7 dark:text-white">
                     {feature.title}
                   </dt>
-                  <dd className="mt-4 flex flex-auto flex-col text-base leading-7 text-gray-600 dark:text-gray-400">
+                  <dd className="mt-4 flex flex-auto flex-col text-base text-gray-600 leading-7 dark:text-gray-400">
                     <p className="flex-auto">{feature.description}</p>
                   </dd>
                 </div>

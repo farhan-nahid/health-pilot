@@ -1,5 +1,10 @@
 "use client";
 
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { CheckCircle2 } from "lucide-react";
+import { useEffect } from "react";
+import { useForm } from "react-hook-form";
 import { FormTextarea } from "@/components/form";
 import { Button } from "@/components/ui/button";
 import {
@@ -13,15 +18,10 @@ import {
 import api from "@/lib/api";
 import { showError, showSuccess } from "@/lib/notifications";
 import {
+  type CompleteAppointmentValues,
   completeAppointmentSchema,
-  CompleteAppointmentValues,
 } from "@/schemas/appointment";
-import { Appointment } from "@/types";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { CheckCircle2 } from "lucide-react";
-import { useEffect } from "react";
-import { useForm } from "react-hook-form";
+import type { Appointment } from "@/types";
 
 export function CompleteAppointmentDialog({
   appointment,

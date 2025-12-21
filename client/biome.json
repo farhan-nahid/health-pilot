@@ -10,14 +10,17 @@
       "recommended": true,
       "a11y": {
         "useKeyWithClickEvents": "off",
-        "noSvgWithoutTitle": "off"
+        "noSvgWithoutTitle": "off",
+        "useSemanticElements": "off",
+        "noLabelWithoutControl": "off"
       },
       "security": {
         "noDangerouslySetInnerHtml": "off"
       },
       "suspicious": {
         "noExplicitAny": "off",
-        "noUnknownAtRules": "off"
+        "noUnknownAtRules": "off",
+        "noArrayIndexKey": "off"
       },
       "complexity": {
         "noForEach": "off"
@@ -28,7 +31,7 @@
       },
       "performance": {
         "noAccumulatingSpread": "error",
-        "noBarrelFile": "error",
+        "noBarrelFile": "off",
         "noDelete": "error"
       },
       "style": {

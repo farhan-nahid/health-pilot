@@ -1,5 +1,10 @@
-import { ReactNode } from "react";
-import { Controller, ControllerProps, FieldPath, FieldValues } from "react-hook-form";
+import type { ReactNode } from "react";
+import {
+  Controller,
+  type ControllerProps,
+  type FieldPath,
+  type FieldValues,
+} from "react-hook-form";
 import { Checkbox } from "./ui/checkbox";
 import {
   Field,

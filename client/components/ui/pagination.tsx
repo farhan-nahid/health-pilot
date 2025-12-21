@@ -1,7 +1,7 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface DataTablePaginationProps {
   page: number;
@@ -22,12 +22,12 @@ export function DataTablePagination({
 
   return (
     <div className="flex items-center justify-between px-2 py-4">
-      <div className="flex-1 text-sm text-muted-foreground">
+      <div className="flex-1 text-muted-foreground text-sm">
         Showing {Math.min((page - 1) * pageSize + 1, totalCount)} to{" "}
         {Math.min(page * pageSize, totalCount)} of {totalCount} entries
       </div>
       <div className="flex items-center space-x-6 lg:space-x-8">
-        <div className="flex w-[100px] items-center justify-center text-sm font-medium">
+        <div className="flex w-[100px] items-center justify-center font-medium text-sm">
           Page {page} of {totalPages}
         </div>
         <div className="flex items-center space-x-2">

@@ -1,5 +1,7 @@
 "use client";
 
+import { format } from "date-fns";
+import { Activity, Calendar, Clock, FileText, StickyNote, User } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -8,9 +10,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
-import { Appointment } from "@/types";
-import { format } from "date-fns";
-import { Activity, Calendar, Clock, FileText, StickyNote, User } from "lucide-react";
+import type { Appointment } from "@/types";
 
 const statusVariants: Record<string, string> = {
   pending:
@@ -45,7 +45,7 @@ export function ViewAppointmentDialog({
           <DialogTitle className="flex items-center justify-between pr-6">
             Appointment Details
             <span
-              className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase border ${statusVariants[appointment.status]}`}
+              className={`rounded-full border px-2 py-0.5 font-bold text-[10px] uppercase ${statusVariants[appointment.status]}`}
             >
               {appointment.status}
             </span>
@@ -59,19 +59,19 @@ export function ViewAppointmentDialog({
         <div className="space-y-6 pt-4">
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1">
-              <span className="text-xs text-muted-foreground flex items-center">
-                <User className="h-3 w-3 mr-1" /> {isDoctor ? "Patient" : "Doctor"}
+              <span className="flex items-center text-muted-foreground text-xs">
+                <User className="mr-1 h-3 w-3" /> {isDoctor ? "Patient" : "Doctor"}
               </span>
               {isDoctor ? (
                 <>
-                  <p className="text-sm font-semibold">{appointment.patient_name}</p>
+                  <p className="font-semibold text-sm">{appointment.patient_name}</p>
                   <p className="text-[10px] text-muted-foreground uppercase">
                     {appointment.patient_details?.user?.phone || "No phone"}
                   </p>
                 </>
               ) : (
                 <>
-                  <p className="text-sm font-semibold">
+                  <p className="font-semibold text-sm">
                     {appointment.doctor_details.doctor_name}
                   </p>
                   <p className="text-[10px] text-muted-foreground uppercase">
@@ -81,14 +81,14 @@ export function ViewAppointmentDialog({
               )}
             </div>
             <div className="space-y-1">
-              <span className="text-xs text-muted-foreground flex items-center">
-                <Calendar className="h-3 w-3 mr-1" /> Schedule
+              <span className="flex items-center text-muted-foreground text-xs">
+                <Calendar className="mr-1 h-3 w-3" /> Schedule
               </span>
-              <p className="text-sm font-medium" suppressHydrationWarning>
+              <p className="font-medium text-sm" suppressHydrationWarning>
                 {format(new Date(appointment.appointment_date), "PPP")}
               </p>
-              <p className="text-xs text-muted-foreground flex items-center font-medium">
-                <Clock className="h-3 w-3 mr-1" /> {appointment.appointment_time}
+              <p className="flex items-center font-medium text-muted-foreground text-xs">
+                <Clock className="mr-1 h-3 w-3" /> {appointment.appointment_time}
               </p>
             </div>
           </div>
@@ -96,20 +96,20 @@ export function ViewAppointmentDialog({
           <Separator />
 
           <div className="space-y-2">
-            <span className="text-xs text-muted-foreground flex items-center">
-              <Activity className="h-3 w-3 mr-1" /> Symptoms
+            <span className="flex items-center text-muted-foreground text-xs">
+              <Activity className="mr-1 h-3 w-3" /> Symptoms
             </span>
-            <p className="text-sm bg-accent/30 p-3 rounded-lg border border-border italic text-muted-foreground">
+            <p className="rounded-lg border border-border bg-accent/30 p-3 text-muted-foreground text-sm italic">
               "{appointment.symptoms}"
             </p>
           </div>
 
           {appointment.doctor_notes && (
             <div className="space-y-2">
-              <span className="text-xs text-muted-foreground flex items-center">
-                <StickyNote className="h-3 w-3 mr-1" /> Doctor's Notes
+              <span className="flex items-center text-muted-foreground text-xs">
+                <StickyNote className="mr-1 h-3 w-3" /> Doctor's Notes
               </span>
-              <p className="text-sm p-3 rounded-lg border border-border bg-emerald-500/5">
+              <p className="rounded-lg border border-border bg-emerald-500/5 p-3 text-sm">
                 {appointment.doctor_notes}
               </p>
             </div>
@@ -117,16 +117,16 @@ export function ViewAppointmentDialog({
 
           {appointment.rejection_reason && (
             <div className="space-y-2">
-              <span className="text-xs text-muted-foreground flex items-center">
-                <FileText className="h-3 w-3 mr-1 text-rose-500" /> Rejection Reason
+              <span className="flex items-center text-muted-foreground text-xs">
+                <FileText className="mr-1 h-3 w-3 text-rose-500" /> Rejection Reason
               </span>
-              <p className="text-sm p-3 rounded-lg border border-rose-500/20 bg-rose-500/5 text-rose-600">
+              <p className="rounded-lg border border-rose-500/20 bg-rose-500/5 p-3 text-rose-600 text-sm">
                 {appointment.rejection_reason}
               </p>
             </div>
           )}
 
-          <div className="pt-4 border-t flex justify-between items-center text-[10px] text-muted-foreground">
+          <div className="flex items-center justify-between border-t pt-4 text-[10px] text-muted-foreground">
             <span>ID: #{appointment.id}</span>
             <span suppressHydrationWarning>
               Created on {format(new Date(appointment.created_at), "MMM d, yyyy")}

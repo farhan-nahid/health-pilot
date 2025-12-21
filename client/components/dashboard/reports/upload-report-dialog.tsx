@@ -1,5 +1,9 @@
 "use client";
 
+import { zodResolver } from "@hookform/resolvers/zod";
+import { CheckCircle2, Plus, Upload } from "lucide-react";
+import { useState } from "react";
+import { Controller, useForm } from "react-hook-form";
 import { FormTextarea } from "@/components/form";
 import { Button } from "@/components/ui/button";
 import {
@@ -15,11 +19,7 @@ import { Field, FieldContent, FieldError, FieldLabel } from "@/components/ui/fie
 import { Input } from "@/components/ui/input";
 import { useUploadReport } from "@/hooks/use-medical-reports";
 import { showError, showSuccess } from "@/lib/notifications";
-import { uploadReportSchema, UploadReportValues } from "@/schemas/report";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { CheckCircle2, Plus, Upload } from "lucide-react";
-import { useState } from "react";
-import { Controller, useForm } from "react-hook-form";
+import { type UploadReportValues, uploadReportSchema } from "@/schemas/report";
 
 export function UploadReportDialog({ onSuccess }: { onSuccess?: () => void }) {
   const [open, setOpen] = useState(false);
@@ -93,7 +93,7 @@ export function UploadReportDialog({ onSuccess }: { onSuccess?: () => void }) {
                           const file = e.target.files?.[0];
                           if (file) onChange(file);
                         }}
-                        className="opacity-0 absolute inset-0 w-full h-full cursor-pointer z-10"
+                        className="absolute inset-0 z-10 h-full w-full cursor-pointer opacity-0"
                       />
                       <Button
                         variant="outline"
@@ -123,7 +123,7 @@ export function UploadReportDialog({ onSuccess }: { onSuccess?: () => void }) {
           />
 
           {error && (
-            <div className="text-destructive text-sm font-medium bg-destructive/10 p-2 rounded border border-destructive/20">
+            <div className="rounded border border-destructive/20 bg-destructive/10 p-2 font-medium text-destructive text-sm">
               {error}
             </div>
           )}

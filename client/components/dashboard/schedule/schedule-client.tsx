@@ -1,5 +1,7 @@
 "use client";
 
+import { Clock, Plus, Trash2 } from "lucide-react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -19,8 +21,6 @@ import {
 } from "@/components/ui/select";
 import { useAvailability } from "@/hooks/use-availability";
 import { showError, showSuccess } from "@/lib/notifications";
-import { Clock, Plus, Trash2 } from "lucide-react";
-import { useState } from "react";
 
 const DAYS = [
   "monday",
@@ -69,7 +69,7 @@ export function ScheduleClient() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">My Schedule</h1>
+        <h1 className="font-bold text-2xl tracking-tight">My Schedule</h1>
         <p className="text-muted-foreground">
           Manage your weekly availability for patient appointments.
         </p>
@@ -137,11 +137,11 @@ export function ScheduleClient() {
           <CardContent>
             <div className="space-y-4">
               {isLoading ? (
-                <p className="text-center py-4 text-muted-foreground">Loading slots...</p>
+                <p className="py-4 text-center text-muted-foreground">Loading slots...</p>
               ) : availability.length === 0 ? (
-                <div className="text-center py-8 border-2 border-dashed rounded-lg bg-muted/30">
-                  <Clock className="h-8 w-8 mx-auto text-muted-foreground/50 mb-2" />
-                  <p className="text-sm text-muted-foreground">
+                <div className="rounded-lg border-2 border-dashed bg-muted/30 py-8 text-center">
+                  <Clock className="mx-auto mb-2 h-8 w-8 text-muted-foreground/50" />
+                  <p className="text-muted-foreground text-sm">
                     No slots configured yet.
                   </p>
                 </div>
@@ -149,11 +149,11 @@ export function ScheduleClient() {
                 availability.map((slot) => (
                   <div
                     key={slot.id}
-                    className="flex items-center justify-between p-3 border rounded-lg hover:bg-muted/30 transition-colors"
+                    className="flex items-center justify-between rounded-lg border p-3 transition-colors hover:bg-muted/30"
                   >
                     <div className="space-y-1">
-                      <p className="text-sm font-bold capitalize">{slot.day_of_week}</p>
-                      <p className="text-xs text-muted-foreground">
+                      <p className="font-bold text-sm capitalize">{slot.day_of_week}</p>
+                      <p className="text-muted-foreground text-xs">
                         {slot.start_time.slice(0, 5)} - {slot.end_time.slice(0, 5)}
                       </p>
                     </div>
@@ -161,7 +161,7 @@ export function ScheduleClient() {
                       variant="ghost"
                       size="sm"
                       onClick={() => handleDelete(slot.id)}
-                      className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                      className="text-destructive hover:bg-destructive/10 hover:text-destructive"
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>

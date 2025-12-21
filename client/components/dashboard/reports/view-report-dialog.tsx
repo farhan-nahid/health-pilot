@@ -1,5 +1,7 @@
 "use client";
 
+import { format } from "date-fns";
+import { Download, FileText, Info, Stethoscope } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -9,9 +11,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
-import { MedicalReport } from "@/types";
-import { format } from "date-fns";
-import { Download, FileText, Info, Stethoscope } from "lucide-react";
+import type { MedicalReport } from "@/types";
 
 export function ViewReportDialog({
   report,
@@ -24,11 +24,11 @@ export function ViewReportDialog({
 }) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-[600px]">
         <DialogHeader>
           <DialogTitle className="flex items-center justify-between">
             Medical Report Analysis
-            <span className="text-[10px] px-2 py-0.5 rounded-full font-bold uppercase border bg-primary/10 text-primary border-primary/20">
+            <span className="rounded-full border border-primary/20 bg-primary/10 px-2 py-0.5 font-bold text-[10px] text-primary uppercase">
               AI Processed
             </span>
           </DialogTitle>
@@ -38,39 +38,39 @@ export function ViewReportDialog({
         </DialogHeader>
 
         <div className="space-y-6 pt-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="p-4 rounded-lg bg-primary/5 border border-primary/10 space-y-2">
-              <div className="flex items-center text-xs font-bold text-primary uppercase">
-                <Stethoscope className="h-3 w-3 mr-2" /> Recommended Specialization
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <div className="space-y-2 rounded-lg border border-primary/10 bg-primary/5 p-4">
+              <div className="flex items-center font-bold text-primary text-xs uppercase">
+                <Stethoscope className="mr-2 h-3 w-3" /> Recommended Specialization
               </div>
-              <p className="text-lg font-bold text-primary">
+              <p className="font-bold text-lg text-primary">
                 {report.ai_specialization || "General Physician"}
               </p>
             </div>
 
-            <div className="p-4 rounded-lg bg-accent/30 border border-border space-y-2">
-              <div className="flex items-center text-xs font-bold text-muted-foreground uppercase">
-                <FileText className="h-3 w-3 mr-2" /> Symptoms Provided
+            <div className="space-y-2 rounded-lg border border-border bg-accent/30 p-4">
+              <div className="flex items-center font-bold text-muted-foreground text-xs uppercase">
+                <FileText className="mr-2 h-3 w-3" /> Symptoms Provided
               </div>
               <p className="text-sm italic">"{report.symptoms}"</p>
             </div>
           </div>
 
           <div className="space-y-2">
-            <div className="flex items-center text-xs font-bold text-muted-foreground uppercase">
-              <Info className="h-3 w-3 mr-2" /> AI Summary
+            <div className="flex items-center font-bold text-muted-foreground text-xs uppercase">
+              <Info className="mr-2 h-3 w-3" /> AI Summary
             </div>
-            <div className="text-sm p-4 rounded-lg border border-border bg-card leading-relaxed">
+            <div className="rounded-lg border border-border bg-card p-4 text-sm leading-relaxed">
               {report.ai_summary || "Summary generation in progress..."}
             </div>
           </div>
 
           {report.extracted_text && (
             <div className="space-y-2">
-              <div className="flex items-center text-xs font-bold text-muted-foreground uppercase">
-                <FileText className="h-3 w-3 mr-2" /> Extracted Text (OCR)
+              <div className="flex items-center font-bold text-muted-foreground text-xs uppercase">
+                <FileText className="mr-2 h-3 w-3" /> Extracted Text (OCR)
               </div>
-              <div className="text-[12px] p-4 rounded-lg border border-border bg-muted/30 max-h-[200px] overflow-y-auto font-mono whitespace-pre-wrap">
+              <div className="max-h-[200px] overflow-y-auto whitespace-pre-wrap rounded-lg border border-border bg-muted/30 p-4 font-mono text-[12px]">
                 {report.extracted_text}
               </div>
             </div>
@@ -79,10 +79,10 @@ export function ViewReportDialog({
           <Separator />
 
           <div className="flex items-center justify-between pt-2">
-            <div className="text-xs text-muted-foreground">Report ID: #{report.id}</div>
+            <div className="text-muted-foreground text-xs">Report ID: #{report.id}</div>
             <Button variant="outline" size="sm" asChild>
               <a href={report.report_file} target="_blank" rel="noopener noreferrer">
-                <Download className="h-4 w-4 mr-2" />
+                <Download className="mr-2 h-4 w-4" />
                 Download PDF
               </a>
             </Button>

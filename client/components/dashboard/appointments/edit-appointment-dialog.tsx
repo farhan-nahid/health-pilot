@@ -1,5 +1,11 @@
 "use client";
 
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { format } from "date-fns";
+import { Calendar as CalendarIcon } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Controller, useForm } from "react-hook-form";
 import { FormSelect, FormTextarea } from "@/components/form";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -18,14 +24,8 @@ import { useDoctors } from "@/hooks/use-doctors";
 import api from "@/lib/api";
 import { showError, showSuccess } from "@/lib/notifications";
 import { cn } from "@/lib/utils";
-import { appointmentSchema, AppointmentValues } from "@/schemas/appointment";
-import { Appointment } from "@/types";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { format } from "date-fns";
-import { Calendar as CalendarIcon } from "lucide-react";
-import { useEffect, useState } from "react";
-import { Controller, useForm } from "react-hook-form";
+import { type AppointmentValues, appointmentSchema } from "@/schemas/appointment";
+import type { Appointment } from "@/types";
 
 const TIME_SLOTS = [
   "09:00",
@@ -106,7 +106,7 @@ export function EditAppointmentDialog({
   const onSubmit = async (values: AppointmentValues) => {
     setError(null);
     mutation.mutate({
-      doctor: parseInt(values.doctor),
+      doctor: parseInt(values.doctor, 10),
       appointment_date: format(values.appointment_date, "yyyy-MM-dd"),
       appointment_time: `${values.appointment_time}:00`,
       symptoms: values.symptoms,
@@ -195,7 +195,7 @@ export function EditAppointmentDialog({
           </div>
           <FormTextarea control={form.control} name="symptoms" label="Symptoms" />
           {error && (
-            <div className="text-destructive text-sm font-medium bg-destructive/10 p-2 rounded border border-destructive/20">
+            <div className="rounded border border-destructive/20 bg-destructive/10 p-2 font-medium text-destructive text-sm">
               {error}
             </div>
           )}

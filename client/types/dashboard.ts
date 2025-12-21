@@ -1,4 +1,4 @@
-import { Appointment } from "./appointment";
+import type { Appointment } from "./appointment";
 
 export interface DashboardSummary {
   user: {

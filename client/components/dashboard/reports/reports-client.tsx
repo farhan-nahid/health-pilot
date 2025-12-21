@@ -1,10 +1,10 @@
 "use client";
 
+import { AlertCircle } from "lucide-react";
+import { parseAsInteger, useQueryState } from "nuqs";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useMedicalReports } from "@/hooks/use-medical-reports";
 import { useUser } from "@/hooks/use-user";
-import { AlertCircle } from "lucide-react";
-import { parseAsInteger, useQueryState } from "nuqs";
 import { ReportList } from "./report-list";
 import { UploadReportDialog } from "./upload-report-dialog";
 
@@ -21,7 +21,7 @@ export function ReportsClient() {
     <div className="space-y-8">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight">Medical Reports</h2>
+          <h2 className="font-bold text-3xl tracking-tight">Medical Reports</h2>
           <p className="text-muted-foreground">
             {isDoctor
               ? "Review AI-powered summaries of medical reports shared by your patients."
