@@ -1,6 +1,16 @@
-import { Activity } from "lucide-react";
+"use client";
+
+import { Activity, Menu } from "lucide-react";
 import Link from "next/link";
 import { ThemeToggle } from "./theme-toggle";
+import { Button } from "./ui/button";
+import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet";
+
+const navLinks = [
+  { name: "Features", href: "/features" },
+  { name: "About", href: "/about" },
+  { name: "Contact", href: "/contact" },
+];
 
 export function Navbar() {
   return (
@@ -15,42 +25,74 @@ export function Navbar() {
           </span>
         </Link>
 
+        {/* Desktop Navigation */}
         <div className="hidden gap-x-8 lg:flex">
-          <Link
-            href="/features"
-            className="font-semibold text-gray-600 text-sm leading-6 transition-colors hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400"
-          >
-            Features
-          </Link>
-          <Link
-            href="/about"
-            className="font-semibold text-gray-600 text-sm leading-6 transition-colors hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400"
-          >
-            About
-          </Link>
-          <Link
-            href="/contact"
-            className="font-semibold text-gray-600 text-sm leading-6 transition-colors hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400"
-          >
-            Contact
-          </Link>
+          {navLinks.map((link) => (
+            <Link
+              key={link.name}
+              href={link.href}
+              className="font-semibold text-gray-600 text-sm leading-6 transition-colors hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400"
+            >
+              {link.name}
+            </Link>
+          ))}
         </div>
       </div>
 
       <div className="flex flex-1 items-center justify-end gap-x-6">
-        <Link
-          href="/login"
-          className="font-semibold text-gray-900 text-sm leading-6 transition-colors hover:text-blue-600 dark:text-gray-100 dark:hover:text-blue-400"
-        >
-          Log in <span aria-hidden="true">&rarr;</span>
-        </Link>
-        <Link
-          href="/register"
-          className="hidden rounded-full bg-blue-600 px-4 py-2 font-semibold text-sm text-white shadow-sm transition-all hover:bg-blue-500 sm:block"
-        >
-          Sign up
-        </Link>
+        {/* Desktop Actions */}
+        <div className="hidden items-center gap-x-6 lg:flex">
+          <Link
+            href="/login"
+            className="font-semibold text-gray-900 text-sm leading-6 transition-colors hover:text-blue-600 dark:text-gray-100 dark:hover:text-blue-400"
+          >
+            Log in <span aria-hidden="true">&rarr;</span>
+          </Link>
+          <Link
+            href="/register"
+            className="rounded-full bg-blue-600 px-4 py-2 font-semibold text-sm text-white shadow-sm transition-all hover:bg-blue-500"
+          >
+            Sign up
+          </Link>
+        </div>
+
         <ThemeToggle />
+
+        {/* Mobile Menu Toggle */}
+        <Sheet>
+          <SheetTrigger asChild>
+            <Button variant="ghost" size="icon" className="lg:hidden">
+              <Menu className="h-6 w-6" />
+              <span className="sr-only">Toggle menu</span>
+            </Button>
+          </SheetTrigger>
+          <SheetContent side="right" className="w-[300px] sm:w-[400px]">
+            <nav className="mt-8 flex flex-col gap-4">
+              {navLinks.map((link) => (
+                <Link
+                  key={link.name}
+                  href={link.href}
+                  className="px-4 py-2 font-semibold text-gray-900 text-lg transition-colors hover:text-blue-600 dark:text-gray-100 dark:hover:text-blue-400"
+                >
+                  {link.name}
+                </Link>
+              ))}
+              <hr className="my-4 border-gray-100 dark:border-zinc-800" />
+              <Link
+                href="/login"
+                className="px-4 py-2 font-semibold text-gray-900 text-lg transition-colors hover:text-blue-600 dark:text-gray-100 dark:hover:text-blue-400"
+              >
+                Log in
+              </Link>
+              <Link
+                href="/register"
+                className="mx-4 mt-2 rounded-full bg-blue-600 px-4 py-3 text-center font-semibold text-lg text-white shadow-sm transition-all hover:bg-blue-500"
+              >
+                Sign up
+              </Link>
+            </nav>
+          </SheetContent>
+        </Sheet>
       </div>
     </nav>
   );
