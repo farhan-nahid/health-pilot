@@ -1,23 +1,24 @@
 "use client";
 
+import { useUser } from "@/hooks/use-user";
+import { cn } from "@/lib/utils";
 import {
-  Activity,
-  Calendar,
-  Clock,
-  FileText,
-  LayoutDashboard,
-  Settings,
-  UserCircle,
-  Users,
+    Activity,
+    Calendar,
+    Clock,
+    FileText,
+    LayoutDashboard,
+    Settings,
+    UserCircle,
+    Users,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useUser } from "@/hooks/use-user";
-import { cn } from "@/lib/utils";
 
 const navigation = [
   { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
   { name: "Appointments", href: "/appointments", icon: Calendar },
+  { name: "Doctors", href: "/doctors", icon: Users, roles: ["patient"] },
   { name: "Patients", href: "/patients", icon: Users, roles: ["doctor"] },
   {
     name: "Medical Reports",

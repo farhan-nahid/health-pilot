@@ -1,22 +1,16 @@
 "use client";
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { format } from "date-fns";
-import { Calendar as CalendarIcon, Plus } from "lucide-react";
-import { useState } from "react";
-import { Controller, useForm } from "react-hook-form";
 import { FormSelect, FormTextarea } from "@/components/form";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
 } from "@/components/ui/dialog";
 import { Field, FieldContent, FieldError, FieldLabel } from "@/components/ui/field";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -27,8 +21,22 @@ import api from "@/lib/api";
 import { showError, showSuccess } from "@/lib/notifications";
 import { cn } from "@/lib/utils";
 import { type AppointmentValues, appointmentSchema } from "@/schemas/appointment";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { format } from "date-fns";
+import { Calendar as CalendarIcon, Plus } from "lucide-react";
+import { useState } from "react";
+import { Controller, useForm } from "react-hook-form";
 
-export function BookAppointmentDialog({ onSuccess }: { onSuccess?: () => void }) {
+export function BookAppointmentDialog({
+  onSuccess,
+  doctorId,
+  children,
+}: {
+  onSuccess?: () => void;
+  doctorId?: string;
+  children?: React.ReactNode;
+}) {
   const [open, setOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -38,7 +46,7 @@ export function BookAppointmentDialog({ onSuccess }: { onSuccess?: () => void })
   const form = useForm<AppointmentValues>({
     resolver: zodResolver(appointmentSchema),
     defaultValues: {
-      doctor: "",
+      doctor: doctorId || "",
       symptoms: "",
       appointment_time: "",
     },
@@ -78,10 +86,12 @@ export function BookAppointmentDialog({ onSuccess }: { onSuccess?: () => void })
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className="font-semibold">
-          <Plus className="mr-2 h-4 w-4" />
-          Book Appointment
-        </Button>
+        {children || (
+          <Button className="font-semibold">
+            <Plus className="mr-2 h-4 w-4" />
+            Book Appointment
+          </Button>
+        )}
       </DialogTrigger>
       <DialogContent className="sm:max-w-106.25">
         <DialogHeader>
