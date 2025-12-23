@@ -89,7 +89,7 @@ export function Footer() {
               <ul className="mt-6 space-y-4">
                 <li>
                   <Link
-                    href="/faq"
+                    href="/docs"
                     className="text-gray-600 text-sm leading-6 transition-colors hover:text-blue-600 dark:text-gray-400"
                   >
                     Documentation
@@ -97,7 +97,7 @@ export function Footer() {
                 </li>
                 <li>
                   <Link
-                    href="/contact"
+                    href="/help"
                     className="text-gray-600 text-sm leading-6 transition-colors hover:text-blue-600 dark:text-gray-400"
                   >
                     Help Center
@@ -105,7 +105,7 @@ export function Footer() {
                 </li>
                 <li>
                   <Link
-                    href="/contact"
+                    href="/community"
                     className="text-gray-600 text-sm leading-6 transition-colors hover:text-blue-600 dark:text-gray-400"
                   >
                     Community
@@ -145,7 +145,7 @@ export function Footer() {
                 </li>
                 <li>
                   <Link
-                    href="/privacy"
+                    href="/hipaa"
                     className="text-gray-600 text-sm leading-6 transition-colors hover:text-blue-600 dark:text-gray-400"
                   >
                     HIPAA Compliance
@@ -153,7 +153,7 @@ export function Footer() {
                 </li>
                 <li>
                   <Link
-                    href="/terms"
+                    href="/cookies"
                     className="text-gray-600 text-sm leading-6 transition-colors hover:text-blue-600 dark:text-gray-400"
                   >
                     Cookie Policy
