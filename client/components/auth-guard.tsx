@@ -1,20 +1,26 @@
 "use client";
 
-import { useUser } from "@/hooks/use-user";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
+import { useUser } from "@/hooks/use-user";
 
 export function DashboardGuard({ children }: { children: React.ReactNode }) {
   const { user, isLoading } = useUser();
   const router = useRouter();
 
   useEffect(() => {
-    if (typeof window !== "undefined" && !isLoading && !user && !localStorage.getItem("token")) {
+    if (
+      typeof window !== "undefined" &&
+      !isLoading &&
+      !user &&
+      !localStorage.getItem("token")
+    ) {
       router.replace("/login");
     }
   }, [user, isLoading, router]);
 
-  const hasToken = typeof window !== "undefined" ? !!localStorage.getItem("token") : false;
+  const hasToken =
+    typeof window !== "undefined" ? !!localStorage.getItem("token") : false;
 
   if (isLoading || (!user && hasToken)) {
     return (

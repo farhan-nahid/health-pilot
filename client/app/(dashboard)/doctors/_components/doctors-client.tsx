@@ -1,9 +1,9 @@
 "use client";
 
-import { Input } from "@/components/ui/input";
-import { useDoctors } from "@/hooks/use-doctors";
 import { Search } from "lucide-react";
 import { useState } from "react";
+import { Input } from "@/components/ui/input";
+import { useDoctors } from "@/hooks/use-doctors";
 import { DoctorList } from "./doctor-list";
 
 export function DoctorsClient() {

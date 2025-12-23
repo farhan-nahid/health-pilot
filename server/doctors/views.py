@@ -1,4 +1,4 @@
-from rest_framework import viewsets, status, filters
+from rest_framework import viewsets, status, filters, pagination
 from django.db import IntegrityError
 from django.db.models import Avg, Count
 from rest_framework.decorators import action
@@ -14,9 +14,16 @@ from .serializers import (
 from appointments.models import Appointment
 from appointments.serializers import AppointmentSerializer
 
+class StandardResultsSetPagination(pagination.PageNumberPagination):
+    page_size = 10
+    page_size_query_param = 'page_size'
+    max_page_size = 100
+
 class DoctorViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
-    filter_backends = [filters.OrderingFilter]
+    pagination_class = StandardResultsSetPagination
+    filter_backends = [filters.OrderingFilter, filters.SearchFilter]
+    search_fields = ['user__first_name', 'user__last_name', 'specialization', 'bio']
     ordering_fields = ['experience_years', 'consultation_fee', 'created_at']
     ordering = ['-created_at']
     

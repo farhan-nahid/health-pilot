@@ -1,18 +1,25 @@
 "use client";
 
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { format } from "date-fns";
+import { Calendar as CalendarIcon, Plus } from "lucide-react";
+import { useState } from "react";
+import { Controller, useForm } from "react-hook-form";
 import { FormSelect, FormTextarea } from "@/components/form";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
 } from "@/components/ui/dialog";
 import { Field, FieldContent, FieldError, FieldLabel } from "@/components/ui/field";
+import { Label } from "@/components/ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { SelectItem } from "@/components/ui/select";
 import { TIME_SLOTS } from "@/constants";
@@ -21,12 +28,7 @@ import api from "@/lib/api";
 import { showError, showSuccess } from "@/lib/notifications";
 import { cn } from "@/lib/utils";
 import { type AppointmentValues, appointmentSchema } from "@/schemas/appointment";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { format } from "date-fns";
-import { Calendar as CalendarIcon, Plus } from "lucide-react";
-import { useState } from "react";
-import { Controller, useForm } from "react-hook-form";
+import { DoctorCombobox } from "./doctor-combobox";
 
 export function BookAppointmentDialog({
   onSuccess,
@@ -101,18 +103,25 @@ export function BookAppointmentDialog({
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 py-4">
-          <FormSelect
+          <Controller
             control={form.control}
             name="doctor"
-            label="Select Doctor"
-            placeholder={loadingDoctors ? "Loading doctors..." : "Select a doctor"}
-          >
-            {doctors.map((doc) => (
-              <SelectItem key={doc.id} value={doc.id.toString()}>
-                {doc.doctor_name} ({doc.specialization})
-              </SelectItem>
-            ))}
-          </FormSelect>
+            render={({ field }) => (
+              <div className="space-y-2">
+                <Label>Select Doctor</Label>
+                <DoctorCombobox
+                  value={field.value}
+                  onChange={field.onChange}
+                  modal={true}
+                />
+                {form.formState.errors.doctor && (
+                  <p className="font-medium text-destructive text-sm">
+                    {form.formState.errors.doctor.message}
+                  </p>
+                )}
+              </div>
+            )}
+          />
 
           <div className="grid grid-cols-6 gap-4">
             <Controller

@@ -18,15 +18,15 @@ export default function DocsPage() {
           Getting Started
         </h2>
         <p>
-          Learn how to set up your account, complete your profile, and start managing
-          your health records.
+          Learn how to set up your account, complete your profile, and start managing your
+          health records.
         </p>
         <h2 className="mt-8 mb-4 font-semibold text-2xl text-gray-900 dark:text-white">
           For Patients
         </h2>
         <p>
-          Discover how to upload medical reports, book appointments with specialists,
-          and track your health history.
+          Discover how to upload medical reports, book appointments with specialists, and
+          track your health history.
         </p>
         <h2 className="mt-8 mb-4 font-semibold text-2xl text-gray-900 dark:text-white">
           For Doctors

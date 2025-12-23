@@ -1,3 +1,8 @@
+import { useInfiniteQuery } from "@tanstack/react-query";
+import { formatDistanceToNow } from "date-fns";
+import { Loader2, Star, User } from "lucide-react";
+import { useEffect } from "react";
+import { useInView } from "react-intersection-observer";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -11,11 +16,6 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area";
 import api from "@/lib/api";
 import type { PaginatedResponse, Review } from "@/types";
-import { useInfiniteQuery } from "@tanstack/react-query";
-import { formatDistanceToNow } from "date-fns";
-import { Loader2, Star, User } from "lucide-react";
-import { useEffect } from "react";
-import { useInView } from "react-intersection-observer";
 import { ReviewDialog } from "./review-dialog";
 
 interface DoctorReviewsDialogProps {
@@ -24,29 +24,30 @@ interface DoctorReviewsDialogProps {
   children?: React.ReactNode;
 }
 
-export function DoctorReviewsDialog({ doctorId, doctorName, children }: DoctorReviewsDialogProps) {
-  const { 
-    data, 
-    fetchNextPage, 
-    hasNextPage, 
-    isFetchingNextPage, 
-    isLoading 
-  } = useInfiniteQuery({
-    queryKey: ["reviews", doctorId],
-    queryFn: async ({ pageParam = 1 }) => {
-      const response = await api.get<PaginatedResponse<Review>>(`/reviews/?doctor_id=${doctorId}&page=${pageParam}`);
-      return response.data;
-    },
-    initialPageParam: 1,
-    getNextPageParam: (lastPage) => {
-      if (lastPage.next) {
-        const url = new URL(lastPage.next);
-        const page = url.searchParams.get("page");
-        return page ? parseInt(page) : undefined;
-      }
-      return undefined;
-    },
-  });
+export function DoctorReviewsDialog({
+  doctorId,
+  doctorName,
+  children,
+}: DoctorReviewsDialogProps) {
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
+    useInfiniteQuery({
+      queryKey: ["reviews", doctorId],
+      queryFn: async ({ pageParam = 1 }) => {
+        const response = await api.get<PaginatedResponse<Review>>(
+          `/reviews/?doctor_id=${doctorId}&page=${pageParam}`,
+        );
+        return response.data;
+      },
+      initialPageParam: 1,
+      getNextPageParam: (lastPage) => {
+        if (lastPage.next) {
+          const url = new URL(lastPage.next);
+          const page = url.searchParams.get("page");
+          return page ? parseInt(page, 10) : undefined;
+        }
+        return undefined;
+      },
+    });
 
   const { ref, inView } = useInView();
 
@@ -78,9 +79,11 @@ export function DoctorReviewsDialog({ doctorId, doctorName, children }: DoctorRe
           </div>
         </DialogHeader>
 
-        <ScrollArea className="h-[400px] pr-4">
+        <ScrollArea className="h-100 pr-4">
           {isLoading ? (
-            <div className="flex justify-center p-8 text-muted-foreground">Loading reviews...</div>
+            <div className="flex justify-center p-8 text-muted-foreground">
+              Loading reviews...
+            </div>
           ) : reviews.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-12 text-center text-muted-foreground">
               <p>No reviews yet.</p>
@@ -99,8 +102,10 @@ export function DoctorReviewsDialog({ doctorId, doctorName, children }: DoctorRe
                   <div className="flex-1 space-y-1">
                     <div className="flex items-center justify-between">
                       <h4 className="font-semibold text-sm">{review.patient_name}</h4>
-                      <span className="text-xs text-muted-foreground">
-                        {formatDistanceToNow(new Date(review.created_at), { addSuffix: true })}
+                      <span className="text-muted-foreground text-xs">
+                        {formatDistanceToNow(new Date(review.created_at), {
+                          addSuffix: true,
+                        })}
                       </span>
                     </div>
                     <div className="flex items-center text-yellow-500">
@@ -111,19 +116,19 @@ export function DoctorReviewsDialog({ doctorId, doctorName, children }: DoctorRe
                         />
                       ))}
                     </div>
-                    <p className="text-sm text-muted-foreground leading-relaxed">
+                    <p className="text-muted-foreground text-sm leading-relaxed">
                       {review.comment}
                     </p>
                   </div>
                 </div>
               ))}
-              
+
               {hasNextPage && (
                 <div ref={ref} className="flex justify-center p-4">
                   {isFetchingNextPage ? (
                     <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
                   ) : (
-                    <span className="text-sm text-muted-foreground">Load more</span>
+                    <span className="text-muted-foreground text-sm">Load more</span>
                   )}
                 </div>
               )}

@@ -7,7 +7,7 @@ export const metadata: Metadata = {
 
 export default function HelpPage() {
   return (
-    <div className="mx-auto max-w-3xl px-6 py-24 lg:px-8 text-center">
+    <div className="mx-auto max-w-3xl px-6 py-24 text-center lg:px-8">
       <h1 className="mb-4 font-bold text-4xl">Help Center</h1>
       <p className="mt-4 text-gray-600 text-lg leading-8 dark:text-gray-400">
         Find resources and support to help you navigate our platform.

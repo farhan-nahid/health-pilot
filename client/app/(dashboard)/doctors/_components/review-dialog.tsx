@@ -1,5 +1,10 @@
 "use client";
 
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { Star } from "lucide-react";
+import { useState } from "react";
+import { Controller, useForm } from "react-hook-form";
 import { FormTextarea } from "@/components/form";
 import { Button } from "@/components/ui/button";
 import {
@@ -14,12 +19,7 @@ import {
 import { Label } from "@/components/ui/label";
 import api from "@/lib/api";
 import { showError, showSuccess } from "@/lib/notifications";
-import { reviewSchema, type ReviewValues } from "@/schemas/review";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Star } from "lucide-react";
-import { useState } from "react";
-import { Controller, useForm } from "react-hook-form";
+import { type ReviewValues, reviewSchema } from "@/schemas/review";
 
 interface ReviewDialogProps {
   doctorId: number;
@@ -83,24 +83,24 @@ export function ReviewDialog({ doctorId, doctorName, children }: ReviewDialogPro
           <div className="space-y-2">
             <Label htmlFor="rating">Rating</Label>
             <Controller
-                control={form.control}
-                name="rating"
-                render={({ field }) => (
-                    <div className="flex items-center gap-1">
-                        {[1, 2, 3, 4, 5].map((star) => (
-                            <button
-                                key={star}
-                                type="button"
-                                onClick={() => field.onChange(star)}
-                                className={`focus:outline-none transition-colors ${
-                                    star <= field.value ? "text-yellow-500" : "text-gray-300"
-                                }`}
-                            >
-                                <Star className="h-6 w-6 fill-current" />
-                            </button>
-                        ))}
-                    </div>
-                )}
+              control={form.control}
+              name="rating"
+              render={({ field }) => (
+                <div className="flex items-center gap-1">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <button
+                      key={star}
+                      type="button"
+                      onClick={() => field.onChange(star)}
+                      className={`transition-colors focus:outline-none ${
+                        star <= field.value ? "text-yellow-500" : "text-gray-300"
+                      }`}
+                    >
+                      <Star className="h-6 w-6 fill-current" />
+                    </button>
+                  ))}
+                </div>
+              )}
             />
           </div>
 
