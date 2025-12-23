@@ -8,6 +8,11 @@ import { Skeleton } from "@/components/ui/skeleton";
 import type { Doctor } from "@/types";
 import { Award, Briefcase, Star, User } from "lucide-react";
 import { BookAppointmentDialog } from "../../appointments/_components/book-appointment-dialog";
+import { DoctorReviewsDialog } from "./doctor-reviews-dialog";
+
+// ... existing imports ...
+
+
 
 interface DoctorListProps {
   doctors: Doctor[];
@@ -54,7 +59,7 @@ export function DoctorList({ doctors, isLoading }: DoctorListProps) {
   return (
     <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
       {doctors.map((doctor) => (
-        <Card key={doctor.id} className="group flex flex-col overflow-hidden transition-all hover:shadow-lg">
+        <Card key={doctor.id} className="group pt-0 flex flex-col overflow-hidden transition-all hover:shadow-lg">
           <CardHeader className="relative p-0 h-48 bg-muted overflow-hidden">
             <Avatar className="h-full w-full rounded-none">
               <AvatarImage
@@ -82,10 +87,17 @@ export function DoctorList({ doctors, isLoading }: DoctorListProps) {
                   {doctor.specialization}
                 </CardDescription>
               </div>
-              <div className="flex items-center text-yellow-500">
-                <Star className="h-4 w-4 fill-current mr-1" />
-                <span className="text-sm font-bold text-foreground">4.8</span>
-              </div>
+              <DoctorReviewsDialog doctorId={doctor.id} doctorName={doctor.doctor_name}>
+                <div className="flex items-center text-yellow-500 cursor-pointer hover:bg-muted/50 p-1 rounded-md transition-colors">
+                  <Star className={`h-4 w-4 mr-1 ${doctor.average_rating ? 'fill-current' : 'text-gray-300'}`} />
+                  <span className="text-sm font-bold text-foreground">
+                    {doctor.average_rating ? doctor.average_rating.toFixed(1) : "New"}
+                  </span>
+                  {doctor.total_reviews ? (
+                    <span className="ml-1 text-xs text-muted-foreground">({doctor.total_reviews})</span>
+                  ) : null}
+                </div>
+              </DoctorReviewsDialog>
             </div>
           </CardHeader>
           <CardContent className="flex-1 pb-4">
@@ -94,10 +106,10 @@ export function DoctorList({ doctors, isLoading }: DoctorListProps) {
                 <Briefcase className="h-4 w-4" />
                 <span>{doctor.experience_years} years exp.</span>
               </div>
-              <div className="flex items-center gap-2">
+            {(doctor?.average_rating?? 0) > 4.5 &&  <div className="flex items-center gap-2">
                 <Award className="h-4 w-4" />
                 <span>Top Rated</span>
-              </div>
+              </div>}
             </div>
             {doctor.bio && (
               <p className="mt-4 line-clamp-2 text-sm text-muted-foreground leading-relaxed">

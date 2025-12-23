@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Doctor, DoctorAvailability
+from .models import Doctor, DoctorAvailability, Review
 
 class DoctorAvailabilitySerializer(serializers.ModelSerializer):
     class Meta:
@@ -40,15 +40,35 @@ class DoctorAvailabilitySerializer(serializers.ModelSerializer):
                 )
 
         return data
+        return data
 
+class ReviewSerializer(serializers.ModelSerializer):
+    patient_name = serializers.SerializerMethodField()
+    patient_image = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = Review
+        fields = ('id', 'doctor', 'patient', 'patient_name', 'patient_image', 'rating', 'comment', 'created_at')
+        read_only_fields = ('id', 'patient', 'created_at')
+        
+    def get_patient_name(self, obj):
+        return obj.patient.user.get_full_name()
+    
+    def get_patient_image(self, obj):
+        # This assumes we might have profile pics for patients later, or just return None
+        return None
 class DoctorSerializer(serializers.ModelSerializer):
     user = serializers.SerializerMethodField()
     availabilities = DoctorAvailabilitySerializer(many=True, read_only=True)
+    average_rating = serializers.FloatField(read_only=True)
+    total_reviews = serializers.IntegerField(read_only=True)
+    reviews = ReviewSerializer(many=True, read_only=True)
     
     class Meta:
         model = Doctor
         fields = ('id', 'user', 'specialization', 'bio', 'profile_picture', 
                   'experience_years', 'consultation_fee', 'availabilities', 
+                  'average_rating', 'total_reviews', 'reviews',
                   'created_at', 'updated_at')
         read_only_fields = ('id', 'created_at', 'updated_at')
     
@@ -68,11 +88,13 @@ class DoctorUpdateSerializer(serializers.ModelSerializer):
 
 class DoctorListSerializer(serializers.ModelSerializer):
     doctor_name = serializers.SerializerMethodField()
+    average_rating = serializers.FloatField(read_only=True)
+    total_reviews = serializers.IntegerField(read_only=True)
     
     class Meta:
         model = Doctor
         fields = ('id', 'doctor_name', 'specialization', 'profile_picture', 
-                  'experience_years', 'consultation_fee')
+                  'experience_years', 'consultation_fee', 'average_rating', 'total_reviews')
     
     def get_doctor_name(self, obj):
         return f"Dr. {obj.user.get_full_name()}"
