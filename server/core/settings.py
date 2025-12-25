@@ -100,9 +100,16 @@ WSGI_APPLICATION = 'core.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-# Use DATABASE_URL if provided (for services like Render, Heroku, etc.)
-# Otherwise fall back to individual DB_* environment variables
-if os.environ.get('DATABASE_URL'):
+# Vercel serverless doesn't support PostgreSQL drivers
+# Force SQLite on Vercel, use DATABASE_URL elsewhere
+if os.environ.get('VERCEL'):
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': '/tmp/db.sqlite3',  # Vercel only allows writes to /tmp
+        }
+    }
+elif os.environ.get('DATABASE_URL'):
     DATABASES = {
         'default': dj_database_url.config(
             default=os.environ.get('DATABASE_URL'),
