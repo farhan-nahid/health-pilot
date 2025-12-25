@@ -53,19 +53,4 @@ class DoctorAvailability(models.Model):
     def __str__(self):
         return f"{self.doctor.user.get_full_name()} - {self.day_of_week} {self.start_time}-{self.end_time}"
 
-class Review(models.Model):
-    doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE, related_name='reviews')
-    patient = models.ForeignKey(Patient, on_delete=models.CASCADE, related_name='reviews')
-    rating = models.IntegerField(
-        validators=[MinValueValidator(1), MaxValueValidator(5)],
-        help_text="Rating from 1 to 5"
-    )
-    comment = models.TextField()
-    created_at = models.DateTimeField(auto_now_add=True)
-    
-    class Meta:
-        ordering = ['-created_at']
-        unique_together = ('doctor', 'patient')  # One review per patient per doctor
-        
-    def __str__(self):
-        return f"Review for Dr. {self.doctor.user.last_name} by {self.patient.user.get_full_name()}"
+

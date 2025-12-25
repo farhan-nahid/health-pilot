@@ -1,5 +1,7 @@
 "use client";
 
+import { useUser } from "@/hooks/use-user";
+import { cn } from "@/lib/utils";
 import {
   Activity,
   Calendar,
@@ -7,13 +9,12 @@ import {
   FileText,
   LayoutDashboard,
   Settings,
+  Star,
   UserCircle,
   Users,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useUser } from "@/hooks/use-user";
-import { cn } from "@/lib/utils";
 
 const navigation = [
   { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
@@ -27,6 +28,7 @@ const navigation = [
     roles: ["patient", "doctor"],
   },
   { name: "Schedule", href: "/schedule", icon: Clock, roles: ["doctor"] },
+  { name: "Reviews", href: "/reviews", icon: Star, roles: ["doctor", "patient"] },
   { name: "Profile", href: "/profile", icon: UserCircle },
   { name: "Settings", href: "/settings", icon: Settings },
 ];

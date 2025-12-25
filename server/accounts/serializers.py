@@ -35,10 +35,23 @@ class CustomRegisterSerializer(RegisterSerializer):
         return user
 
 class UserSerializer(serializers.ModelSerializer):
+    patient_profile = serializers.SerializerMethodField()
+    doctor_profile = serializers.SerializerMethodField()
+
     class Meta:
         model = User
-        fields = ('id', 'email', 'first_name', 'last_name', 'user_type', 'phone')
+        fields = ('id', 'email', 'first_name', 'last_name', 'user_type', 'phone', 'patient_profile', 'doctor_profile')
         read_only_fields = ('id', 'email')
+
+    def get_patient_profile(self, obj):
+        if hasattr(obj, 'patient_profile'):
+            return {'id': obj.patient_profile.id}
+        return None
+
+    def get_doctor_profile(self, obj):
+        if hasattr(obj, 'doctor_profile'):
+            return {'id': obj.doctor_profile.id}
+        return None
 
 
 class UserSettingsSerializer(serializers.ModelSerializer):

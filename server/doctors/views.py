@@ -5,11 +5,10 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from django.shortcuts import get_object_or_404
-from .models import Doctor, DoctorAvailability, Review
+from .models import Doctor, DoctorAvailability
 from .serializers import (
     DoctorSerializer, DoctorUpdateSerializer, 
     DoctorAvailabilitySerializer, DoctorListSerializer,
-    ReviewSerializer
 )
 from appointments.models import Appointment
 from appointments.serializers import AppointmentSerializer
@@ -253,45 +252,5 @@ class DoctorAvailabilityViewSet(viewsets.ModelViewSet):
         except Doctor.DoesNotExist:
             return Response(
                 {'error': 'Doctor profile not found'},
-                status=status.HTTP_404_NOT_FOUND
-            )
-
-class ReviewViewSet(viewsets.ModelViewSet):
-    serializer_class = ReviewSerializer
-    permission_classes = [IsAuthenticated]
-    
-    def get_queryset(self):
-        # Filter by doctor_id if provided in query params
-        doctor_id = self.request.query_params.get('doctor_id', None)
-        if doctor_id:
-            return Review.objects.filter(doctor_id=doctor_id)
-        return Review.objects.all()
-
-    def create(self, request, *args, **kwargs):
-        if request.user.user_type != 'patient':
-            return Response(
-                {'error': 'Only patients can leave reviews'},
-                status=status.HTTP_403_FORBIDDEN
-            )
-            
-        try:
-            patient = request.user.patient_profile
-            data = request.data.copy()
-            # Check for existing review
-            if Review.objects.filter(doctor_id=data.get('doctor'), patient=patient).exists():
-                return Response(
-                    {'error': 'You have already reviewed this doctor'},
-                    status=status.HTTP_400_BAD_REQUEST
-                )
-
-            serializer = self.get_serializer(data=data)
-            serializer.is_valid(raise_exception=True)
-            serializer.save(patient=patient)
-            headers = self.get_success_headers(serializer.data)
-            return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
-            
-        except AttributeError:
-             return Response(
-                {'error': 'Patient profile not found'},
                 status=status.HTTP_404_NOT_FOUND
             )

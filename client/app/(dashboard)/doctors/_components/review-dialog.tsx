@@ -1,10 +1,5 @@
 "use client";
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Star } from "lucide-react";
-import { useState } from "react";
-import { Controller, useForm } from "react-hook-form";
 import { FormTextarea } from "@/components/form";
 import { Button } from "@/components/ui/button";
 import {
@@ -21,26 +16,55 @@ import api from "@/lib/api";
 import { showError, showSuccess } from "@/lib/notifications";
 import { type ReviewValues, reviewSchema } from "@/schemas/review";
 
+import { type Review } from "@/types";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { Star } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Controller, useForm } from "react-hook-form";
+
 interface ReviewDialogProps {
   doctorId: number;
   doctorName: string;
+  existingReview?: Review;
   children?: React.ReactNode;
 }
 
-export function ReviewDialog({ doctorId, doctorName, children }: ReviewDialogProps) {
+export function ReviewDialog({
+  doctorId,
+  doctorName,
+  existingReview,
+  children,
+}: ReviewDialogProps) {
   const [open, setOpen] = useState(false);
   const queryClient = useQueryClient();
 
   const form = useForm<ReviewValues>({
     resolver: zodResolver(reviewSchema) as any,
     defaultValues: {
-      rating: 5,
-      comment: "",
+      rating: existingReview?.rating || 5,
+      comment: existingReview?.comment || "",
     },
   });
 
+  // Reset form when opening dialog with existing review
+  useEffect(() => {
+    if (open && existingReview) {
+      form.reset({
+        rating: existingReview.rating,
+        comment: existingReview.comment,
+      });
+    }
+  }, [open, existingReview, form]);
+
   const mutation = useMutation({
     mutationFn: async (values: ReviewValues) => {
+      if (existingReview) {
+        return api.patch(`/reviews/${existingReview.id}/`, {
+          rating: values.rating,
+          comment: values.comment,
+        });
+      }
       return api.post("/reviews/", {
         doctor: doctorId,
         rating: values.rating,
@@ -48,9 +72,13 @@ export function ReviewDialog({ doctorId, doctorName, children }: ReviewDialogPro
       });
     },
     onSuccess: () => {
-      showSuccess("Review submitted successfully!");
+      showSuccess(
+        existingReview
+          ? "Review updated successfully!"
+          : "Review submitted successfully!",
+      );
       queryClient.invalidateQueries({ queryKey: ["doctors"] });
-      queryClient.invalidateQueries({ queryKey: ["reviews", doctorId] });
+      queryClient.invalidateQueries({ queryKey: ["reviews"] }); // Invalidate all reviews
       setOpen(false);
       form.reset();
     },
@@ -74,9 +102,13 @@ export function ReviewDialog({ doctorId, doctorName, children }: ReviewDialogPro
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Review {doctorName}</DialogTitle>
+          <DialogTitle>
+            {existingReview ? "Edit Review" : `Review ${doctorName}`}
+          </DialogTitle>
           <DialogDescription>
-            Share your experience with this doctor to help other patients.
+            {existingReview
+              ? "Update your review for this doctor."
+              : "Share your experience with this doctor to help other patients."}
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 py-4">
@@ -93,7 +125,9 @@ export function ReviewDialog({ doctorId, doctorName, children }: ReviewDialogPro
                       type="button"
                       onClick={() => field.onChange(star)}
                       className={`transition-colors focus:outline-none ${
-                        star <= field.value ? "text-yellow-500" : "text-gray-300"
+                        star <= field.value
+                          ? "text-yellow-500"
+                          : "text-gray-300"
                       }`}
                     >
                       <Star className="h-6 w-6 fill-current" />
@@ -118,7 +152,7 @@ export function ReviewDialog({ doctorId, doctorName, children }: ReviewDialogPro
               disabled={mutation.isPending}
               loading={mutation.isPending}
             >
-              Submit Review
+              {existingReview ? "Update Review" : "Submit Review"}
             </Button>
           </DialogFooter>
         </form>

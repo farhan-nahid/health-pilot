@@ -1,7 +1,10 @@
 import xior from "xior";
 
 const api = xior.create({
-  baseURL: "https://healths-pilot.onrender.com/api",
+  baseURL:
+    process?.env?.NODE_ENV === "production"
+      ? "https://healths-pilot.onrender.com/api"
+      : "http://localhost:8000/api",
   headers: {
     "Content-Type": "application/json",
   },
