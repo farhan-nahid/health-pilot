@@ -3,6 +3,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from django.shortcuts import get_object_or_404
+from django.db import models
 from .models import Appointment
 from .serializers import (
     AppointmentSerializer, 
@@ -19,8 +20,36 @@ class AppointmentViewSet(viewsets.ModelViewSet):
     
     def get_queryset(self):
         user = self.request.user
+        if not user.is_authenticated:
+            return Appointment.objects.none()
+            
         if user.user_type == 'patient':
-            return Appointment.objects.filter(patient__user=user)
+            # 1. Own appointments
+            # 2. Appointments of dependents (Managed) where dependent__patient__user is current user
+            # 3. Appointments of linked dependents?
+            # actually, if I am a guardian, I want to see appointments where:
+            # a) patient__user == me
+            # b) dependent__patient__user == me (Managed dependent appointment)
+            # c) patient__user is one of my linked dependents (Linked account appointment)
+            
+            # Simplifying:
+            # - Direct appointments match patient__user=user
+            # - Managed dependent appointments match dependent__patient__user=user
+            # - Linked Account appointments: The appointment has patient=LinkedPatient. 
+            #   We need to find if LinkedPatient is a dependent of CurrentUser.
+            #   Dependent.objects.filter(patient__user=user, linked_user=appointment.patient.user).exists()
+            
+            from patients.models import Dependent
+            
+            # Get all users that are dependents of current user
+            linked_users = Dependent.objects.filter(patient__user=user, linked_user__isnull=False).values_list('linked_user', flat=True)
+            
+            return Appointment.objects.filter(
+                models.Q(patient__user=user) |  # My own
+                models.Q(dependent__patient__user=user) |  # Managed dependent
+                models.Q(patient__user__in=linked_users)   # Linked dependent's appointments
+            ).distinct()
+            
         elif user.user_type == 'doctor':
             return Appointment.objects.filter(doctor__user=user)
         return Appointment.objects.none()

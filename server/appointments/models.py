@@ -12,6 +12,7 @@ class Appointment(models.Model):
     )
     
     patient = models.ForeignKey(Patient, on_delete=models.CASCADE, related_name='appointments')
+    dependent = models.ForeignKey('patients.Dependent', on_delete=models.SET_NULL, null=True, blank=True, related_name='appointments')
     doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE, related_name='appointments')
     medical_report = models.ForeignKey('patients.MedicalReport', on_delete=models.SET_NULL, null=True, blank=True)
     appointment_date = models.DateField()

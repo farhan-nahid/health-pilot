@@ -3,8 +3,8 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.parsers import MultiPartParser, FormParser
-from .models import Patient, MedicalReport
-from .serializers import PatientSerializer, PatientUpdateSerializer, MedicalReportSerializer
+from .models import Patient, MedicalReport, Dependent
+from .serializers import PatientSerializer, PatientUpdateSerializer, MedicalReportSerializer, DependentSerializer
 from .ai_service import AIService
 from appointments.models import Appointment
 from appointments.serializers import AppointmentSerializer
@@ -18,6 +18,9 @@ class PatientViewSet(viewsets.ModelViewSet):
     ordering = ['-created_at']
     
     def get_queryset(self):
+        if not self.request.user.is_authenticated:
+            return Patient.objects.none()
+            
         if self.request.user.user_type == 'patient':
             return Patient.objects.filter(user=self.request.user)
         return Patient.objects.all()
@@ -175,12 +178,27 @@ class MedicalReportViewSet(viewsets.ModelViewSet):
     ordering = ['-uploaded_at']
     
     def get_queryset(self):
-        if self.request.user.user_type == 'patient':
-            return MedicalReport.objects.filter(patient__user=self.request.user)
-        elif self.request.user.user_type == 'doctor':
+        user = self.request.user
+        if not user.is_authenticated:
+            return MedicalReport.objects.none()
+            
+        if user.user_type == 'patient':
+            # Similar logic to appointments
+            # My reports OR reports of my dependents (managed or linked)
+            
+            linked_users = Dependent.objects.filter(patient__user=user, linked_user__isnull=False).values_list('linked_user', flat=True)
+            
+            from django.db import models
+            return MedicalReport.objects.filter(
+                models.Q(patient__user=user) |
+                models.Q(dependent__patient__user=user) |
+                models.Q(patient__user__in=linked_users)
+            ).distinct()
+            
+        elif user.user_type == 'doctor':
             # Doctors can see reports from their appointments
             return MedicalReport.objects.filter(
-                patient__appointments__doctor__user=self.request.user
+                patient__appointments__doctor__user=user
             ).distinct()
         return MedicalReport.objects.none()
     
@@ -206,9 +224,19 @@ class MedicalReportViewSet(viewsets.ModelViewSet):
                 try:
                     ai_results = ai_service.process_medical_report(report_file, symptoms)
                     
+                    # Handle dependent
+                    dependent_id = request.data.get('dependent_id')
+                    dependent = None
+                    if dependent_id:
+                        try:
+                            dependent = Dependent.objects.get(id=dependent_id, patient=patient)
+                        except Dependent.DoesNotExist:
+                            pass # Or raise error if strict validation needed
+
                     # Save report with AI analysis
                     medical_report = serializer.save(
                         patient=patient,
+                        dependent=dependent,
                         extracted_text=ai_results['extracted_text'],
                         ai_specialization=ai_results['primary_specialization'],
                         ai_summary=ai_results['report_summary']
@@ -256,3 +284,19 @@ class MedicalReportViewSet(viewsets.ModelViewSet):
                 {'error': 'Patient profile not found'},
                 status=status.HTTP_404_NOT_FOUND
             )
+
+class DependentViewSet(viewsets.ModelViewSet):
+    serializer_class = DependentSerializer
+    permission_classes = [IsAuthenticated]
+    
+    def get_queryset(self):
+        if not self.request.user.is_authenticated:
+            return Dependent.objects.none()
+            
+        if self.request.user.user_type == 'patient':
+            return Dependent.objects.filter(patient__user=self.request.user)
+        return Dependent.objects.none()
+    
+    def perform_create(self, serializer):
+        patient = self.request.user.patient_profile
+        serializer.save(patient=patient)

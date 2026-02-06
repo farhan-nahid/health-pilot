@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Patient, MedicalReport
+from .models import Patient, MedicalReport, Dependent
 
 class PatientSerializer(serializers.ModelSerializer):
     user = serializers.SerializerMethodField()
@@ -35,6 +35,8 @@ class MedicalReportSerializer(serializers.ModelSerializer):
                             'extracted_text', 'uploaded_at')
     
     def get_patient_name(self, obj):
+        if obj.dependent:
+            return obj.dependent.name
         return obj.patient.user.get_full_name()
     
     def validate_report_file(self, value):
@@ -43,3 +45,9 @@ class MedicalReportSerializer(serializers.ModelSerializer):
         if value.size > 10 * 1024 * 1024:  # 10MB limit
             raise serializers.ValidationError("File size cannot exceed 10MB.")
         return value
+
+class DependentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Dependent
+        fields = ('id', 'name', 'relationship', 'date_of_birth', 'gender', 'blood_group', 'created_at', 'updated_at')
+        read_only_fields = ('id', 'created_at', 'updated_at')

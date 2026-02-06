@@ -6,7 +6,9 @@ from patients.models import Patient
 class AppointmentCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Appointment
-        fields = ('doctor', 'medical_report', 'appointment_date', 'appointment_time', 'symptoms')
+        fields = ('doctor', 'medical_report', 'appointment_date', 'appointment_time', 'symptoms', 'dependent_id')
+    
+    dependent_id = serializers.IntegerField(required=False, write_only=True)
     
     def validate(self, data):
         # Check if the time slot is already booked
@@ -24,12 +26,23 @@ class AppointmentCreateSerializer(serializers.ModelSerializer):
         request = self.context.get('request')
         if request and hasattr(request.user, 'patient_profile'):
             data['patient'] = request.user.patient_profile
+            
+            # Handle dependent
+            dependent_id = data.get('dependent_id')
+            if dependent_id:
+                from patients.models import Dependent
+                try:
+                    dependent = Dependent.objects.get(id=dependent_id, patient=request.user.patient_profile)
+                    data['dependent'] = dependent
+                except Dependent.DoesNotExist:
+                    raise serializers.ValidationError({"dependent_id": "Invalid dependent ID."})
         else:
             raise serializers.ValidationError("Only patients can book appointments.")
         
         return data
     
     def create(self, validated_data):
+        dependent_id = validated_data.pop('dependent_id', None)
         return Appointment.objects.create(**validated_data)
 
 class AppointmentSerializer(serializers.ModelSerializer):
@@ -51,6 +64,8 @@ class AppointmentSerializer(serializers.ModelSerializer):
         return PatientSerializer(obj.patient).data
     
     def get_patient_name(self, obj):
+        if obj.dependent:
+            return obj.dependent.name
         return obj.patient.user.get_full_name()
     
     def get_medical_report_summary(self, obj):
