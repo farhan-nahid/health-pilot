@@ -1,19 +1,19 @@
 "use client";
 
-import { format } from "date-fns";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DataTablePagination } from "@/components/ui/pagination";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
 } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
 import type { Appointment } from "@/types";
+import { format } from "date-fns";
 import { AppointmentActions } from "./appointment-actions";
 
 const statusVariants: Record<string, string> = {
@@ -76,7 +76,7 @@ export function AppointmentList({
       <Table>
         <TableHeader>
           <TableRow className="bg-muted/50 hover:bg-muted/50">
-            <TableHead className="w-62.5">{isDoctor ? "Patient" : "Doctor"}</TableHead>
+            <TableHead className="w-62.5">{isDoctor ? "Patient" : "Doctor / Member"}</TableHead>
             <TableHead>Date & Time</TableHead>
             <TableHead>Status</TableHead>
             <TableHead className="max-w-50">Symptoms</TableHead>
@@ -99,9 +99,14 @@ export function AppointmentList({
                     )}
                   </Avatar>
                   <div className="flex flex-col">
-                    <span className="font-semibold text-sm">
-                      {isDoctor ? apt.patient_name : apt.doctor_details.doctor_name}
-                    </span>
+                      <span className="font-semibold text-sm">
+                        {isDoctor ? apt.patient_name : apt.doctor_details.doctor_name}
+                        {!isDoctor && apt.patient_name && (
+                           <span className="ml-2 rounded-full bg-muted px-2 py-0.5 text-[10px] text-muted-foreground">
+                             For: {apt.patient_name}
+                           </span>
+                        )}
+                      </span>
                     {!isDoctor && (
                       <span className="text-[10px] text-muted-foreground uppercase">
                         {apt.doctor_details.specialization}

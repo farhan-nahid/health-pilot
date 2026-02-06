@@ -1,20 +1,20 @@
 "use client";
 
-import { format } from "date-fns";
-import { Eye, FileText } from "lucide-react";
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { DataTablePagination } from "@/components/ui/pagination";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
 } from "@/components/ui/table";
 import { useUser } from "@/hooks/use-user";
 import type { MedicalReport } from "@/types";
+import { format } from "date-fns";
+import { Eye, FileText } from "lucide-react";
+import { useState } from "react";
 import { ViewReportDialog } from "./view-report-dialog";
 
 export function ReportList({
@@ -61,7 +61,7 @@ export function ReportList({
         <TableHeader>
           <TableRow className="bg-muted/50 hover:bg-muted/50">
             <TableHead>Date Uploaded</TableHead>
-            {isDoctor && <TableHead>Patient</TableHead>}
+            <TableHead>Patient</TableHead>
             <TableHead>Symptoms</TableHead>
             <TableHead>AI Specialization</TableHead>
             <TableHead className="w-25 text-right">Action</TableHead>
@@ -73,9 +73,7 @@ export function ReportList({
               <TableCell className="font-medium" suppressHydrationWarning>
                 {format(new Date(report.uploaded_at), "PPP")}
               </TableCell>
-              {isDoctor && (
-                <TableCell className="font-semibold">{report.patient_name}</TableCell>
-              )}
+              <TableCell className="font-semibold">{report.patient_name}</TableCell>
               <TableCell className="max-w-75 truncate">{report.symptoms}</TableCell>
               <TableCell>
                 <span className="inline-flex items-center rounded-full border border-primary/20 bg-primary/10 px-2 py-0.5 font-bold text-[10px] text-primary uppercase">

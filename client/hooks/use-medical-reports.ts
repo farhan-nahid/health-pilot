@@ -1,8 +1,8 @@
 "use client";
 
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import api from "@/lib/api";
 import type { MedicalReport, PaginatedResponse, UploadReportPayload } from "@/types";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 export function useMedicalReports(page: number = 1) {
   const { data, isLoading, error, refetch } = useQuery<PaginatedResponse<MedicalReport>>({
@@ -42,6 +42,9 @@ export function useUploadReport() {
       const formData = new FormData();
       formData.append("report_file", payload.report_file);
       formData.append("symptoms", payload.symptoms);
+      if (payload.dependent_id) {
+        formData.append("dependent_id", payload.dependent_id.toString());
+      }
 
       const { data } = await api.post("/medical-reports/", formData, {
         headers: {

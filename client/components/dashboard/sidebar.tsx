@@ -3,15 +3,15 @@
 import { useUser } from "@/hooks/use-user";
 import { cn } from "@/lib/utils";
 import {
-  Activity,
-  Calendar,
-  Clock,
-  FileText,
-  LayoutDashboard,
-  Settings,
-  Star,
-  UserCircle,
-  Users,
+    Activity,
+    Calendar,
+    Clock,
+    FileText,
+    LayoutDashboard,
+    Settings,
+    Star,
+    UserCircle,
+    Users,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -27,6 +27,7 @@ const navigation = [
     icon: FileText,
     roles: ["patient", "doctor"],
   },
+  { name: "Family Profile", href: "/family", icon: Users, roles: ["patient"] },
   { name: "Schedule", href: "/schedule", icon: Clock, roles: ["doctor"] },
   { name: "Reviews", href: "/reviews", icon: Star, roles: ["doctor", "patient"] },
   { name: "Profile", href: "/profile", icon: UserCircle },

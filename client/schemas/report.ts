@@ -15,6 +15,7 @@ export const uploadReportSchema = z.object({
   symptoms: z
     .string()
     .min(10, "Please provide context about your symptoms (min 10 characters)"),
+  dependent_id: z.string().optional(), // We'll validte it's a number/string in component. Selects usually return string.
 });
 
 export type UploadReportValues = z.infer<typeof uploadReportSchema>;

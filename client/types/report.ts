@@ -13,4 +13,5 @@ export interface MedicalReport {
 export interface UploadReportPayload {
   report_file: File;
   symptoms: string;
+  dependent_id?: number;
 }

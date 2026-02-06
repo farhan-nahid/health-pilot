@@ -1,7 +1,5 @@
 "use client";
 
-import { Loader2, Monitor, Moon, Sun } from "lucide-react";
-import { useTheme } from "next-themes";
 import {
   Card,
   CardContent,
@@ -11,9 +9,9 @@ import {
 } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Switch } from "@/components/ui/switch";
 import { useSettings } from "@/hooks/use-settings";
-import { showError, showSuccess } from "@/lib/notifications";
+import { Loader2, Monitor, Moon, Sun } from "lucide-react";
+import { useTheme } from "next-themes";
 import { ChangePasswordForm } from "./change-password-form";
 
 export function SettingsClient() {
@@ -82,7 +80,7 @@ export function SettingsClient() {
 
       <ChangePasswordForm />
 
-      <Card>
+      {/* <Card>
         <CardHeader>
           <CardTitle>Notifications</CardTitle>
           <CardDescription>Choose what updates you want to receive.</CardDescription>
@@ -149,9 +147,9 @@ export function SettingsClient() {
             />
           </div>
         </CardContent>
-      </Card>
+      </Card> */}
 
-      <Card>
+      {/* <Card>
         <CardHeader>
           <CardTitle>Account Data</CardTitle>
           <CardDescription>Manage your personal data and account status.</CardDescription>
@@ -179,7 +177,7 @@ export function SettingsClient() {
             />
           </div>
         </CardContent>
-      </Card>
+      </Card> */}
     </div>
   );
 }

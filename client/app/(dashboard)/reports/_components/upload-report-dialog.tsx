@@ -1,30 +1,40 @@
 "use client";
 
+import { FormTextarea } from "@/components/form";
+import { Button } from "@/components/ui/button";
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from "@/components/ui/dialog";
+import { Field, FieldContent, FieldError, FieldLabel } from "@/components/ui/field";
+import { FormControl } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue
+} from "@/components/ui/select";
+import { useDependents } from "@/hooks/use-dependents";
+import { useUploadReport } from "@/hooks/use-medical-reports";
+import { showError, showSuccess } from "@/lib/notifications";
+import { type UploadReportValues, uploadReportSchema } from "@/schemas/report";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CheckCircle2, Plus, Upload } from "lucide-react";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { FormTextarea } from "@/components/form";
-import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { Field, FieldContent, FieldError, FieldLabel } from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
-import { useUploadReport } from "@/hooks/use-medical-reports";
-import { showError, showSuccess } from "@/lib/notifications";
-import { type UploadReportValues, uploadReportSchema } from "@/schemas/report";
 
 export function UploadReportDialog({ onSuccess }: { onSuccess?: () => void }) {
   const [open, setOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const { dependents } = useDependents();
   const uploadMutation = useUploadReport();
 
   const form = useForm<UploadReportValues>({
@@ -40,6 +50,7 @@ export function UploadReportDialog({ onSuccess }: { onSuccess?: () => void }) {
       {
         report_file: values.report_file,
         symptoms: values.symptoms,
+        dependent_id: values.dependent_id ? parseInt(values.dependent_id) : undefined,
       },
       {
         onSuccess: () => {
@@ -110,6 +121,33 @@ export function UploadReportDialog({ onSuccess }: { onSuccess?: () => void }) {
                   </p>
                   {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                 </FieldContent>
+              </Field>
+            )}
+          />
+          <Controller
+            control={form.control}
+            name="dependent_id"
+            render={({ field }) => (
+              <Field>
+                <FieldLabel>Family Member (Optional)</FieldLabel>
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select member (Defaults to You)" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value="">Me (Primary)</SelectItem>
+                    {dependents.map((dep) => (
+                      <SelectItem key={dep.id} value={dep.id.toString()}>
+                        {dep.name} ({dep.relationship})
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </Field>
             )}
           />
