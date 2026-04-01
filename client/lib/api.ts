@@ -1,10 +1,7 @@
 import xior from "xior";
 
 const api = xior.create({
-  baseURL:
-    process?.env?.NODE_ENV === "production"
-      ? "https://healths-pilot.onrender.com/api"
-      : "http://localhost:8000/api",
+  baseURL: "https://health-pilot-server.vercel.app/api",
   headers: {
     "Content-Type": "application/json",
   },
