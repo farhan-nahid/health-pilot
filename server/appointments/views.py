@@ -24,6 +24,9 @@ class AppointmentViewSet(viewsets.ModelViewSet):
         if not user.is_authenticated:
             return Appointment.objects.none()
 
+        # Check for patient_id query parameter (for doctors/staff to filter by patient)
+        patient_id = self.request.query_params.get("patient_id", None)
+
         if user.user_type == "patient":
             # 1. Own appointments
             # 2. Appointments of dependents (Managed) where dependent__patient__user is current user
@@ -47,7 +50,7 @@ class AppointmentViewSet(viewsets.ModelViewSet):
                 patient__user=user, linked_user__isnull=False
             ).values_list("linked_user", flat=True)
 
-            return Appointment.objects.filter(
+            queryset = Appointment.objects.filter(
                 models.Q(patient__user=user)  # My own
                 | models.Q(dependent__patient__user=user)  # Managed dependent
                 | models.Q(
@@ -55,8 +58,34 @@ class AppointmentViewSet(viewsets.ModelViewSet):
                 )  # Linked dependent's appointments
             ).distinct()
 
+            # If patient_id is provided, filter by it (for viewing specific patient's appointments)
+            if patient_id:
+                try:
+                    from patients.models import Patient
+
+                    patient = Patient.objects.get(id=patient_id)
+                    # Only allow if this patient is related to current user
+                    if (
+                        patient.user == user
+                        or linked_users.filter(id=patient.user.id).exists()
+                    ):
+                        queryset = Appointment.objects.filter(patient=patient)
+                except Patient.DoesNotExist:
+                    queryset = Appointment.objects.none()
+
+            return queryset
+
         elif user.user_type == "doctor":
-            return Appointment.objects.filter(doctor__user=user)
+            queryset = Appointment.objects.filter(doctor__user=user)
+            # If patient_id is provided, filter by it
+            if patient_id:
+                try:
+                    from patients.models import Patient
+
+                    queryset = queryset.filter(patient_id=patient_id)
+                except Patient.DoesNotExist:
+                    queryset = Appointment.objects.none()
+            return queryset
         return Appointment.objects.none()
 
     def get_serializer_class(self):

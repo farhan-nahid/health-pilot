@@ -29,6 +29,19 @@ class PatientViewSet(viewsets.ModelViewSet):
 
         if self.request.user.user_type == "patient":
             return Patient.objects.filter(user=self.request.user)
+
+        # For doctors, only show patients who have booked appointments with them
+        if self.request.user.user_type == "doctor":
+            try:
+                doctor = self.request.user.doctor_profile
+                # Get all appointments for this doctor
+                appointments = Appointment.objects.filter(doctor=doctor)
+                # Get unique patients from those appointments
+                patient_ids = appointments.values_list("patient", flat=True).distinct()
+                return Patient.objects.filter(id__in=patient_ids)
+            except Doctor.DoesNotExist:
+                return Patient.objects.none()
+
         return Patient.objects.all()
 
     def get_serializer_class(self):

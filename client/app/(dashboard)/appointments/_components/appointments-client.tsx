@@ -1,6 +1,6 @@
 "use client";
 
-import { parseAsInteger, useQueryState } from "nuqs";
+import { parseAsInteger, parseAsString, useQueryState } from "nuqs";
 import { Suspense } from "react";
 import { useAppointments } from "@/hooks/use-appointments";
 import { useUser } from "@/hooks/use-user";
@@ -12,9 +12,14 @@ function AppointmentsContent() {
     "page",
     parseAsInteger.withDefault(1).withOptions({ shallow: false }),
   );
+  
+  const [patientId, setPatientId] = useQueryState(
+    "patient_id",
+    parseAsString.withOptions({ shallow: false }),
+  );
 
   const { user } = useUser();
-  const { appointments, count, isLoading, refresh } = useAppointments(null, page);
+  const { appointments, count, isLoading, refresh } = useAppointments(patientId, page);
 
   const isPatient = user?.user_type === "patient";
 
