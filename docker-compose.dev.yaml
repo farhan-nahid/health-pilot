@@ -41,7 +41,7 @@ services:
       context: ./server
       dockerfile: Dockerfile
     container_name: healthpilot-backend
-    command: sh -c "python manage.py migrate && python manage.py collectstatic --noinput && gunicorn --bind 0.0.0.0:8000 --workers 3 --timeout 120 core.wsgi:application"
+    command: sh -c "python manage.py migrate && python manage.py collectstatic --noinput && gunicorn --bind 0.0.0.0:8000 --workers 3 --timeout 120 api.wsgi:application"
     volumes:
       - static_volume:/app/staticfiles
       - media_volume:/app/media

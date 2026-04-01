@@ -30,4 +30,4 @@ RUN mkdir -p /app/staticfiles /app/media
 EXPOSE 8000
 
 # Use gunicorn for production
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--workers", "3", "--timeout", "120", "core.wsgi:application"]
+CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--workers", "3", "--timeout", "120", "api.wsgi:application"]

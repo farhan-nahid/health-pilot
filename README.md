@@ -279,11 +279,11 @@ health-pilot/
 │   └── package.json         # Frontend dependencies
 │
 ├── server/                   # Django Backend
+│   ├── api/                 # Django settings
 │   ├── accounts/            # User authentication
 │   ├── doctors/             # Doctor management
 │   ├── patients/            # Patient management
 │   ├── appointments/        # Appointment system
-│   ├── core/                # Django settings
 │   ├── Dockerfile           # Backend Docker config
 │   ├── requirements.txt     # Python dependencies
 │   └── manage.py            # Django management
