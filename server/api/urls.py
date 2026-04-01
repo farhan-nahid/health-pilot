@@ -38,6 +38,5 @@ urlpatterns = [
     path("api/", include("reviews.urls")),
 ]
 
-if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+# Serve static files in production (handled by WhiteNoise)
+urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
