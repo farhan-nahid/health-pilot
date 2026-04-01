@@ -1,14 +1,4 @@
 {
-    "build": {
-        "env": {
-            "DJANGO_SETTINGS_MODULE": "api.settings"
-        }
-    },
-    "functions": {
-        "api/wsgi.py": {
-            "runtime": "python3.14"
-        }
-    },
     "routes": [
         {
             "src": "/static/(.*)",
