@@ -6,7 +6,6 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [
@@ -15,49 +14,154 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='Dependent',
+            name="Dependent",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=255)),
-                ('relationship', models.CharField(choices=[('Son', 'Son'), ('Daughter', 'Daughter'), ('Spouse', 'Spouse'), ('Parent', 'Parent'), ('Other', 'Other')], max_length=20)),
-                ('date_of_birth', models.DateField()),
-                ('gender', models.CharField(choices=[('Male', 'Male'), ('Female', 'Female'), ('Other', 'Other')], max_length=10)),
-                ('blood_group', models.CharField(blank=True, choices=[('A+', 'A+'), ('A-', 'A-'), ('B+', 'B+'), ('B-', 'B-'), ('AB+', 'AB+'), ('AB-', 'AB-'), ('O+', 'O+'), ('O-', 'O-')], max_length=5, null=True)),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('linked_user', models.OneToOneField(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='dependent_profile', to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=255)),
+                (
+                    "relationship",
+                    models.CharField(
+                        choices=[
+                            ("Son", "Son"),
+                            ("Daughter", "Daughter"),
+                            ("Spouse", "Spouse"),
+                            ("Parent", "Parent"),
+                            ("Other", "Other"),
+                        ],
+                        max_length=20,
+                    ),
+                ),
+                ("date_of_birth", models.DateField()),
+                (
+                    "gender",
+                    models.CharField(
+                        choices=[
+                            ("Male", "Male"),
+                            ("Female", "Female"),
+                            ("Other", "Other"),
+                        ],
+                        max_length=10,
+                    ),
+                ),
+                (
+                    "blood_group",
+                    models.CharField(
+                        blank=True,
+                        choices=[
+                            ("A+", "A+"),
+                            ("A-", "A-"),
+                            ("B+", "B+"),
+                            ("B-", "B-"),
+                            ("AB+", "AB+"),
+                            ("AB-", "AB-"),
+                            ("O+", "O+"),
+                            ("O-", "O-"),
+                        ],
+                        max_length=5,
+                        null=True,
+                    ),
+                ),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                (
+                    "linked_user",
+                    models.OneToOneField(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="dependent_profile",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='Patient',
+            name="Patient",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('date_of_birth', models.DateField(blank=True, null=True)),
-                ('blood_group', models.CharField(blank=True, max_length=5, null=True)),
-                ('address', models.TextField(blank=True, null=True)),
-                ('emergency_contact', models.CharField(blank=True, max_length=30, null=True)),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('user', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='patient_profile', to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("date_of_birth", models.DateField(blank=True, null=True)),
+                ("blood_group", models.CharField(blank=True, max_length=5, null=True)),
+                ("address", models.TextField(blank=True, null=True)),
+                (
+                    "emergency_contact",
+                    models.CharField(blank=True, max_length=30, null=True),
+                ),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                (
+                    "user",
+                    models.OneToOneField(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="patient_profile",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='MedicalReport',
+            name="MedicalReport",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('report_file', models.FileField(upload_to='medical_reports/')),
-                ('symptoms', models.TextField()),
-                ('ai_specialization', models.CharField(blank=True, max_length=255, null=True)),
-                ('ai_summary', models.TextField(blank=True, null=True)),
-                ('extracted_text', models.TextField(blank=True, null=True)),
-                ('uploaded_at', models.DateTimeField(auto_now_add=True)),
-                ('dependent', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='medical_reports', to='patients.dependent')),
-                ('patient', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='medical_reports', to='patients.patient')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("report_file", models.FileField(upload_to="medical_reports/")),
+                ("symptoms", models.TextField()),
+                (
+                    "ai_specialization",
+                    models.CharField(blank=True, max_length=255, null=True),
+                ),
+                ("ai_summary", models.TextField(blank=True, null=True)),
+                ("extracted_text", models.TextField(blank=True, null=True)),
+                ("uploaded_at", models.DateTimeField(auto_now_add=True)),
+                (
+                    "dependent",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="medical_reports",
+                        to="patients.dependent",
+                    ),
+                ),
+                (
+                    "patient",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="medical_reports",
+                        to="patients.patient",
+                    ),
+                ),
             ],
         ),
         migrations.AddField(
-            model_name='dependent',
-            name='patient',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='dependents', to='patients.patient'),
+            model_name="dependent",
+            name="patient",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="dependents",
+                to="patients.patient",
+            ),
         ),
     ]

@@ -3,10 +3,11 @@ from openai import OpenAI
 from django.conf import settings
 import json
 
+
 class AIService:
     def __init__(self):
         self.client = OpenAI(api_key=settings.OPENAI_API_KEY)
-    
+
     def extract_text_from_pdf(self, pdf_file):
         """Extract text from uploaded PDF file"""
         try:
@@ -17,7 +18,7 @@ class AIService:
             return text.strip()
         except Exception as e:
             raise Exception(f"Error extracting text from PDF: {str(e)}")
-    
+
     def analyze_symptoms(self, symptoms):
         """Analyze symptoms and predict medical specialization"""
         try:
@@ -35,17 +36,20 @@ class AIService:
                 "reasoning": "brief explanation"
             }}
             """
-            
+
             response = self.client.chat.completions.create(
                 model="gpt-3.5-turbo",
                 messages=[
-                    {"role": "system", "content": "You are a medical AI assistant that helps predict medical specializations based on symptoms."},
-                    {"role": "user", "content": prompt}
+                    {
+                        "role": "system",
+                        "content": "You are a medical AI assistant that helps predict medical specializations based on symptoms.",
+                    },
+                    {"role": "user", "content": prompt},
                 ],
                 temperature=0.3,
-                max_tokens=300
+                max_tokens=300,
             )
-            
+
             result = response.choices[0].message.content.strip()
             # Parse JSON response
             try:
@@ -56,12 +60,12 @@ class AIService:
                 return {
                     "primary_specialization": "General Physician",
                     "alternative_specializations": [],
-                    "reasoning": result
+                    "reasoning": result,
                 }
-        
+
         except Exception as e:
             raise Exception(f"Error analyzing symptoms: {str(e)}")
-    
+
     def summarize_medical_report(self, report_text, symptoms=""):
         """Summarize medical report content"""
         try:
@@ -80,23 +84,26 @@ class AIService:
             3. Recommendations
             4. Critical information for the doctor
             """
-            
+
             response = self.client.chat.completions.create(
                 model="gpt-3.5-turbo",
                 messages=[
-                    {"role": "system", "content": "You are a medical AI assistant that summarizes medical reports for healthcare professionals."},
-                    {"role": "user", "content": prompt}
+                    {
+                        "role": "system",
+                        "content": "You are a medical AI assistant that summarizes medical reports for healthcare professionals.",
+                    },
+                    {"role": "user", "content": prompt},
                 ],
                 temperature=0.3,
-                max_tokens=500
+                max_tokens=500,
             )
-            
+
             summary = response.choices[0].message.content.strip()
             return summary
-        
+
         except Exception as e:
             raise Exception(f"Error summarizing report: {str(e)}")
-    
+
     def process_medical_report(self, pdf_file, symptoms):
         """
         Complete processing pipeline:
@@ -107,20 +114,22 @@ class AIService:
         try:
             # Extract text from PDF
             extracted_text = self.extract_text_from_pdf(pdf_file)
-            
+
             # Analyze symptoms
             symptom_analysis = self.analyze_symptoms(symptoms)
-            
+
             # Summarize medical report
             report_summary = self.summarize_medical_report(extracted_text, symptoms)
-            
+
             return {
-                'extracted_text': extracted_text,
-                'symptom_analysis': symptom_analysis,
-                'report_summary': report_summary,
-                'primary_specialization': symptom_analysis.get('primary_specialization', 'General Physician'),
+                "extracted_text": extracted_text,
+                "symptom_analysis": symptom_analysis,
+                "report_summary": report_summary,
+                "primary_specialization": symptom_analysis.get(
+                    "primary_specialization", "General Physician"
+                ),
             }
-        
+
         except Exception as e:
             raise Exception(f"Error processing medical report: {str(e)}")
 

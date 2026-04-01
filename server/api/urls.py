@@ -10,7 +10,7 @@ from .views import health_check
 schema_view = get_schema_view(
     openapi.Info(
         title="API",
-        default_version='v1',
+        default_version="v1",
         description="API documentation",
         contact=openapi.Contact(email="mominurrohman774@gmail.com"),
     ),
@@ -20,21 +20,22 @@ schema_view = get_schema_view(
 
 urlpatterns = [
     # Health check endpoint (no auth required)
-    path('health/', health_check, name='health-check'),
-    
-    path('admin/', admin.site.urls),
-    path('api/docs/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
-    
+    path("health/", health_check, name="health-check"),
+    path("admin/", admin.site.urls),
+    path(
+        "api/docs/",
+        schema_view.with_ui("swagger", cache_timeout=0),
+        name="schema-swagger-ui",
+    ),
     # Authentication URLs
-    path('api/auth/', include('dj_rest_auth.urls')),
-    path('api/auth/registration/', include('dj_rest_auth.registration.urls')),
-    
+    path("api/auth/", include("dj_rest_auth.urls")),
+    path("api/auth/registration/", include("dj_rest_auth.registration.urls")),
     # App URLs
-    path('api/', include('accounts.urls')),
-    path('api/', include('doctors.urls')),
-    path('api/', include('patients.urls')),
-    path('api/', include('appointments.urls')),
-    path('api/', include('reviews.urls')),
+    path("api/", include("accounts.urls")),
+    path("api/", include("doctors.urls")),
+    path("api/", include("patients.urls")),
+    path("api/", include("appointments.urls")),
+    path("api/", include("reviews.urls")),
 ]
 
 if settings.DEBUG:

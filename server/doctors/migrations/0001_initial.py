@@ -6,7 +6,6 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [
@@ -15,32 +14,101 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='Doctor',
+            name="Doctor",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('specialization', models.CharField(choices=[('cardiologist', 'Cardiologist'), ('neurologist', 'Neurologist'), ('dermatologist', 'Dermatologist'), ('orthopedic', 'Orthopedic'), ('pediatrician', 'Pediatrician'), ('psychiatrist', 'Psychiatrist'), ('gynecologist', 'Gynecologist'), ('oncologist', 'Oncologist'), ('gastroenterologist', 'Gastroenterologist'), ('general_physician', 'General Physician')], max_length=50)),
-                ('bio', models.TextField(blank=True, null=True)),
-                ('profile_picture', models.ImageField(blank=True, null=True, upload_to='doctors/profiles/')),
-                ('experience_years', models.IntegerField(default=0)),
-                ('consultation_fee', models.DecimalField(decimal_places=2, default=0, max_digits=10)),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('user', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='doctor_profile', to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "specialization",
+                    models.CharField(
+                        choices=[
+                            ("cardiologist", "Cardiologist"),
+                            ("neurologist", "Neurologist"),
+                            ("dermatologist", "Dermatologist"),
+                            ("orthopedic", "Orthopedic"),
+                            ("pediatrician", "Pediatrician"),
+                            ("psychiatrist", "Psychiatrist"),
+                            ("gynecologist", "Gynecologist"),
+                            ("oncologist", "Oncologist"),
+                            ("gastroenterologist", "Gastroenterologist"),
+                            ("general_physician", "General Physician"),
+                        ],
+                        max_length=50,
+                    ),
+                ),
+                ("bio", models.TextField(blank=True, null=True)),
+                (
+                    "profile_picture",
+                    models.ImageField(
+                        blank=True, null=True, upload_to="doctors/profiles/"
+                    ),
+                ),
+                ("experience_years", models.IntegerField(default=0)),
+                (
+                    "consultation_fee",
+                    models.DecimalField(decimal_places=2, default=0, max_digits=10),
+                ),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                (
+                    "user",
+                    models.OneToOneField(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="doctor_profile",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='DoctorAvailability',
+            name="DoctorAvailability",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('day_of_week', models.CharField(choices=[('monday', 'Monday'), ('tuesday', 'Tuesday'), ('wednesday', 'Wednesday'), ('thursday', 'Thursday'), ('friday', 'Friday'), ('saturday', 'Saturday'), ('sunday', 'Sunday')], max_length=10)),
-                ('start_time', models.TimeField()),
-                ('end_time', models.TimeField()),
-                ('is_available', models.BooleanField(default=True)),
-                ('doctor', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='availabilities', to='doctors.doctor')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "day_of_week",
+                    models.CharField(
+                        choices=[
+                            ("monday", "Monday"),
+                            ("tuesday", "Tuesday"),
+                            ("wednesday", "Wednesday"),
+                            ("thursday", "Thursday"),
+                            ("friday", "Friday"),
+                            ("saturday", "Saturday"),
+                            ("sunday", "Sunday"),
+                        ],
+                        max_length=10,
+                    ),
+                ),
+                ("start_time", models.TimeField()),
+                ("end_time", models.TimeField()),
+                ("is_available", models.BooleanField(default=True)),
+                (
+                    "doctor",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="availabilities",
+                        to="doctors.doctor",
+                    ),
+                ),
             ],
             options={
-                'ordering': ['day_of_week', 'start_time'],
-                'unique_together': {('doctor', 'day_of_week', 'start_time')},
+                "ordering": ["day_of_week", "start_time"],
+                "unique_together": {("doctor", "day_of_week", "start_time")},
             },
         ),
     ]
