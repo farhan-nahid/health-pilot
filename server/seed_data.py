@@ -10,19 +10,17 @@ import django
 import random
 from datetime import timedelta, date
 from decimal import Decimal
-
-# Setup Django environment
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "api.settings")
-
-django.setup()
-
 from accounts.models import User, UserSettings
 from appointments.models import Appointment
 from doctors.models import Doctor, DoctorAvailability
 from patients.models import Patient, MedicalReport, Dependent
 from reviews.models import Review
 from django.db import transaction
+
+# Setup Django environment
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "api.settings")
+django.setup()
 
 print("=" * 80)
 print("HEALTH PILOT - DATABASE SEEDING SCRIPT")
@@ -264,7 +262,7 @@ def seed_users_and_settings(count=1000):
     print(f"✓ Created {len(settings_list)} user settings")
 
     print(f"✓ Inserted {count} users")
-    print(f"✓ Password: Letmein123!")
+    print("✓ Password: Letmein123!")
 
 
 # ------------------ DOCTORS ------------------
@@ -408,7 +406,7 @@ def seed_appointments():
         Appointment.objects.bulk_create(appointments, batch_size=100, ignore_conflicts=True)
         print(f"✓ Batch inserted {len(appointments)} remaining appointments")
 
-    print(f"✓ Completed appointment seeding")
+    print("✓ Completed appointment seeding")
 
 
 # ------------------ SPECIAL APPOINTMENTS FOR NAHID USERS ------------------
