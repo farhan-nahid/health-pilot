@@ -2,6 +2,7 @@ import xior from "xior";
 
 const api = xior.create({
   baseURL: "https://health-pilot-server.vercel.app/api",
+  // baseURL: "http://localhost:8000/api",
   headers: {
     "Content-Type": "application/json",
   },

@@ -367,7 +367,7 @@ def seed_appointments():
             # 🔥 ensure unique slot
             for _ in range(50):  # retry max 50 times
                 appointment_date = date.today() + timedelta(days=random.randint(0, 10))
-                appointment_time = f"{random.randint(8, 17):02d}:{random.choice(['00', '15', '30', '45'])}:00"
+                appointment_time = f"{random.randint(8, 17):02d}:{random.choice(['00', '05', '10', '15', '20', '25', '30', '35', '40', '45', '50', '55'])}:00"
 
                 slot = (appointment_date, appointment_time)
 
@@ -391,7 +391,7 @@ def seed_appointments():
 
             # Insert in batches of 100
             if batch_counter >= 100:
-                Appointment.objects.bulk_create(appointments, batch_size=100)
+                Appointment.objects.bulk_create(appointments, batch_size=100, ignore_conflicts=True)
                 print(f"✓ Batch inserted {len(appointments)} appointments")
                 appointments = []
                 batch_counter = 0
@@ -405,7 +405,7 @@ def seed_appointments():
 
     # Insert remaining appointments
     if appointments:
-        Appointment.objects.bulk_create(appointments, batch_size=100)
+        Appointment.objects.bulk_create(appointments, batch_size=100, ignore_conflicts=True)
         print(f"✓ Batch inserted {len(appointments)} remaining appointments")
 
     print(f"✓ Completed appointment seeding")
@@ -459,7 +459,7 @@ def seed_special_nahid_appointments():
         # Try to find unique slot
         for _ in range(50):
             appointment_date = date.today() + timedelta(days=random.randint(0, 30))
-            appointment_time = f"{random.randint(8, 17):02d}:{random.choice(['00', '15', '30', '45'])}:00"
+            appointment_time = f"{random.randint(8, 17):02d}:{random.choice(['00', '05', '10', '15', '20', '25', '30', '35', '40', '45', '50', '55'])}:00"
 
             slot = (appointment_date, appointment_time)
 
@@ -483,7 +483,7 @@ def seed_special_nahid_appointments():
 
         # Insert in batches of 100
         if batch_counter >= 100:
-            Appointment.objects.bulk_create(appointments, batch_size=100)
+            Appointment.objects.bulk_create(appointments, batch_size=100, ignore_conflicts=True)
             print(f"✓ Batch inserted {len(appointments)} appointments for doctor")
             total_created += len(appointments)
             appointments = []
@@ -509,7 +509,7 @@ def seed_special_nahid_appointments():
         # Try to find unique slot
         for _ in range(50):
             appointment_date = date.today() + timedelta(days=random.randint(0, 30))
-            appointment_time = f"{random.randint(8, 17):02d}:{random.choice(['00', '15', '30', '45'])}:00"
+            appointment_time = f"{random.randint(8, 17):02d}:{random.choice(['00', '05', '10', '15', '20', '25', '30', '35', '40', '45', '50', '55'])}:00"
 
             slot = (appointment_date, appointment_time)
 
@@ -533,7 +533,7 @@ def seed_special_nahid_appointments():
 
         # Insert in batches of 100
         if batch_counter >= 100:
-            Appointment.objects.bulk_create(appointments, batch_size=100)
+            Appointment.objects.bulk_create(appointments, batch_size=100, ignore_conflicts=True)
             print(f"✓ Batch inserted {len(appointments)} appointments for patient")
             total_created += len(appointments)
             appointments = []
@@ -546,7 +546,7 @@ def seed_special_nahid_appointments():
 
     # Insert remaining appointments
     if appointments:
-        Appointment.objects.bulk_create(appointments, batch_size=100)
+        Appointment.objects.bulk_create(appointments, batch_size=100, ignore_conflicts=True)
         total_created += len(appointments)
         print(f"✓ Batch inserted {len(appointments)} remaining appointments")
 
@@ -661,7 +661,7 @@ if __name__ == "__main__":
         # Create specific numbers: 2 test users + 50 patients + 20 doctors = 72 users
         # First create 50 patient users
         print("Creating 50 patients and 20 doctors...")
-        # seed_users_and_settings(72)  # 2 test + 50 patients + 20 doctors
+        seed_users_and_settings(72)  # 2 test + 50 patients + 20 doctors
 
         # Then separate them by type
         seed_doctors()  # Will create doctors from doctor-type users (20)
