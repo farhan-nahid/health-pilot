@@ -16,7 +16,13 @@ import { Field, FieldContent, FieldError, FieldLabel } from "@/components/ui/fie
 import { Form, FormControl } from "@/components/ui/form";
 import { Label } from "@/components/ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { TIME_SLOTS } from "@/constants";
 import { useDependents } from "@/hooks/use-dependents";
 import { useDoctors } from "@/hooks/use-doctors";
@@ -85,7 +91,10 @@ export function BookAppointmentDialog({
       appointment_date: format(values.appointment_date, "yyyy-MM-dd"),
       appointment_time: `${values.appointment_time}:00`,
       symptoms: values.symptoms,
-      dependent_id: values.dependent_id ? parseInt(values.dependent_id) : undefined,
+      dependent_id:
+        values.dependent_id && values.dependent_id !== "self"
+          ? parseInt(values.dependent_id)
+          : undefined,
     });
   };
 
@@ -113,7 +122,7 @@ export function BookAppointmentDialog({
               name="doctor"
               render={({ field }) => (
                 <div className="space-y-2">
-                   <Controller
+                  <Controller
                     control={form.control}
                     name="dependent_id"
                     render={({ field }) => (
@@ -121,15 +130,15 @@ export function BookAppointmentDialog({
                         <Label>For Family Member</Label>
                         <Select
                           onValueChange={field.onChange}
-                          defaultValue={field.value}
+                          defaultValue={field.value || "self"}
                         >
-                         <FormControl>
+                          <FormControl>
                             <SelectTrigger>
                               <SelectValue placeholder="Booking for myself" />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            <SelectItem value="">Myself</SelectItem>
+                            <SelectItem value="self">Myself</SelectItem>
                             {dependents.map((dep) => (
                               <SelectItem key={dep.id} value={dep.id.toString()}>
                                 {dep.name} ({dep.relationship})

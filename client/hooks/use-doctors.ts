@@ -1,20 +1,26 @@
 "use client";
 
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import api from "@/lib/api";
 import type { Doctor } from "@/types";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-export function useDoctors() {
-  const { data, isLoading, error } = useQuery<Doctor[]>({
-    queryKey: ["doctors"],
+export function useDoctors(search: string = "", page: number = 1) {
+  const { data, isLoading, error } = useQuery<any>({
+    queryKey: ["doctors", search, page],
     queryFn: async () => {
-      const { data } = await api.get("/doctors/");
-      return Array.isArray(data) ? data : data.results || [];
+      const params = new URLSearchParams();
+      params.append("page", page.toString());
+      if (search) {
+        params.append("search", search);
+      }
+      const { data } = await api.get(`/doctors/?${params.toString()}`);
+      return data;
     },
   });
 
   return {
-    doctors: data || [],
+    doctors: data?.results || [],
+    count: data?.count || 0,
     isLoading,
     error: error ? (error as any).message : null,
   };

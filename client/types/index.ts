@@ -7,4 +7,3 @@ export * from "./pagination";
 export * from "./patient";
 export * from "./report";
 export * from "./settings";
-

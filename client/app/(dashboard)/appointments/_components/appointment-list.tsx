@@ -76,7 +76,9 @@ export function AppointmentList({
       <Table>
         <TableHeader>
           <TableRow className="bg-muted/50 hover:bg-muted/50">
-            <TableHead className="w-62.5">{isDoctor ? "Patient" : "Doctor / Member"}</TableHead>
+            <TableHead className="w-62.5">
+              {isDoctor ? "Patient" : "Doctor / Member"}
+            </TableHead>
             <TableHead>Date & Time</TableHead>
             <TableHead>Status</TableHead>
             <TableHead className="max-w-50">Symptoms</TableHead>
@@ -99,14 +101,14 @@ export function AppointmentList({
                     )}
                   </Avatar>
                   <div className="flex flex-col">
-                      <span className="font-semibold text-sm">
-                        {isDoctor ? apt.patient_name : apt.doctor_details.doctor_name}
-                        {!isDoctor && apt.patient_name && (
-                           <span className="ml-2 rounded-full bg-muted px-2 py-0.5 text-[10px] text-muted-foreground">
-                             For: {apt.patient_name}
-                           </span>
-                        )}
-                      </span>
+                    <span className="font-semibold text-sm">
+                      {isDoctor ? apt.patient_name : apt.doctor_details.doctor_name}
+                      {!isDoctor && apt.patient_name && (
+                        <span className="ml-2 rounded-full bg-muted px-2 py-0.5 text-[10px] text-muted-foreground">
+                          For: {apt.patient_name}
+                        </span>
+                      )}
+                    </span>
                     {!isDoctor && (
                       <span className="text-[10px] text-muted-foreground uppercase">
                         {apt.doctor_details.specialization}

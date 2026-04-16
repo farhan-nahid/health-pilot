@@ -125,9 +125,7 @@ export function ReviewDialog({
                       type="button"
                       onClick={() => field.onChange(star)}
                       className={`transition-colors focus:outline-none ${
-                        star <= field.value
-                          ? "text-yellow-500"
-                          : "text-gray-300"
+                        star <= field.value ? "text-yellow-500" : "text-gray-300"
                       }`}
                     >
                       <Star className="h-6 w-6 fill-current" />

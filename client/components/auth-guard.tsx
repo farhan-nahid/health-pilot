@@ -7,8 +7,7 @@ import { useUser } from "@/hooks/use-user";
 export function DashboardGuard({ children }: { children: React.ReactNode }) {
   const { user, isLoading, error } = useUser();
   const router = useRouter();
-  console.log({error, isLoading, user});
-  
+  console.log({ error, isLoading, user });
 
   useEffect(() => {
     if (
