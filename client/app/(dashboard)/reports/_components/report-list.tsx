@@ -10,8 +10,7 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
-import { useUser } from "@/hooks/use-user";
-import type { MedicalReport } from "@/types";
+import type { SymptomAssessment } from "@/types";
 import { format } from "date-fns";
 import { Eye, FileText } from "lucide-react";
 import { useState } from "react";
@@ -24,15 +23,13 @@ export function ReportList({
   page,
   onPageChange,
 }: {
-  reports: MedicalReport[];
+  reports: SymptomAssessment[];
   isLoading: boolean;
   count: number;
   page: number;
   onPageChange: (page: number) => void;
 }) {
-  const { user } = useUser();
-  const isDoctor = user?.user_type === "doctor";
-  const [selectedReport, setSelectedReport] = useState<MedicalReport | null>(null);
+  const [selectedReport, setSelectedReport] = useState<SymptomAssessment | null>(null);
 
   if (isLoading) {
     return (
@@ -47,9 +44,9 @@ export function ReportList({
     return (
       <div className="flex flex-col items-center justify-center rounded-lg border-2 border-border border-dashed bg-card/50 p-12">
         <FileText className="mb-4 h-10 w-10 text-muted-foreground" />
-        <p className="font-medium text-muted-foreground">No medical reports found.</p>
+        <p className="font-medium text-muted-foreground">No symptom assessments found.</p>
         <p className="mt-1 text-muted-foreground text-sm">
-          Upload your first PDF report for AI analysis.
+          Submit symptoms to generate your first AI assessment.
         </p>
       </div>
     );
@@ -60,10 +57,10 @@ export function ReportList({
       <Table>
         <TableHeader>
           <TableRow className="bg-muted/50 hover:bg-muted/50">
-            <TableHead>Date Uploaded</TableHead>
+            <TableHead>Date</TableHead>
             <TableHead>Patient</TableHead>
             <TableHead>Symptoms</TableHead>
-            <TableHead>AI Specialization</TableHead>
+            <TableHead>Recommended Specialist</TableHead>
             <TableHead className="w-25 text-right">Action</TableHead>
           </TableRow>
         </TableHeader>
@@ -71,13 +68,13 @@ export function ReportList({
           {reports.map((report) => (
             <TableRow key={report.id} className="cursor-default">
               <TableCell className="font-medium" suppressHydrationWarning>
-                {format(new Date(report.uploaded_at), "PPP")}
+                {format(new Date(report.created_at), "PPP")}
               </TableCell>
               <TableCell className="font-semibold">{report.patient_name}</TableCell>
               <TableCell className="max-w-75 truncate">{report.symptoms}</TableCell>
               <TableCell>
                 <span className="inline-flex items-center rounded-full border border-primary/20 bg-primary/10 px-2 py-0.5 font-bold text-[10px] text-primary uppercase">
-                  {report.ai_specialization || "Processing..."}
+                  {report.recommended_specialization || "General Physician"}
                 </span>
               </TableCell>
               <TableCell className="text-right">

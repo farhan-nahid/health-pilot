@@ -1,21 +1,11 @@
 import { z } from "zod";
 
-const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
-const ACCEPTED_FILE_TYPES = ["application/pdf"];
-
-export const uploadReportSchema = z.object({
-  report_file: z
-    .any()
-    .refine((file) => file instanceof File, "Medical report file is required")
-    .refine((file) => file?.size <= MAX_FILE_SIZE, `Max file size is 10MB.`)
-    .refine(
-      (file) => ACCEPTED_FILE_TYPES.includes(file?.type),
-      "Only .pdf format is supported.",
-    ),
+export const symptomAssessmentSchema = z.object({
   symptoms: z
     .string()
-    .min(10, "Please provide context about your symptoms (min 10 characters)"),
-  dependent_id: z.string().optional(), // We'll validte it's a number/string in component. Selects usually return string.
+    .min(15, "Please provide detailed symptoms (minimum 15 characters)")
+    .max(3000, "Please keep symptoms under 3000 characters"),
+  dependent_id: z.string().optional(),
 });
 
-export type UploadReportValues = z.infer<typeof uploadReportSchema>;
+export type SymptomAssessmentValues = z.infer<typeof symptomAssessmentSchema>;

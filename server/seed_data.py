@@ -389,7 +389,9 @@ def seed_appointments():
 
             # Insert in batches of 100
             if batch_counter >= 100:
-                Appointment.objects.bulk_create(appointments, batch_size=100, ignore_conflicts=True)
+                Appointment.objects.bulk_create(
+                    appointments, batch_size=100, ignore_conflicts=True
+                )
                 print(f"✓ Batch inserted {len(appointments)} appointments")
                 appointments = []
                 batch_counter = 0
@@ -403,7 +405,9 @@ def seed_appointments():
 
     # Insert remaining appointments
     if appointments:
-        Appointment.objects.bulk_create(appointments, batch_size=100, ignore_conflicts=True)
+        Appointment.objects.bulk_create(
+            appointments, batch_size=100, ignore_conflicts=True
+        )
         print(f"✓ Batch inserted {len(appointments)} remaining appointments")
 
     print("✓ Completed appointment seeding")
@@ -481,7 +485,9 @@ def seed_special_nahid_appointments():
 
         # Insert in batches of 100
         if batch_counter >= 100:
-            Appointment.objects.bulk_create(appointments, batch_size=100, ignore_conflicts=True)
+            Appointment.objects.bulk_create(
+                appointments, batch_size=100, ignore_conflicts=True
+            )
             print(f"✓ Batch inserted {len(appointments)} appointments for doctor")
             total_created += len(appointments)
             appointments = []
@@ -531,7 +537,9 @@ def seed_special_nahid_appointments():
 
         # Insert in batches of 100
         if batch_counter >= 100:
-            Appointment.objects.bulk_create(appointments, batch_size=100, ignore_conflicts=True)
+            Appointment.objects.bulk_create(
+                appointments, batch_size=100, ignore_conflicts=True
+            )
             print(f"✓ Batch inserted {len(appointments)} appointments for patient")
             total_created += len(appointments)
             appointments = []
@@ -544,7 +552,9 @@ def seed_special_nahid_appointments():
 
     # Insert remaining appointments
     if appointments:
-        Appointment.objects.bulk_create(appointments, batch_size=100, ignore_conflicts=True)
+        Appointment.objects.bulk_create(
+            appointments, batch_size=100, ignore_conflicts=True
+        )
         total_created += len(appointments)
         print(f"✓ Batch inserted {len(appointments)} remaining appointments")
 

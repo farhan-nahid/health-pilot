@@ -1,14 +1,17 @@
+from django.db import models
 from rest_framework import viewsets, status, filters
 from rest_framework.decorators import action
-from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
 from rest_framework.parsers import MultiPartParser, FormParser
-from .models import Patient, MedicalReport, Dependent
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from .models import Dependent, MedicalReport, Patient, SymptomAssessment
 from .serializers import (
+    DependentSerializer,
     PatientSerializer,
     PatientUpdateSerializer,
     MedicalReportSerializer,
-    DependentSerializer,
+    SymptomAssessmentCreateSerializer,
+    SymptomAssessmentSerializer,
 )
 from .ai_service import AIService
 from appointments.models import Appointment
@@ -227,8 +230,6 @@ class MedicalReportViewSet(viewsets.ModelViewSet):
                 patient__user=user, linked_user__isnull=False
             ).values_list("linked_user", flat=True)
 
-            from django.db import models
-
             return MedicalReport.objects.filter(
                 models.Q(patient__user=user)
                 | models.Q(dependent__patient__user=user)
@@ -347,3 +348,134 @@ class DependentViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         patient = self.request.user.patient_profile
         serializer.save(patient=patient)
+
+
+class SymptomAssessmentViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated]
+    filter_backends = [filters.OrderingFilter]
+    ordering_fields = ["created_at", "recommended_specialization"]
+    ordering = ["-created_at"]
+
+    def get_serializer_class(self):
+        if self.action == "create":
+            return SymptomAssessmentCreateSerializer
+        return SymptomAssessmentSerializer
+
+    def get_queryset(self):
+        user = self.request.user
+        if not user.is_authenticated:
+            return SymptomAssessment.objects.none()
+
+        if user.user_type == "patient":
+            linked_users = Dependent.objects.filter(
+                patient__user=user, linked_user__isnull=False
+            ).values_list("linked_user", flat=True)
+
+            return SymptomAssessment.objects.filter(
+                models.Q(patient__user=user)
+                | models.Q(dependent__patient__user=user)
+                | models.Q(patient__user__in=linked_users)
+            ).distinct()
+
+        if user.user_type == "doctor":
+            return SymptomAssessment.objects.filter(
+                patient__appointments__doctor__user=user
+            ).distinct()
+
+        return SymptomAssessment.objects.none()
+
+    def create(self, request, *args, **kwargs):
+        if request.user.user_type != "patient":
+            return Response(
+                {"error": "Only patients can submit symptoms for AI analysis"},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+        try:
+            patient = request.user.patient_profile
+        except Patient.DoesNotExist:
+            return Response(
+                {"error": "Patient profile not found"}, status=status.HTTP_404_NOT_FOUND
+            )
+
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        symptoms = serializer.validated_data["symptoms"]
+        dependent_id = serializer.validated_data.get("dependent_id")
+        dependent = None
+        if dependent_id:
+            try:
+                dependent = Dependent.objects.get(id=dependent_id, patient=patient)
+            except Dependent.DoesNotExist:
+                return Response(
+                    {"error": "Selected dependent was not found"},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+
+        try:
+            ai_service = AIService()
+            ai_results = ai_service.analyze_symptoms_only(symptoms)
+        except Exception as e:
+            return Response(
+                {"error": f"AI analysis failed: {str(e)}"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
+
+        specialization_map = {
+            "Cardiologist": "cardiologist",
+            "Neurologist": "neurologist",
+            "Dermatologist": "dermatologist",
+            "Orthopedic": "orthopedic",
+            "Pediatrician": "pediatrician",
+            "Psychiatrist": "psychiatrist",
+            "Gynecologist": "gynecologist",
+            "Oncologist": "oncologist",
+            "Gastroenterologist": "gastroenterologist",
+            "General Physician": "general_physician",
+        }
+
+        required_fields = [
+            "recommended_specialization",
+            "probable_conditions",
+            "medication_guidance",
+            "home_care_suggestions",
+            "red_flags",
+            "summary",
+            "disclaimer",
+        ]
+        missing_fields = [field for field in required_fields if field not in ai_results]
+        if missing_fields:
+            return Response(
+                {
+                    "error": "AI analysis response is missing required fields",
+                    "missing_fields": missing_fields,
+                },
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
+
+        recommended_specialization = ai_results["recommended_specialization"]
+        matching_doctors = Doctor.objects.filter(
+            specialization=specialization_map.get(
+                recommended_specialization, "general_physician"
+            )
+        )
+
+        assessment = SymptomAssessment.objects.create(
+            patient=patient,
+            dependent=dependent,
+            symptoms=symptoms,
+            recommended_specialization=recommended_specialization,
+            probable_conditions=ai_results["probable_conditions"],
+            medication_guidance=ai_results["medication_guidance"],
+            home_care_suggestions=ai_results["home_care_suggestions"],
+            red_flags=ai_results["red_flags"],
+            ai_summary=ai_results["summary"],
+            disclaimer=ai_results["disclaimer"],
+        )
+
+        response_data = {
+            "assessment": SymptomAssessmentSerializer(assessment).data,
+            "matching_doctors": DoctorListSerializer(matching_doctors, many=True).data,
+        }
+        return Response(response_data, status=status.HTTP_201_CREATED)

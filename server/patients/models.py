@@ -41,6 +41,31 @@ class MedicalReport(models.Model):
         return f"Report for {self.patient.user.get_full_name()} - {self.uploaded_at}"
 
 
+class SymptomAssessment(models.Model):
+    patient = models.ForeignKey(
+        Patient, on_delete=models.CASCADE, related_name="symptom_assessments"
+    )
+    dependent = models.ForeignKey(
+        "Dependent",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="symptom_assessments",
+    )
+    symptoms = models.TextField()
+    recommended_specialization = models.CharField(max_length=255, blank=True, null=True)
+    probable_conditions = models.JSONField(default=list, blank=True)
+    medication_guidance = models.JSONField(default=list, blank=True)
+    home_care_suggestions = models.JSONField(default=list, blank=True)
+    red_flags = models.JSONField(default=list, blank=True)
+    ai_summary = models.TextField(blank=True, null=True)
+    disclaimer = models.TextField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Symptom assessment for {self.patient.user.get_full_name()} - {self.created_at}"
+
+
 class Dependent(models.Model):
     RELATIONSHIP_CHOICES = (
         ("Son", "Son"),

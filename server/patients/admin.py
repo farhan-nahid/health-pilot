@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Patient, MedicalReport
+from .models import MedicalReport, Patient, SymptomAssessment
 
 
 @admin.register(Patient)
@@ -24,4 +24,21 @@ class MedicalReportAdmin(admin.ModelAdmin):
         "ai_specialization",
         "ai_summary",
         "uploaded_at",
+    )
+
+
+@admin.register(SymptomAssessment)
+class SymptomAssessmentAdmin(admin.ModelAdmin):
+    list_display = ("patient", "recommended_specialization", "created_at")
+    list_filter = ("recommended_specialization", "created_at")
+    search_fields = ("patient__user__email", "patient__user__first_name", "symptoms")
+    readonly_fields = (
+        "recommended_specialization",
+        "probable_conditions",
+        "medication_guidance",
+        "home_care_suggestions",
+        "red_flags",
+        "ai_summary",
+        "disclaimer",
+        "created_at",
     )

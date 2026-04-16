@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Patient, MedicalReport, Dependent
+from .models import Dependent, MedicalReport, Patient, SymptomAssessment
 
 
 class PatientSerializer(serializers.ModelSerializer):
@@ -87,3 +87,48 @@ class DependentSerializer(serializers.ModelSerializer):
             "updated_at",
         )
         read_only_fields = ("id", "created_at", "updated_at")
+
+
+class SymptomAssessmentSerializer(serializers.ModelSerializer):
+    patient_name = serializers.SerializerMethodField()
+
+    class Meta:
+        model = SymptomAssessment
+        fields = (
+            "id",
+            "patient",
+            "patient_name",
+            "dependent",
+            "symptoms",
+            "recommended_specialization",
+            "probable_conditions",
+            "medication_guidance",
+            "home_care_suggestions",
+            "red_flags",
+            "ai_summary",
+            "disclaimer",
+            "created_at",
+        )
+        read_only_fields = (
+            "id",
+            "patient",
+            "patient_name",
+            "recommended_specialization",
+            "probable_conditions",
+            "medication_guidance",
+            "home_care_suggestions",
+            "red_flags",
+            "ai_summary",
+            "disclaimer",
+            "created_at",
+        )
+
+    def get_patient_name(self, obj):
+        if obj.dependent:
+            return obj.dependent.name
+        return obj.patient.user.get_full_name()
+
+
+class SymptomAssessmentCreateSerializer(serializers.Serializer):
+    symptoms = serializers.CharField(min_length=10)
+    dependent_id = serializers.IntegerField(required=False)

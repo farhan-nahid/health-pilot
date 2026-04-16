@@ -1,24 +1,31 @@
 "use client";
 
 import api from "@/lib/api";
-import type { MedicalReport, PaginatedResponse, UploadReportPayload } from "@/types";
+import type {
+  CreateSymptomAssessmentPayload,
+  PaginatedResponse,
+  SymptomAssessment,
+} from "@/types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-export function useMedicalReports(page: number = 1) {
-  const { data, isLoading, error, refetch } = useQuery<PaginatedResponse<MedicalReport>>({
-    queryKey: ["medical-reports", page],
+export function useSymptomAssessments(page: number = 1) {
+  const { data, isLoading, error, refetch } = useQuery<
+    PaginatedResponse<SymptomAssessment>
+  >({
+    queryKey: ["symptom-assessments", page],
     queryFn: async () => {
-      const url = page > 1 ? `/medical-reports/?page=${page}` : "/medical-reports/";
+      const url =
+        page > 1 ? `/symptom-assessments/?page=${page}` : "/symptom-assessments/";
       const { data } = await api.get(url);
 
       if (data.results) {
-        return data as PaginatedResponse<MedicalReport>;
+        return data as PaginatedResponse<SymptomAssessment>;
       }
       return {
-        count: (data as MedicalReport[]).length,
+        count: (data as SymptomAssessment[]).length,
         next: null,
         previous: null,
-        results: data as MedicalReport[],
+        results: data as SymptomAssessment[],
       };
     },
   });
@@ -34,27 +41,16 @@ export function useMedicalReports(page: number = 1) {
   };
 }
 
-export function useUploadReport() {
+export function useAnalyzeSymptoms() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (payload: UploadReportPayload) => {
-      const formData = new FormData();
-      formData.append("report_file", payload.report_file);
-      formData.append("symptoms", payload.symptoms);
-      if (payload.dependent_id) {
-        formData.append("dependent_id", payload.dependent_id.toString());
-      }
-
-      const { data } = await api.post("/medical-reports/", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+    mutationFn: async (payload: CreateSymptomAssessmentPayload) => {
+      const { data } = await api.post("/symptom-assessments/", payload);
       return data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["medical-reports"] });
+      queryClient.invalidateQueries({ queryKey: ["symptom-assessments"] });
     },
   });
 }

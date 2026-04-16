@@ -1,0 +1,44 @@
+Frontend Symptoms Input Samples
+
+These are raw text values for the `symptoms` field used by frontend forms.
+Use each line (or paragraph) directly as user input.
+
+1) I have had fever since last night with body ache, mild headache, and sore throat.
+
+2) For the past 3 days I feel burning when urinating, frequent urge to pee, and lower belly discomfort.
+
+3) I am having dry cough, runny nose, and slight chest tightness, worse at night.
+
+4) I have a throbbing headache on one side with nausea and light sensitivity for 2 days.
+
+5) I feel stomach bloating after meals, acid reflux, and burning sensation in chest especially when lying down.
+
+6) I developed itchy red rash on both arms after using a new detergent, no swelling in lips or breathing issue.
+
+7) I have right knee pain and mild swelling after climbing stairs, pain increases when bending.
+
+8) I am feeling extreme tiredness, dizziness on standing, and occasional palpitations for one week.
+
+9) My child has fever, reduced appetite, and ear pain for 2 days with irritability at night.
+
+10) I have lower back pain radiating to left leg with tingling and numbness after lifting heavy object.
+
+11) I have intermittent chest discomfort with sweating and pain moving to left shoulder for 20 minutes.
+
+12) I am feeling low mood, poor sleep, and anxiety with loss of interest in daily activities for 3 weeks.
+
+13) I have vomiting and loose stools since morning with mild abdominal cramps and weakness.
+
+14) I am experiencing shortness of breath while walking, dry cough, and fatigue for the last 5 days.
+
+15) I have severe period cramps, heavy bleeding, and pelvic pain during this cycle.
+
+16) I have skin acne flare with painful inflamed bumps on face and jawline for the last month.
+
+17) I feel neck stiffness, fever, and intense headache since today.
+
+18) I have eye redness, itching, and watery discharge, worse in the evening.
+
+19) I am having constipation for one week with hard stools and abdominal discomfort.
+
+20) I have sudden severe abdominal pain on right lower side with nausea and low fever.

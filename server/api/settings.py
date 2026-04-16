@@ -230,8 +230,14 @@ DEFAULT_FROM_EMAIL = os.environ.get(
     "DEFAULT_FROM_EMAIL", "Health Pilot <noreply@healthpilot.com>"
 )
 
-# OpenAI Configuration
-OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
+# OpenAI Configuration (kept as comment for reference)
+# OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
+
+# Free-tier AI Configuration (Hugging Face Inference API)
+HUGGINGFACE_API_KEY = os.environ.get("HUGGINGFACE_API_KEY")
+HUGGINGFACE_MODEL = os.environ.get(
+    "HUGGINGFACE_MODEL", "meta-llama/Meta-Llama-3-8B-Instruct"
+)
 
 # Security Settings for Production
 if not DEBUG:

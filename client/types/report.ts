@@ -1,17 +1,33 @@
-export interface MedicalReport {
+export interface SymptomCondition {
+  name: string;
+  likelihood: "low" | "medium" | "high";
+  reasoning: string;
+}
+
+export interface MedicationGuidance {
+  name: string;
+  purpose: string;
+  dosage_note: string;
+  warning: string;
+}
+
+export interface SymptomAssessment {
   id: number;
   patient: number;
   patient_name: string;
-  report_file: string;
+  dependent: number | null;
   symptoms: string;
-  ai_specialization: string | null;
+  recommended_specialization: string | null;
+  probable_conditions: SymptomCondition[];
+  medication_guidance: MedicationGuidance[];
+  home_care_suggestions: string[];
+  red_flags: string[];
   ai_summary: string | null;
-  extracted_text: string | null;
-  uploaded_at: string;
+  disclaimer: string | null;
+  created_at: string;
 }
 
-export interface UploadReportPayload {
-  report_file: File;
+export interface CreateSymptomAssessmentPayload {
   symptoms: string;
   dependent_id?: number;
 }
