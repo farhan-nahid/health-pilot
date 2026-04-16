@@ -1,21 +1,22 @@
 "use client";
 
-import { Search } from "lucide-react";
-import { useState } from "react";
 import { Input } from "@/components/ui/input";
+import { useDebounce } from "@/hooks/use-debounce";
 import { useDoctors } from "@/hooks/use-doctors";
+import { Search } from "lucide-react";
+import { parseAsInteger, useQueryState } from "nuqs";
+import { useState } from "react";
 import { DoctorList } from "./doctor-list";
 
 export function DoctorsClient() {
-  const { doctors, isLoading } = useDoctors();
+  const [page, setPage] = useQueryState(
+    "page",
+    parseAsInteger.withDefault(1).withOptions({ shallow: false }),
+  );
   const [search, setSearch] = useState("");
+  const debouncedSearch = useDebounce(search, 500);
 
-  const filteredDoctors = doctors.filter((doctor) => {
-    const fullName = doctor.doctor_name.toLowerCase();
-    const specialization = doctor.specialization.toLowerCase();
-    const query = search.toLowerCase();
-    return fullName.includes(query) || specialization.includes(query);
-  });
+  const { doctors, count, isLoading } = useDoctors(debouncedSearch, page);
 
   return (
     <div className="space-y-6">
@@ -33,12 +34,21 @@ export function DoctorsClient() {
         <Input
           placeholder="Search by name or specialization..."
           value={search}
-          onChange={(e) => setSearch(e.target.value)}
+          onChange={(e) => {
+            setSearch(e.target.value);
+            setPage(1);
+          }}
           className="pl-9"
         />
       </div>
 
-      <DoctorList doctors={filteredDoctors} isLoading={isLoading} />
+      <DoctorList
+        doctors={doctors}
+        isLoading={isLoading}
+        count={count}
+        page={page}
+        onPageChange={setPage}
+      />
     </div>
   );
 }

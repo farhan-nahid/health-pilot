@@ -12,7 +12,7 @@ function AppointmentsContent() {
     "page",
     parseAsInteger.withDefault(1).withOptions({ shallow: false }),
   );
-  
+
   const [patientId, setPatientId] = useQueryState(
     "patient_id",
     parseAsString.withOptions({ shallow: false }),

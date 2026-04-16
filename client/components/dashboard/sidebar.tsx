@@ -3,15 +3,15 @@
 import { useUser } from "@/hooks/use-user";
 import { cn } from "@/lib/utils";
 import {
-    Activity,
-    Calendar,
-    Clock,
-    FileText,
-    LayoutDashboard,
-    Settings,
-    Star,
-    UserCircle,
-    Users,
+  Activity,
+  Calendar,
+  Clock,
+  FileText,
+  LayoutDashboard,
+  Settings,
+  Star,
+  UserCircle,
+  Users,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";

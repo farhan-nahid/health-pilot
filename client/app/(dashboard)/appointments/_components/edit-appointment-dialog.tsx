@@ -112,7 +112,7 @@ export function EditAppointmentDialog({
             label="Doctor"
             placeholder={loadingDoctors ? "Loading..." : "Select doctor"}
           >
-            {doctors.map((doc) => (
+            {doctors.map((doc: any) => (
               <SelectItem key={doc.id} value={doc.id.toString()}>
                 {doc.doctor_name} ({doc.specialization})
               </SelectItem>

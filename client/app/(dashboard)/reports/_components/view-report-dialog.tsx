@@ -1,5 +1,7 @@
 "use client";
 
+import { format } from "date-fns";
+import { AlertTriangle, FileText, Info, Pill, Stethoscope } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -9,8 +11,6 @@ import {
 } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
 import type { SymptomAssessment } from "@/types";
-import { format } from "date-fns";
-import { AlertTriangle, FileText, Info, Pill, Stethoscope } from "lucide-react";
 
 export function ViewReportDialog({
   report,
@@ -71,7 +71,10 @@ export function ViewReportDialog({
               </div>
               <div className="space-y-2 rounded-lg border border-border bg-muted/30 p-4">
                 {report.probable_conditions.map((condition, index) => (
-                  <div key={`${condition.name}-${index}`} className="rounded-md border bg-card p-3">
+                  <div
+                    key={`${condition.name}-${index}`}
+                    className="rounded-md border bg-card p-3"
+                  >
                     <p className="font-semibold text-sm">{condition.name}</p>
                     <p className="text-muted-foreground text-xs uppercase">
                       Likelihood: {condition.likelihood}
@@ -90,7 +93,10 @@ export function ViewReportDialog({
               </div>
               <div className="space-y-2 rounded-lg border border-border bg-muted/30 p-4">
                 {report.medication_guidance.map((med, index) => (
-                  <div key={`${med.name}-${index}`} className="rounded-md border bg-card p-3">
+                  <div
+                    key={`${med.name}-${index}`}
+                    className="rounded-md border bg-card p-3"
+                  >
                     <p className="font-semibold text-sm">{med.name}</p>
                     <p className="text-sm">{med.purpose}</p>
                     <p className="text-muted-foreground text-xs">{med.dosage_note}</p>
@@ -128,7 +134,7 @@ export function ViewReportDialog({
           )}
 
           {report.disclaimer && (
-            <div className="rounded-lg border border-amber-400/30 bg-amber-400/10 p-3 text-amber-950 text-xs">
+            <div className="rounded-lg border border-amber-400/30 bg-amber-400/10 p-3 text-amber-950 text-xs dark:border-amber-700/40 dark:bg-amber-900/30 dark:text-amber-200">
               {report.disclaimer}
             </div>
           )}

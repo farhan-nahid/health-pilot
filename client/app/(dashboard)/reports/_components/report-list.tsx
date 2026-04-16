@@ -3,12 +3,12 @@
 import { Button } from "@/components/ui/button";
 import { DataTablePagination } from "@/components/ui/pagination";
 import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from "@/components/ui/table";
 import type { SymptomAssessment } from "@/types";
 import { format } from "date-fns";

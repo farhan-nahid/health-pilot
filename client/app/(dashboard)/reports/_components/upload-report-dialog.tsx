@@ -21,10 +21,7 @@ import {
 import { useDependents } from "@/hooks/use-dependents";
 import { useAnalyzeSymptoms } from "@/hooks/use-medical-reports";
 import { showError, showSuccess } from "@/lib/notifications";
-import {
-  symptomAssessmentSchema,
-  type SymptomAssessmentValues,
-} from "@/schemas/report";
+import { symptomAssessmentSchema, type SymptomAssessmentValues } from "@/schemas/report";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Plus, Sparkles } from "lucide-react";
 import { useState } from "react";
@@ -82,8 +79,8 @@ export function UploadReportDialog({ onSuccess }: { onSuccess?: () => void }) {
         <DialogHeader>
           <DialogTitle>Analyze Symptoms with AI</DialogTitle>
           <DialogDescription>
-            Describe symptoms clearly to get possible conditions, medicine guidance,
-            and actionable care suggestions.
+            Describe symptoms clearly to get possible conditions, medicine guidance, and
+            actionable care suggestions.
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 py-4">
@@ -91,22 +88,19 @@ export function UploadReportDialog({ onSuccess }: { onSuccess?: () => void }) {
             control={form.control}
             name="dependent_id"
             render={({ field }) => (
-                <Select
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select member (Defaults to You)" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="self">Me (Primary)</SelectItem>
-                    {dependents.map((dep) => (
-                      <SelectItem key={dep.id} value={dep.id.toString()}>
-                        {dep.name} ({dep.relationship})
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select member (Defaults to You)" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="self">Me (Primary)</SelectItem>
+                  {dependents.map((dep) => (
+                    <SelectItem key={dep.id} value={dep.id.toString()}>
+                      {dep.name} ({dep.relationship})
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             )}
           />
 

@@ -12,17 +12,19 @@ import {
 } from "@/components/ui/dialog";
 import {
   Form,
-  FormControl, FormField,
+  FormControl,
+  FormField,
   FormItem,
   FormLabel,
-  FormMessage
+  FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import {
   Select,
-  SelectContent, SelectItem,
+  SelectContent,
+  SelectItem,
   SelectTrigger,
-  SelectValue
+  SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { BLOOD_GROUPS } from "@/constants";
@@ -82,7 +84,7 @@ export function DependentDialog({ dependent, children }: DependentDialogProps) {
             setOpen(false);
           },
           onError: (err: any) => showError(err),
-        }
+        },
       );
     } else {
       createMutation.mutate(values, {
@@ -100,10 +102,8 @@ export function DependentDialog({ dependent, children }: DependentDialogProps) {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        {children || <Button>Add Member</Button>}
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogTrigger asChild>{children || <Button>Add Member</Button>}</DialogTrigger>
+      <DialogContent className="sm:max-w-106.25">
         <DialogHeader>
           <DialogTitle>
             {dependent ? "Edit Family Member" : "Add Family Member"}
@@ -247,10 +247,7 @@ export function DependentDialog({ dependent, children }: DependentDialogProps) {
                         </DialogDescription>
                       </div>
                       <FormControl>
-                         <Switch
-                          checked={field.value}
-                          onCheckedChange={field.onChange}
-                        />
+                        <Switch checked={field.value} onCheckedChange={field.onChange} />
                       </FormControl>
                     </FormItem>
                   )}
@@ -265,7 +262,11 @@ export function DependentDialog({ dependent, children }: DependentDialogProps) {
                         <FormItem>
                           <FormLabel>Email</FormLabel>
                           <FormControl>
-                            <Input placeholder="email@example.com" type="email" {...field} />
+                            <Input
+                              placeholder="email@example.com"
+                              type="email"
+                              {...field}
+                            />
                           </FormControl>
                           <FormMessage />
                         </FormItem>

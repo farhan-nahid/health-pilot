@@ -1,11 +1,11 @@
 "use client";
 
 import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle,
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
 } from "@/components/ui/card";
 import { useUser } from "@/hooks/use-user";
 import { ReviewList } from "./_components/review-list";
@@ -22,18 +22,12 @@ export default function PatientReviewsPage() {
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
           <h1 className="font-bold text-2xl tracking-tight">
-            {
-              user?.patient_profile?.id
-                ? "My Reviews"
-                : "Patient Reviews"
-            }
+            {user?.patient_profile?.id ? "My Reviews" : "Patient Reviews"}
           </h1>
           <p className="text-muted-foreground">
-            {
-              user?.patient_profile?.id
-                ? "Manage reviews you have written for doctors."
-                : "See what patients are saying about you."
-          }
+            {user?.patient_profile?.id
+              ? "Manage reviews you have written for doctors."
+              : "See what patients are saying about you."}
           </p>
         </div>
       </div>

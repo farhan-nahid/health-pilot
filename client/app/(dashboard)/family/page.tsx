@@ -1,30 +1,30 @@
 "use client";
 
 import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle,
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
 } from "@/components/ui/card";
 import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from "@/components/ui/table";
 import { useDeleteDependent, useDependents } from "@/hooks/use-dependents";
 import { showError, showSuccess } from "@/lib/notifications";
@@ -77,9 +77,7 @@ export default function FamilyPage() {
         </CardHeader>
         <CardContent>
           {isLoading ? (
-            <div className="py-8 text-center text-muted-foreground">
-              Loading...
-            </div>
+            <div className="py-8 text-center text-muted-foreground">Loading...</div>
           ) : dependents.length === 0 ? (
             <div className="py-8 text-center text-muted-foreground">
               No family members added yet.
@@ -136,8 +134,8 @@ export default function FamilyPage() {
           <AlertDialogHeader>
             <AlertDialogTitle>Are you sure?</AlertDialogTitle>
             <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete the
-              family member from your account.
+              This action cannot be undone. This will permanently delete the family member
+              from your account.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
