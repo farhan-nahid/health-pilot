@@ -1,6 +1,5 @@
 import json
 import requests
-import PyPDF2
 import logging
 from django.conf import settings
 
@@ -330,16 +329,7 @@ class AIService:
 
         raise Exception("Unexpected response format from Hugging Face API")
 
-    def extract_text_from_pdf(self, pdf_file):
-        """Extract text from uploaded PDF file"""
-        try:
-            pdf_reader = PyPDF2.PdfReader(pdf_file)
-            text = ""
-            for page in pdf_reader.pages:
-                text += page.extract_text()
-            return text.strip()
-        except Exception as e:
-            raise Exception(f"Error extracting text from PDF: {str(e)}")
+
 
     def analyze_symptoms(self, symptoms):
         """Analyze symptoms and return structured AI guidance."""
@@ -508,31 +498,4 @@ If previous model output exists and is malformed, fix it into valid JSON while p
 
         return summary
 
-    def process_medical_report(self, pdf_file, symptoms):
-        """
-        Complete processing pipeline:
-        1. Extract text from PDF
-        2. Analyze symptoms
-        3. Summarize medical report
-        """
-        try:
-            # Extract text from PDF
-            extracted_text = self.extract_text_from_pdf(pdf_file)
 
-            # Analyze symptoms
-            symptom_analysis = self.analyze_symptoms(symptoms)
-
-            # Summarize medical report
-            report_summary = self.summarize_medical_report(extracted_text, symptoms)
-
-            return {
-                "extracted_text": extracted_text,
-                "symptom_analysis": symptom_analysis,
-                "report_summary": report_summary,
-                "primary_specialization": symptom_analysis[
-                    "recommended_specialization"
-                ],
-            }
-
-        except Exception as e:
-            raise Exception(f"Error processing medical report: {str(e)}")
