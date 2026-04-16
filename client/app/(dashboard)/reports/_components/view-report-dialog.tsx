@@ -1,5 +1,7 @@
 "use client";
 
+import { format } from "date-fns";
+import { AlertTriangle, FileText, Info, Pill, Stethoscope } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -9,8 +11,6 @@ import {
 } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
 import type { SymptomAssessment } from "@/types";
-import { format } from "date-fns";
-import { AlertTriangle, FileText, Info, Pill, Stethoscope } from "lucide-react";
 
 export function ViewReportDialog({
   report,
@@ -134,7 +134,7 @@ export function ViewReportDialog({
           )}
 
           {report.disclaimer && (
-            <div className="rounded-lg border border-amber-400/30 bg-amber-400/10 p-3 text-xs text-amber-950 dark:text-amber-200 dark:bg-amber-900/30 dark:border-amber-700/40">
+            <div className="rounded-lg border border-amber-400/30 bg-amber-400/10 p-3 text-amber-950 text-xs dark:border-amber-700/40 dark:bg-amber-900/30 dark:text-amber-200">
               {report.disclaimer}
             </div>
           )}
