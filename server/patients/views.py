@@ -22,7 +22,8 @@ from doctors.serializers import DoctorListSerializer
 
 class PatientViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
-    filter_backends = [filters.OrderingFilter]
+    filter_backends = [filters.OrderingFilter, filters.SearchFilter]
+    search_fields = ["user__first_name", "user__last_name", "user__email"]
     ordering_fields = ["created_at", "updated_at"]
     ordering = ["-created_at"]
 

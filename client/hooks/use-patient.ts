@@ -22,12 +22,16 @@ export function usePatientProfile() {
   };
 }
 
-export function usePatients(page: number = 1) {
+export function usePatients(search: string = "", page: number = 1) {
   const { data, isLoading, error } = useQuery<PaginatedResponse<Patient>>({
-    queryKey: ["patients", page],
+    queryKey: ["patients", search, page],
     queryFn: async () => {
-      const url = page > 1 ? `/patients/?page=${page}` : "/patients/";
-      const { data } = await api.get(url);
+      const params = new URLSearchParams();
+      params.append("page", page.toString());
+      if (search) {
+        params.append("search", search);
+      }
+      const { data } = await api.get(`/patients/?${params.toString()}`);
 
       if (data.results) {
         return data as PaginatedResponse<Patient>;
