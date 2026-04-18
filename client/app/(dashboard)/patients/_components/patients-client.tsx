@@ -4,6 +4,7 @@ import { Search } from "lucide-react";
 import { parseAsInteger, useQueryState } from "nuqs";
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
+import { useDebounce } from "@/hooks/use-debounce";
 import { usePatients } from "@/hooks/use-patient";
 import { PatientList } from "./patient-list";
 
@@ -12,15 +13,9 @@ export function PatientsClient() {
     "page",
     parseAsInteger.withDefault(1).withOptions({ shallow: false }),
   );
-  const { patients, count, isLoading } = usePatients(page);
   const [search, setSearch] = useState("");
-
-  const filteredPatients = patients.filter((patient) => {
-    const fullName = `${patient.user.first_name} ${patient.user.last_name}`.toLowerCase();
-    const email = patient.user.email.toLowerCase();
-    const query = search.toLowerCase();
-    return fullName.includes(query) || email.includes(query);
-  });
+  const debouncedSearch = useDebounce(search, 500);
+  const { patients, count, isLoading } = usePatients(debouncedSearch, page);
 
   return (
     <div className="space-y-6">
@@ -38,13 +33,16 @@ export function PatientsClient() {
         <Input
           placeholder="Search patients by name or email..."
           value={search}
-          onChange={(e) => setSearch(e.target.value)}
+          onChange={(e) => {
+            setSearch(e.target.value);
+            setPage(1);
+          }}
           className="pl-9"
         />
       </div>
 
       <PatientList
-        patients={filteredPatients}
+        patients={patients}
         isLoading={isLoading}
         count={count}
         page={page}
