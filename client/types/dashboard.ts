@@ -1,5 +1,13 @@
 import type { Appointment } from "./appointment";
 
+export interface DashboardActivityItem {
+  id: string;
+  type: "appointment" | "report";
+  title: string;
+  detail: string;
+  date: string;
+}
+
 export interface DashboardSummary {
   user: {
     name: string;
@@ -17,11 +25,5 @@ export interface DashboardSummary {
     unique_specializations?: string[];
   };
   upcoming_consultations: Appointment[];
-  recent_activity: {
-    id: string;
-    type: "appointment" | "report";
-    title: string;
-    detail: string;
-    date: string;
-  }[];
+  recent_activity: DashboardActivityItem[];
 }

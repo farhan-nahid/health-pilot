@@ -2,7 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import api from "@/lib/api";
-import type { DashboardSummary } from "@/types";
+import type { DashboardActivityItem, DashboardSummary, PaginatedResponse } from "@/types";
 
 export function useDashboardSummary(userType?: string) {
   const { data, isLoading, error, refetch } = useQuery<DashboardSummary>({
@@ -21,6 +21,41 @@ export function useDashboardSummary(userType?: string) {
 
   return {
     summary: data,
+    isLoading,
+    error: error ? (error as any).message : null,
+    refresh: refetch,
+  };
+}
+
+export function useDashboardActivity(userType?: string, page: number = 1) {
+  const { data, isLoading, error, refetch } = useQuery<
+    PaginatedResponse<DashboardActivityItem>
+  >({
+    queryKey: ["dashboard-activity", userType, page],
+    queryFn: async () => {
+      const baseEndpoint =
+        userType === "doctor" ? "/doctors/activity/" : "/patients/activity/";
+      const endpoint = page > 1 ? `${baseEndpoint}?page=${page}` : baseEndpoint;
+
+      const { data } = await api.get(endpoint);
+      if (data.results) {
+        return data as PaginatedResponse<DashboardActivityItem>;
+      }
+
+      return {
+        count: (data as DashboardActivityItem[]).length,
+        next: null,
+        previous: null,
+        results: data as DashboardActivityItem[],
+      };
+    },
+    retry: false,
+    enabled: !!userType,
+  });
+
+  return {
+    activities: data?.results || [],
+    count: data?.count || 0,
     isLoading,
     error: error ? (error as any).message : null,
     refresh: refetch,

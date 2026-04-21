@@ -4,7 +4,6 @@ from django.db.models import Avg, Count
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
-from django.shortcuts import get_object_or_404
 from .models import Doctor, DoctorAvailability
 from .serializers import (
     DoctorSerializer,
@@ -191,6 +190,50 @@ class DoctorViewSet(viewsets.ModelViewSet):
             }
 
             return Response(response_data)
+        except Doctor.DoesNotExist:
+            return Response(
+                {"error": "Doctor profile not found"}, status=status.HTTP_404_NOT_FOUND
+            )
+
+    @action(detail=False, methods=["get"])
+    def activity(self, request):
+        """Get paginated activity feed for the current doctor"""
+        if request.user.user_type != "doctor":
+            return Response(
+                {"error": "Only doctors can access this endpoint"},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+        try:
+            doctor = request.user.doctor_profile
+            appointments = (
+                Appointment.objects.filter(doctor=doctor)
+                .select_related("patient__user")
+                .only(
+                    "id",
+                    "status",
+                    "updated_at",
+                    "patient__user__first_name",
+                    "patient__user__last_name",
+                )
+                .order_by("-updated_at")
+            )
+
+            page = self.paginate_queryset(appointments)
+            if page is not None:
+                activity_list = [
+                    {
+                        "id": f"app-{app.id}",
+                        "type": "appointment",
+                        "title": f"Appointment {app.status.capitalize()}",
+                        "detail": f"With patient {app.patient.user.get_full_name()}",
+                        "date": app.updated_at,
+                    }
+                    for app in page
+                ]
+                return self.get_paginated_response(activity_list)
+
+            return Response([])
         except Doctor.DoesNotExist:
             return Response(
                 {"error": "Doctor profile not found"}, status=status.HTTP_404_NOT_FOUND
