@@ -2,6 +2,7 @@
 
 import { formatDistanceToNow } from "date-fns";
 import {
+  ArrowRight,
   Calendar,
   CheckCircle2,
   Clock,
@@ -10,6 +11,8 @@ import {
   Stethoscope,
   Users,
 } from "lucide-react";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useDashboardSummary } from "@/hooks/use-dashboard";
 import { useUser } from "@/hooks/use-user";
@@ -128,8 +131,14 @@ export function DashboardClient() {
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
         <Card className="col-span-4 border-border bg-card/50 backdrop-blur-sm">
-          <CardHeader>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0">
             <CardTitle>Recent Activity</CardTitle>
+            <Button variant="ghost" size="sm" asChild>
+              <Link href="/activity">
+                View all
+                <ArrowRight className="ml-1 h-4 w-4" />
+              </Link>
+            </Button>
           </CardHeader>
           <CardContent>
             <div className="space-y-8">

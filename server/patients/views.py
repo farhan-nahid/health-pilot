@@ -1,5 +1,6 @@
 from django.db import models
-from rest_framework import viewsets, status, filters
+from django.db.models.functions import Coalesce
+from rest_framework import viewsets, status, filters, pagination
 from rest_framework.decorators import action
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.permissions import IsAuthenticated
@@ -20,8 +21,15 @@ from doctors.models import Doctor
 from doctors.serializers import DoctorListSerializer
 
 
+class ActivityPagination(pagination.PageNumberPagination):
+    page_size = 10
+    page_size_query_param = "page_size"
+    max_page_size = 100
+
+
 class PatientViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
+    pagination_class = ActivityPagination
     filter_backends = [filters.OrderingFilter, filters.SearchFilter]
     search_fields = ["user__first_name", "user__last_name", "user__email"]
     ordering_fields = ["created_at", "updated_at"]
@@ -86,6 +94,30 @@ class PatientViewSet(viewsets.ModelViewSet):
             # 1. Stats
             appointments = Appointment.objects.filter(patient=patient)
             reports = MedicalReport.objects.filter(patient=patient)
+            symptom_assessments = SymptomAssessment.objects.filter(patient=patient)
+
+            reports_total = reports.count() + symptom_assessments.count()
+            reports_analyzed = (
+                reports.exclude(ai_specialization__isnull=True)
+                .exclude(ai_specialization="")
+                .count()
+                + symptom_assessments.exclude(recommended_specialization__isnull=True)
+                .exclude(recommended_specialization="")
+                .count()
+            )
+
+            unique_specializations = set(
+                reports.values_list("ai_specialization", flat=True)
+                .exclude(ai_specialization__isnull=True)
+                .exclude(ai_specialization="")
+            )
+            unique_specializations.update(
+                symptom_assessments.values_list(
+                    "recommended_specialization", flat=True
+                )
+                .exclude(recommended_specialization__isnull=True)
+                .exclude(recommended_specialization="")
+            )
 
             stats = {
                 "appointments_total": appointments.count(),
@@ -93,16 +125,9 @@ class PatientViewSet(viewsets.ModelViewSet):
                 "appointments_completed": appointments.filter(
                     status="completed"
                 ).count(),
-                "reports_total": reports.count(),
-                "reports_analyzed": reports.exclude(ai_specialization__isnull=True)
-                .exclude(ai_specialization="")
-                .count(),
-                "unique_specializations": list(
-                    reports.values_list("ai_specialization", flat=True)
-                    .distinct()
-                    .exclude(ai_specialization__isnull=True)
-                    .exclude(ai_specialization="")
-                ),
+                "reports_total": reports_total,
+                "reports_analyzed": reports_analyzed,
+                "unique_specializations": sorted(unique_specializations),
             }
 
             # 2. Upcoming Consultations (Accepted ones)
@@ -114,6 +139,7 @@ class PatientViewSet(viewsets.ModelViewSet):
             # Combine latest appointments and reports
             recent_appointments = appointments.order_by("-updated_at")[:5]
             recent_reports = reports.order_by("-uploaded_at")[:5]
+            recent_symptom_assessments = symptom_assessments.order_by("-created_at")[:5]
 
             activity_list = []
             for app in recent_appointments:
@@ -140,6 +166,19 @@ class PatientViewSet(viewsets.ModelViewSet):
                     }
                 )
 
+            for assessment in recent_symptom_assessments:
+                activity_list.append(
+                    {
+                        "id": f"rep-sa-{assessment.id}",
+                        "type": "report",
+                        "title": "AI Symptom Assessment Generated",
+                        "detail": f"Recommended {assessment.recommended_specialization}"
+                        if assessment.recommended_specialization
+                        else "AI triage guidance generated",
+                        "date": assessment.created_at,
+                    }
+                )
+
             # Sort activity by date descending
             activity_list.sort(key=lambda x: x["date"], reverse=True)
 
@@ -156,6 +195,161 @@ class PatientViewSet(viewsets.ModelViewSet):
             }
 
             return Response(response_data)
+        except Patient.DoesNotExist:
+            return Response(
+                {"error": "Patient profile not found"}, status=status.HTTP_404_NOT_FOUND
+            )
+
+    @action(detail=False, methods=["get"])
+    def activity(self, request):
+        """Get paginated activity feed for the current patient"""
+        if request.user.user_type != "patient":
+            return Response(
+                {"error": "Only patients can access this endpoint"},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+        try:
+            patient = request.user.patient_profile
+
+            appointment_activity = (
+                Appointment.objects.filter(patient=patient)
+                .annotate(
+                    activity_date=models.F("updated_at"),
+                    activity_kind=models.Value(
+                        "appointment", output_field=models.CharField()
+                    ),
+                    activity_ref_id=models.F("id"),
+                    activity_status=models.F("status"),
+                    counterpart_first_name=models.F("doctor__user__first_name"),
+                    counterpart_last_name=models.F("doctor__user__last_name"),
+                    activity_specialization=models.Value(
+                        "", output_field=models.CharField()
+                    ),
+                )
+                .values(
+                    "activity_date",
+                    "activity_kind",
+                    "activity_ref_id",
+                    "activity_status",
+                    "counterpart_first_name",
+                    "counterpart_last_name",
+                    "activity_specialization",
+                )
+            )
+
+            report_activity = (
+                MedicalReport.objects.filter(patient=patient)
+                .annotate(
+                    activity_date=models.F("uploaded_at"),
+                    activity_kind=models.Value(
+                        "medical_report", output_field=models.CharField()
+                    ),
+                    activity_ref_id=models.F("id"),
+                    activity_status=models.Value("", output_field=models.CharField()),
+                    counterpart_first_name=models.Value(
+                        "", output_field=models.CharField()
+                    ),
+                    counterpart_last_name=models.Value(
+                        "", output_field=models.CharField()
+                    ),
+                    activity_specialization=Coalesce(
+                        "ai_specialization", models.Value("", output_field=models.CharField())
+                    ),
+                )
+                .values(
+                    "activity_date",
+                    "activity_kind",
+                    "activity_ref_id",
+                    "activity_status",
+                    "counterpart_first_name",
+                    "counterpart_last_name",
+                    "activity_specialization",
+                )
+            )
+
+            symptom_activity = (
+                SymptomAssessment.objects.filter(patient=patient)
+                .annotate(
+                    activity_date=models.F("created_at"),
+                    activity_kind=models.Value(
+                        "symptom_assessment", output_field=models.CharField()
+                    ),
+                    activity_ref_id=models.F("id"),
+                    activity_status=models.Value("", output_field=models.CharField()),
+                    counterpart_first_name=models.Value(
+                        "", output_field=models.CharField()
+                    ),
+                    counterpart_last_name=models.Value(
+                        "", output_field=models.CharField()
+                    ),
+                    activity_specialization=Coalesce(
+                        "recommended_specialization",
+                        models.Value("", output_field=models.CharField()),
+                    ),
+                )
+                .values(
+                    "activity_date",
+                    "activity_kind",
+                    "activity_ref_id",
+                    "activity_status",
+                    "counterpart_first_name",
+                    "counterpart_last_name",
+                    "activity_specialization",
+                )
+            )
+
+            activity_queryset = appointment_activity.union(
+                report_activity, symptom_activity, all=True
+            ).order_by("-activity_date")
+
+            page = self.paginate_queryset(activity_queryset)
+            if page is not None:
+                activity_list = []
+                for activity in page:
+                    if activity["activity_kind"] == "appointment":
+                        doctor_name = (
+                            f"{activity['counterpart_first_name']} {activity['counterpart_last_name']}"
+                        ).strip()
+                        activity_list.append(
+                            {
+                                "id": f"app-{activity['activity_ref_id']}",
+                                "type": "appointment",
+                                "title": f"Appointment {activity['activity_status'].capitalize()}",
+                                "detail": f"With Dr. {doctor_name}",
+                                "date": activity["activity_date"],
+                            }
+                        )
+                    elif activity["activity_kind"] == "medical_report":
+                        specialization = activity["activity_specialization"]
+                        activity_list.append(
+                            {
+                                "id": f"rep-{activity['activity_ref_id']}",
+                                "type": "report",
+                                "title": "Medical Report Uploaded",
+                                "detail": f"Analyzed as {specialization}"
+                                if specialization
+                                else "Processing AI analysis...",
+                                "date": activity["activity_date"],
+                            }
+                        )
+                    else:
+                        specialization = activity["activity_specialization"]
+                        activity_list.append(
+                            {
+                                "id": f"rep-sa-{activity['activity_ref_id']}",
+                                "type": "report",
+                                "title": "AI Symptom Assessment Generated",
+                                "detail": f"Recommended {specialization}"
+                                if specialization
+                                else "AI triage guidance generated",
+                                "date": activity["activity_date"],
+                            }
+                        )
+
+                return self.get_paginated_response(activity_list)
+
+            return Response([])
         except Patient.DoesNotExist:
             return Response(
                 {"error": "Patient profile not found"}, status=status.HTTP_404_NOT_FOUND

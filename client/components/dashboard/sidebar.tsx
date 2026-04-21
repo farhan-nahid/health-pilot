@@ -1,7 +1,5 @@
 "use client";
 
-import { useUser } from "@/hooks/use-user";
-import { cn } from "@/lib/utils";
 import {
   Activity,
   Calendar,
@@ -15,17 +13,20 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useUser } from "@/hooks/use-user";
+import { cn } from "@/lib/utils";
 
 const navigation = [
   { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
   { name: "Appointments", href: "/appointments", icon: Calendar },
+  { name: "Activity", href: "/activity", icon: Activity },
   { name: "Doctors", href: "/doctors", icon: Users, roles: ["patient"] },
   { name: "Patients", href: "/patients", icon: Users, roles: ["doctor"] },
   {
     name: "Medical Reports",
     href: "/reports",
     icon: FileText,
-    roles: ["patient", "doctor"],
+    roles: ["patient"],
   },
   { name: "Family Profile", href: "/family", icon: Users, roles: ["patient"] },
   { name: "Schedule", href: "/schedule", icon: Clock, roles: ["doctor"] },
