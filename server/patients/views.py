@@ -86,6 +86,30 @@ class PatientViewSet(viewsets.ModelViewSet):
             # 1. Stats
             appointments = Appointment.objects.filter(patient=patient)
             reports = MedicalReport.objects.filter(patient=patient)
+            symptom_assessments = SymptomAssessment.objects.filter(patient=patient)
+
+            reports_total = reports.count() + symptom_assessments.count()
+            reports_analyzed = (
+                reports.exclude(ai_specialization__isnull=True)
+                .exclude(ai_specialization="")
+                .count()
+                + symptom_assessments.exclude(recommended_specialization__isnull=True)
+                .exclude(recommended_specialization="")
+                .count()
+            )
+
+            unique_specializations = set(
+                reports.values_list("ai_specialization", flat=True)
+                .exclude(ai_specialization__isnull=True)
+                .exclude(ai_specialization="")
+            )
+            unique_specializations.update(
+                symptom_assessments.values_list(
+                    "recommended_specialization", flat=True
+                )
+                .exclude(recommended_specialization__isnull=True)
+                .exclude(recommended_specialization="")
+            )
 
             stats = {
                 "appointments_total": appointments.count(),
@@ -93,16 +117,9 @@ class PatientViewSet(viewsets.ModelViewSet):
                 "appointments_completed": appointments.filter(
                     status="completed"
                 ).count(),
-                "reports_total": reports.count(),
-                "reports_analyzed": reports.exclude(ai_specialization__isnull=True)
-                .exclude(ai_specialization="")
-                .count(),
-                "unique_specializations": list(
-                    reports.values_list("ai_specialization", flat=True)
-                    .distinct()
-                    .exclude(ai_specialization__isnull=True)
-                    .exclude(ai_specialization="")
-                ),
+                "reports_total": reports_total,
+                "reports_analyzed": reports_analyzed,
+                "unique_specializations": sorted(unique_specializations),
             }
 
             # 2. Upcoming Consultations (Accepted ones)
@@ -114,6 +131,7 @@ class PatientViewSet(viewsets.ModelViewSet):
             # Combine latest appointments and reports
             recent_appointments = appointments.order_by("-updated_at")[:5]
             recent_reports = reports.order_by("-uploaded_at")[:5]
+            recent_symptom_assessments = symptom_assessments.order_by("-created_at")[:5]
 
             activity_list = []
             for app in recent_appointments:
@@ -137,6 +155,19 @@ class PatientViewSet(viewsets.ModelViewSet):
                         if rep.ai_specialization
                         else "Processing AI analysis...",
                         "date": rep.uploaded_at,
+                    }
+                )
+
+            for assessment in recent_symptom_assessments:
+                activity_list.append(
+                    {
+                        "id": f"rep-sa-{assessment.id}",
+                        "type": "report",
+                        "title": "AI Symptom Assessment Generated",
+                        "detail": f"Recommended {assessment.recommended_specialization}"
+                        if assessment.recommended_specialization
+                        else "AI triage guidance generated",
+                        "date": assessment.created_at,
                     }
                 )
 

@@ -1,12 +1,12 @@
 "use client";
 
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import api from "@/lib/api";
 import type {
   CreateSymptomAssessmentPayload,
   PaginatedResponse,
   SymptomAssessment,
 } from "@/types";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 export function useSymptomAssessments(page: number = 1) {
   const { data, isLoading, error, refetch } = useQuery<
@@ -51,6 +51,7 @@ export function useAnalyzeSymptoms() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["symptom-assessments"] });
+      queryClient.invalidateQueries({ queryKey: ["dashboard-summary"] });
     },
   });
 }
