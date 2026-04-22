@@ -329,8 +329,6 @@ class AIService:
 
         raise Exception("Unexpected response format from Hugging Face API")
 
-
-
     def analyze_symptoms(self, symptoms):
         """Analyze symptoms and return structured AI guidance."""
         hf_prompt = f"""
@@ -497,5 +495,3 @@ If previous model output exists and is malformed, fix it into valid JSON while p
             raise ValueError("AI summary response was empty")
 
         return summary
-
-

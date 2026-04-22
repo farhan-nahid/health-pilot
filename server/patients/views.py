@@ -112,9 +112,7 @@ class PatientViewSet(viewsets.ModelViewSet):
                 .exclude(ai_specialization="")
             )
             unique_specializations.update(
-                symptom_assessments.values_list(
-                    "recommended_specialization", flat=True
-                )
+                symptom_assessments.values_list("recommended_specialization", flat=True)
                 .exclude(recommended_specialization__isnull=True)
                 .exclude(recommended_specialization="")
             )
@@ -254,7 +252,8 @@ class PatientViewSet(viewsets.ModelViewSet):
                         "", output_field=models.CharField()
                     ),
                     activity_specialization=Coalesce(
-                        "ai_specialization", models.Value("", output_field=models.CharField())
+                        "ai_specialization",
+                        models.Value("", output_field=models.CharField()),
                     ),
                 )
                 .values(

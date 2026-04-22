@@ -4,6 +4,14 @@ from doctors.serializers import DoctorListSerializer
 from patients.models import Patient
 
 
+class PrescriptionMedicineSerializer(serializers.Serializer):
+    name = serializers.CharField(required=False, allow_blank=True)
+    dose = serializers.CharField(required=False, allow_blank=True)
+    when_to_take = serializers.CharField(required=False, allow_blank=True)
+    duration = serializers.CharField(required=False, allow_blank=True)
+    instructions = serializers.CharField(required=False, allow_blank=True)
+
+
 class AppointmentCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Appointment
@@ -81,6 +89,10 @@ class AppointmentSerializer(serializers.ModelSerializer):
             "status",
             "symptoms",
             "doctor_notes",
+            "prescription_data",
+            "follow_up_required",
+            "follow_up_date",
+            "follow_up_notes",
             "rejection_reason",
             "created_at",
             "updated_at",
@@ -116,3 +128,76 @@ class AppointmentUpdateSerializer(serializers.ModelSerializer):
         if value not in ["accepted", "rejected", "completed", "cancelled"]:
             raise serializers.ValidationError("Invalid status value.")
         return value
+
+
+class AppointmentCompleteSerializer(serializers.ModelSerializer):
+    medicines = PrescriptionMedicineSerializer(many=True, required=False)
+    follow_up_date = serializers.DateField(required=False, allow_null=True)
+    follow_up_required = serializers.BooleanField(required=False)
+    follow_up_notes = serializers.CharField(
+        required=False, allow_blank=True, allow_null=True
+    )
+
+    class Meta:
+        model = Appointment
+        fields = (
+            "doctor_notes",
+            "medicines",
+            "follow_up_required",
+            "follow_up_date",
+            "follow_up_notes",
+        )
+
+    def validate_medicines(self, medicines):
+        cleaned_medicines = []
+        for medicine in medicines:
+            if not medicine:
+                continue
+
+            has_content = any(str(value or "").strip() for value in medicine.values())
+            if not has_content:
+                continue
+
+            if not medicine.get("name", "").strip():
+                raise serializers.ValidationError("Each medicine needs a name.")
+            if not medicine.get("when_to_take", "").strip():
+                raise serializers.ValidationError(
+                    "Each medicine needs a time instruction."
+                )
+            if not medicine.get("duration", "").strip():
+                raise serializers.ValidationError("Each medicine needs a duration.")
+
+            cleaned_medicines.append(
+                {
+                    "name": medicine.get("name", "").strip(),
+                    "dose": medicine.get("dose", "").strip(),
+                    "when_to_take": medicine.get("when_to_take", "").strip(),
+                    "duration": medicine.get("duration", "").strip(),
+                    "instructions": medicine.get("instructions", "").strip(),
+                }
+            )
+
+        return cleaned_medicines
+
+    def validate(self, attrs):
+        follow_up_required = attrs.get("follow_up_required", False)
+        follow_up_date = attrs.get("follow_up_date")
+
+        if follow_up_required and not follow_up_date:
+            raise serializers.ValidationError(
+                {"follow_up_date": "Please provide a follow-up date."}
+            )
+
+        return attrs
+
+    def update(self, instance, validated_data):
+        medicines = validated_data.pop("medicines", None)
+
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+
+        if medicines is not None:
+            instance.prescription_data = medicines
+
+        instance.save()
+        return instance
