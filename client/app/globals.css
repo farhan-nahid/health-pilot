@@ -131,4 +131,12 @@
     width: var(--radix-popover-trigger-width);
     max-height: var(--radix-popover-content-available-height);
   }
+
+  .prescription-badge {
+    @apply rounded-full bg-emerald-500/10 px-2 py-1 text-[10px] font-medium uppercase text-emerald-700 dark:text-emerald-300;
+  }
+
+  .prescription-medicine-meta {
+    @apply mt-2 grid gap-2 text-xs text-muted-foreground md:grid-cols-2;
+  }
 }

@@ -1,6 +1,14 @@
 import type { Doctor } from "./doctor";
 import type { Patient } from "./patient";
 
+export interface PrescriptionMedicine {
+  name: string;
+  dose: string;
+  when_to_take: string;
+  duration: string;
+  instructions?: string;
+}
+
 export interface Appointment {
   id: number;
   patient: number;
@@ -13,6 +21,10 @@ export interface Appointment {
   status: "pending" | "accepted" | "rejected" | "completed" | "cancelled";
   symptoms: string;
   doctor_notes: string | null;
+  prescription_data: PrescriptionMedicine[];
+  follow_up_required: boolean;
+  follow_up_date: string | null;
+  follow_up_notes: string | null;
   rejection_reason: string | null;
   created_at: string;
   updated_at: string;
