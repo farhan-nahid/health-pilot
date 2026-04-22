@@ -1,7 +1,18 @@
 "use client";
 
 import { format } from "date-fns";
-import { Activity, Calendar, Clock, FileText, StickyNote, User } from "lucide-react";
+import {
+  Activity,
+  Calendar,
+  Clock,
+  Download,
+  FileText,
+  Pill,
+  StickyNote,
+  User,
+} from "lucide-react";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -10,6 +21,8 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
+import api from "@/lib/api";
+import { showError } from "@/lib/notifications";
 import type { Appointment } from "@/types";
 
 const statusVariants: Record<string, string> = {
@@ -37,11 +50,39 @@ export function ViewAppointmentDialog({
   userType?: "doctor" | "patient";
 }) {
   const isDoctor = userType === "doctor";
+  const [downloading, setDownloading] = useState(false);
+  const canDownloadPrescription = appointment.status === "completed";
+  const hasPrescriptionData = (appointment.prescription_data?.length || 0) > 0;
+
+  const downloadPrescription = async () => {
+    try {
+      setDownloading(true);
+      const response = await api.get(
+        `/appointments/${appointment.id}/prescription_pdf/`,
+        {
+          responseType: "blob",
+        },
+      );
+      const blob = response.data as Blob;
+      const url = window.URL.createObjectURL(blob);
+      const anchor = document.createElement("a");
+      anchor.href = url;
+      anchor.download = `health-pilot-prescription-${appointment.id}.pdf`;
+      document.body.appendChild(anchor);
+      anchor.click();
+      anchor.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (error: any) {
+      showError(error);
+    } finally {
+      setDownloading(false);
+    }
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-125">
-        <DialogHeader>
+      <DialogContent className="flex max-h-[85vh] flex-col overflow-hidden sm:max-w-125">
+        <DialogHeader className="shrink-0">
           <DialogTitle className="flex items-center justify-between pr-6">
             Appointment Details
             <span
@@ -54,9 +95,26 @@ export function ViewAppointmentDialog({
             Detailed information about{" "}
             {isDoctor ? "the patient consultation" : "your consultation"}.
           </DialogDescription>
+          <div className="pt-1">
+            <Button
+              size="sm"
+              variant={canDownloadPrescription ? "default" : "outline"}
+              onClick={downloadPrescription}
+              disabled={!canDownloadPrescription || downloading}
+              loading={downloading}
+              className={canDownloadPrescription ? "bg-blue-600 hover:bg-blue-700" : ""}
+            >
+              {!downloading && <Download className="h-4 w-4" />}
+              {downloading
+                ? "Preparing PDF..."
+                : canDownloadPrescription
+                  ? "Download Prescription PDF"
+                  : "PDF available after completion"}
+            </Button>
+          </div>
         </DialogHeader>
 
-        <div className="space-y-6 pt-4">
+        <div className="min-h-0 flex-1 space-y-6 overflow-y-auto pt-4 pr-1">
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1">
               <span className="flex items-center text-muted-foreground text-xs">
@@ -112,6 +170,83 @@ export function ViewAppointmentDialog({
               <p className="rounded-lg border border-border bg-emerald-500/5 p-3 text-sm">
                 {appointment.doctor_notes}
               </p>
+            </div>
+          )}
+
+          {(hasPrescriptionData || canDownloadPrescription) && (
+            <div className="space-y-2">
+              <span className="flex items-center text-muted-foreground text-xs">
+                <Pill className="mr-1 h-3 w-3" /> Prescription Medicines
+              </span>
+
+              {hasPrescriptionData ? (
+                <div className="space-y-2">
+                  {appointment.prescription_data.map((medicine, index) => (
+                    <div
+                      key={`${medicine.name}-${index}`}
+                      className="rounded-lg border border-border bg-accent/20 p-3"
+                    >
+                      <div className="flex items-center justify-between gap-3">
+                        <p className="font-semibold text-sm">
+                          {medicine.name || "Medicine"}
+                        </p>
+                        <p className="text-muted-foreground text-xs">
+                          {medicine.dose || "-"}
+                        </p>
+                      </div>
+                      <div className="mt-2 grid grid-cols-1 gap-1 text-xs md:grid-cols-2">
+                        <p>
+                          <span className="font-medium">When:</span>{" "}
+                          {medicine.when_to_take || "-"}
+                        </p>
+                        <p>
+                          <span className="font-medium">Duration:</span>{" "}
+                          {medicine.duration || "-"}
+                        </p>
+                      </div>
+                      {medicine.instructions && (
+                        <p className="mt-1 text-muted-foreground text-xs">
+                          <span className="font-medium text-foreground">
+                            Instructions:
+                          </span>{" "}
+                          {medicine.instructions}
+                        </p>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="rounded-lg border border-border bg-accent/20 p-3 text-muted-foreground text-sm">
+                  This appointment was completed, but no medicine list was recorded.
+                </p>
+              )}
+            </div>
+          )}
+
+          {(appointment.follow_up_required ||
+            appointment.follow_up_date ||
+            appointment.follow_up_notes) && (
+            <div className="space-y-2">
+              <span className="flex items-center text-muted-foreground text-xs">
+                <Calendar className="mr-1 h-3 w-3" /> Follow-up
+              </span>
+              <div className="rounded-lg border border-blue-500/20 bg-blue-500/5 p-3 text-sm">
+                <p className="font-medium text-blue-700 dark:text-blue-300">
+                  {appointment.follow_up_required
+                    ? "Patient should come again."
+                    : "Follow-up note recorded."}
+                </p>
+                {appointment.follow_up_date && (
+                  <p className="mt-1 text-blue-700/90 text-xs dark:text-blue-200">
+                    Next visit: {format(new Date(appointment.follow_up_date), "PPP")}
+                  </p>
+                )}
+                {appointment.follow_up_notes && (
+                  <p className="mt-1 text-blue-700/90 text-xs dark:text-blue-200">
+                    {appointment.follow_up_notes}
+                  </p>
+                )}
+              </div>
             </div>
           )}
 

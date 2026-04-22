@@ -4,13 +4,16 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from django.shortcuts import get_object_or_404
 from django.db import models
+from django.http import FileResponse
 from .models import Appointment
 from .serializers import (
     AppointmentSerializer,
     AppointmentCreateSerializer,
     AppointmentUpdateSerializer,
+    AppointmentCompleteSerializer,
 )
 from datetime import datetime, time
+from .pdf import build_prescription_pdf
 
 
 class AppointmentViewSet(viewsets.ModelViewSet):
@@ -181,14 +184,55 @@ class AppointmentViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        appointment.status = "completed"
-        appointment.doctor_notes = request.data.get(
-            "doctor_notes", appointment.doctor_notes
+        serializer = AppointmentCompleteSerializer(
+            instance=appointment, data=request.data, partial=True
         )
+        serializer.is_valid(raise_exception=True)
+        appointment = serializer.save()
+        appointment.status = "completed"
         appointment.save()
 
-        serializer = AppointmentSerializer(appointment)
-        return Response(serializer.data)
+        return Response(AppointmentSerializer(appointment).data)
+
+    @action(detail=True, methods=["get"])
+    def prescription_pdf(self, request, pk=None):
+        """Download a completed appointment prescription as PDF."""
+        appointment = self.get_object()
+
+        if request.user.user_type == "doctor":
+            if appointment.doctor.user != request.user:
+                return Response(
+                    {"error": "You can only access your own prescriptions"},
+                    status=status.HTTP_403_FORBIDDEN,
+                )
+        elif request.user.user_type == "patient":
+            if appointment.patient.user != request.user:
+                return Response(
+                    {"error": "You can only access your own prescriptions"},
+                    status=status.HTTP_403_FORBIDDEN,
+                )
+        else:
+            return Response(
+                {"error": "Only doctors or patients can download prescriptions"},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+        if appointment.status != "completed":
+            return Response(
+                {
+                    "error": "Prescription PDF is only available for completed appointments"
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        pdf_buffer = build_prescription_pdf(appointment)
+        filename = f"health-pilot-prescription-{appointment.id}.pdf"
+        return FileResponse(
+            pdf_buffer,
+            as_attachment=True,
+            filename=filename,
+            content_type="application/pdf",
+        )
 
     @action(detail=True, methods=["post"])
     def cancel(self, request, pk=None):
