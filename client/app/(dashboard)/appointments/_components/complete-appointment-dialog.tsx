@@ -76,6 +76,7 @@ export function CompleteAppointmentDialog({
   onSuccess?: () => void;
 }) {
   const queryClient = useQueryClient();
+  const isEditingCompletedAppointment = appointment.status === "completed";
 
   const form = useForm<
     CompleteAppointmentFormValues,
@@ -122,7 +123,11 @@ export function CompleteAppointmentDialog({
       });
     },
     onSuccess: () => {
-      showSuccess("Appointment marked as completed.");
+      showSuccess(
+        isEditingCompletedAppointment
+          ? "Prescription updated successfully."
+          : "Appointment marked as completed.",
+      );
       queryClient.invalidateQueries({ queryKey: ["appointments"] });
       onOpenChange(false);
       if (onSuccess) onSuccess();
@@ -140,11 +145,21 @@ export function CompleteAppointmentDialog({
         <DialogHeader className="shrink-0">
           <DialogTitle className="flex items-center gap-2">
             <CheckCircle2 className="h-5 w-5 text-emerald-500" />
-            Complete Appointment
+            {isEditingCompletedAppointment ? "Edit Prescription" : "Complete Appointment"}
           </DialogTitle>
           <DialogDescription>
-            Finish this session with patient <strong>{appointment.patient_name}</strong>.
-            Add any final clinical notes or recommendations.
+            {isEditingCompletedAppointment ? (
+              <>
+                Update prescription and follow-up details for patient{" "}
+                <strong>{appointment.patient_name}</strong>.
+              </>
+            ) : (
+              <>
+                Finish this session with patient{" "}
+                <strong>{appointment.patient_name}</strong>. Add any final clinical notes
+                or recommendations.
+              </>
+            )}
           </DialogDescription>
         </DialogHeader>
         <form
@@ -286,7 +301,9 @@ export function CompleteAppointmentDialog({
               className="bg-emerald-600 hover:bg-emerald-700"
               loading={mutation.isPending}
             >
-              Mark as Completed
+              {isEditingCompletedAppointment
+                ? "Save Prescription Changes"
+                : "Mark as Completed"}
             </Button>
           </DialogFooter>
         </form>
