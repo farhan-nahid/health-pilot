@@ -1,7 +1,15 @@
 "use client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { format } from "date-fns";
-import { CheckCircle2, Edit, Eye, MoreHorizontal, Trash2, XCircle } from "lucide-react";
+import {
+  CheckCircle2,
+  Edit,
+  Eye,
+  MoreHorizontal,
+  Pill,
+  Trash2,
+  XCircle,
+} from "lucide-react";
 import { useState } from "react";
 import {
   AlertDialog,
@@ -141,6 +149,15 @@ export function AppointmentActions({
               className="text-emerald-600 focus:bg-emerald-50 focus:text-emerald-600"
             >
               <CheckCircle2 className="mr-2 h-4 w-4" /> Mark Completed
+            </DropdownMenuItem>
+          )}
+
+          {isDoctor && appointment.status === "completed" && (
+            <DropdownMenuItem
+              onClick={() => setShowComplete(true)}
+              className="text-blue-600 focus:bg-blue-50 focus:text-blue-600"
+            >
+              <Pill className="mr-2 h-4 w-4" /> Edit Prescription
             </DropdownMenuItem>
           )}
 

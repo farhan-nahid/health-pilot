@@ -2,7 +2,6 @@ from rest_framework import viewsets, status, filters
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
-from django.shortcuts import get_object_or_404
 from django.db import models
 from django.http import FileResponse
 from .models import Appointment
@@ -12,7 +11,6 @@ from .serializers import (
     AppointmentUpdateSerializer,
     AppointmentCompleteSerializer,
 )
-from datetime import datetime, time
 from .pdf import build_prescription_pdf
 
 
@@ -164,7 +162,7 @@ class AppointmentViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=["post"])
     def complete(self, request, pk=None):
-        """Complete an appointment (doctor only)"""
+        """Complete an appointment or update its prescription (doctor only)"""
         if request.user.user_type != "doctor":
             return Response(
                 {"error": "Only doctors can complete appointments"},
@@ -178,9 +176,10 @@ class AppointmentViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_403_FORBIDDEN,
             )
 
-        if appointment.status != "accepted":
+        # Allow completion of accepted appointments or updating already completed appointments
+        if appointment.status not in ["accepted", "completed"]:
             return Response(
-                {"error": "Only accepted appointments can be marked as completed"},
+                {"error": "Only accepted or completed appointments can be updated"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
@@ -189,7 +188,11 @@ class AppointmentViewSet(viewsets.ModelViewSet):
         )
         serializer.is_valid(raise_exception=True)
         appointment = serializer.save()
-        appointment.status = "completed"
+
+        # Only set to completed if it was previously accepted
+        if appointment.status == "accepted":
+            appointment.status = "completed"
+
         appointment.save()
 
         return Response(AppointmentSerializer(appointment).data)

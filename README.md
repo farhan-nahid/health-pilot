@@ -1,363 +1,196 @@
-# 🏥 Health Pilot
+# Health Pilot
 
-A comprehensive healthcare management platform connecting patients with doctors through intelligent appointment scheduling, medical report analysis, and AI-powered health recommendations.
+Health Pilot is a full-stack healthcare platform for patients and doctors, featuring authentication, profile management, doctor availability, appointment workflows, medical report uploads, and AI-assisted symptom/report guidance.
 
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
-![Django](https://img.shields.io/badge/Django-4.2.27-green.svg)
-![Next.js](https://img.shields.io/badge/Next.js-16.1.0-black.svg)
+![Django](https://img.shields.io/badge/Django-4.2.30-green.svg)
+![Next.js](https://img.shields.io/badge/Next.js-16.2.3-black.svg)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-blue.svg)
 ![Docker](https://img.shields.io/badge/Docker-Ready-blue.svg)
 
-## 📋 Table of Contents
+## Features
 
-- [Features](#-features)
-- [Tech Stack](#-tech-stack)
-- [Architecture](#-architecture)
-- [Getting Started](#-getting-started)
-- [Docker Deployment](#-docker-deployment)
-- [API Documentation](#-api-documentation)
-- [Project Structure](#-project-structure)
-- [Database Models](#-database-models)
-- [Contributing](#-contributing)
-- [License](#-license)
+- Email-first authentication with role-aware patient/doctor flows
+- Doctor profile and availability management
+- Appointment lifecycle (request, accept/reject, complete)
+- Medical report upload and review
+- AI-assisted symptom/report analysis with specialist suggestions
+- Dashboard experiences for both patients and doctors
+- REST API with Swagger UI documentation
 
-## ✨ Features
-
-### For Patients
-- 🔐 **Secure Authentication** - Email-based authentication with customizable settings
-- 📄 **Medical Report Upload** - Upload and manage medical reports with AI analysis
-- 🤖 **AI-Powered Recommendations** - Get specialist recommendations based on symptoms and reports
-- 📅 **Appointment Booking** - Schedule appointments with available doctors
-- 📊 **Health Dashboard** - Track appointments, reports, and health metrics
-- 🔔 **Notifications** - Appointment reminders and health tips
-- ⚙️ **Profile Management** - Update personal information and preferences
-
-### For Doctors
-- 👨‍⚕️ **Professional Profile** - Showcase specialization, experience, and consultation fees
-- 📅 **Schedule Management** - Set availability by day and time slots
-- 📋 **Appointment Management** - Accept, reject, or complete appointments
-- 📝 **Patient Reports** - View medical reports shared by patients
-- 💬 **Doctor Notes** - Add notes and recommendations for appointments
-- 📊 **Dashboard Analytics** - Track appointments and patient interactions
-
-### Admin Features
-- 👥 **User Management** - Manage patients and doctors
-- 📈 **System Analytics** - Monitor platform usage and statistics
-- 🔧 **Configuration** - System-wide settings and configurations
-
-## 🛠️ Tech Stack
-
-### Backend
-- **Framework**: Django 4.2.27 with Django REST Framework
-- **Authentication**: dj-rest-auth with django-allauth
-- **Database**: PostgreSQL 15 (SQLite for development)
-- **Cache**: Redis 7
-- **Task Queue**: Celery
-- **AI Integration**: OpenAI API
-- **API Documentation**: drf-yasg (Swagger)
-- **Server**: Gunicorn (production)
+## Tech Stack
 
 ### Frontend
-- **Framework**: Next.js 16.1.0 (React 19)
-- **Language**: TypeScript
-- **Styling**: Tailwind CSS 4
-- **UI Components**: Radix UI
-- **State Management**: TanStack Query (React Query)
-- **HTTP Client**: Xior
-- **Date Handling**: date-fns
-- **Icons**: Lucide React
-- **Notifications**: Sonner
+- Next.js 16.2.3 (App Router) + React 19
+- TypeScript
+- Tailwind CSS 4
+- Radix UI
+- TanStack Query
+- Zod + React Hook Form
 
-### DevOps
-- **Containerization**: Docker & Docker Compose
-- **Deployment**: Render (with Blueprint support)
-- **Version Control**: Git
+### Backend
+- Django 4.2.30 + Django REST Framework
+- dj-rest-auth + django-allauth
+- SQLite (default local) or PostgreSQL
+- drf-yasg (Swagger)
+- WhiteNoise + Gunicorn for containerized runtime
 
-## 🏗️ Architecture
+### AI Provider
+- Primary: Hugging Face Inference API (configured via `HUGGINGFACE_API_KEY`)
+- Legacy OpenAI wiring is preserved in comments for reference
 
-```
-┌─────────────────┐         ┌─────────────────┐
-│   Next.js       │         │   Django        │
-│   Frontend      │────────▶│   REST API      │
-│   (Port 3000)   │         │   (Port 8000)   │
-└─────────────────┘         └─────────────────┘
-                                     │
-                    ┌────────────────┼────────────────┐
-                    │                │                │
-              ┌─────▼─────┐    ┌────▼────┐    ┌─────▼─────┐
-              │ PostgreSQL│    │  Redis  │    │  OpenAI   │
-              │ Database  │    │  Cache  │    │    API    │
-              └───────────┘    └─────────┘    └───────────┘
+## Architecture
+
+```text
+client (Next.js, :3000) ---> server (Django API, :8000)
+                                   | \
+                                   |  \-- AI provider (Hugging Face)
+                                   \
+                                    \-- DB (SQLite local or PostgreSQL in Docker)
 ```
 
-## 🚀 Getting Started
+## Repository Layout
+
+```text
+health-pilot/
+├─ client/                    # Next.js frontend
+├─ server/                    # Django backend
+├─ docker-compose.dev.yaml    # Local multi-service stack (db, redis, backend, frontend)
+├─ docker-compose.prod.yaml   # Production-oriented compose setup
+├─ .env.example               # Environment template
+└─ README.md
+```
+
+## Quick Start (Local Development)
 
 ### Prerequisites
 
-- Python 3.12+
-- Node.js 18+ or Bun
-- PostgreSQL 15+ (or use SQLite for development)
-- Redis (optional, for caching)
-- Docker & Docker Compose (for containerized deployment)
+- Python 3.11+
+- Node.js 18+
+- npm or Bun
 
-### Local Development Setup
-
-#### 1. Clone the Repository
+### 1) Clone and configure env
 
 ```bash
 git clone https://github.com/farhan-nahid/health-pilot.git
 cd health-pilot
+cp .env.example .env
 ```
 
-#### 2. Backend Setup
+### 2) Run backend (Django)
 
 ```bash
 cd server
-
-# Create virtual environment
 python -m venv .venv
-source .venv/bin/activate  # On Windows: .venv\Scripts\activate
-
-# Install dependencies
+source .venv/bin/activate
 pip install -r requirements.txt
-
-# Create .env file (optional)
-cp .env.example .env
-# Edit .env with your configuration
-
-# Run migrations
 python manage.py migrate
-
-# Create superuser
-python manage.py createsuperuser
-
-# Run development server
 python manage.py runserver
 ```
 
-Backend will be available at: http://localhost:8000
+Backend: http://localhost:8000
 
-#### 3. Frontend Setup
+### 3) Run frontend (Next.js)
+
+In a new terminal:
 
 ```bash
 cd client
-
-# Install dependencies (using bun)
-bun install
-
-# Or using npm
 npm install
-
-# Run development server
-bun dev
-# Or: npm run dev
+npm run dev
 ```
 
-Frontend will be available at: http://localhost:3000
+Frontend: http://localhost:3000
 
-### Environment Variables
+## Environment Variables
 
-#### Backend (.env)
+Create `.env` from `.env.example` at repository root.
+
+Most relevant values for local development:
+
 ```env
-DEBUG=1
-SECRET_KEY=your-secret-key
-DB_ENGINE=django.db.backends.postgresql
-DB_NAME=healthpilot
-DB_USER=postgres
-DB_PASSWORD=your-password
-DB_HOST=localhost
-DB_PORT=5432
-OPENAI_API_KEY=your-openai-key
+SECRET_KEY=change-me
+DEBUG=True
 ALLOWED_HOSTS=localhost,127.0.0.1
-```
 
-#### Frontend (.env.local)
-```env
+# Choose one DB strategy:
+# 1) SQLite local: leave DATABASE_URL unset
+# 2) PostgreSQL: set DATABASE_URL
+DATABASE_URL=postgresql://user:password@host:5432/database
+
+FRONTEND_URL=http://localhost:3000
+# NEXT_PUBLIC_API_URL is used by Docker Compose environment wiring
 NEXT_PUBLIC_API_URL=http://localhost:8000
+
+# AI (recommended)
+HUGGINGFACE_API_KEY=your_hf_token
+HUGGINGFACE_MODEL=meta-llama/Meta-Llama-3-8B-Instruct
 ```
 
-## 🐳 Docker Deployment
+Notes:
+- The backend falls back to SQLite when `DATABASE_URL` is not provided.
+- If you use Docker dev compose, PostgreSQL and Redis are provisioned for you.
+- The current frontend API client defaults to `http://localhost:8000/api` in code.
 
-### Quick Start with Docker Compose
+## Docker
+
+### Development stack
 
 ```bash
-# Copy environment template
-cp .env.example .env
-
-# Edit .env with your configuration
-nano .env
-
-# Build and run all services
-docker-compose up --build
-
-# Run in detached mode
-docker-compose up -d
+docker compose -f docker-compose.dev.yaml --env-file .env up --build
 ```
 
-**Services will be available at:**
+Services:
 - Frontend: http://localhost:3000
-- Backend API: http://localhost:8000
-- Django Admin: http://localhost:8000/admin
-- API Docs: http://localhost:8000/swagger
+- Backend: http://localhost:8000
+- Health check: http://localhost:8000/health/
+- API docs: http://localhost:8000/api/docs/
 
-### Individual Service Deployment
+### Production-style stack
 
 ```bash
-# Backend only
-cd server
-docker-compose up --build
-
-# Frontend only
-cd client
-docker-compose up --build
+docker compose -f docker-compose.prod.yaml --env-file .env up --build -d
 ```
 
-### Deploy to Render
+## API Docs and Useful Endpoints
 
-This project includes a `render.yaml` blueprint for one-click deployment:
+- Swagger UI: `/api/docs/`
+- Health check: `/health/`
+- Admin: `/admin/`
 
-1. Push your code to GitHub
-2. Connect your repository to Render
-3. Render will auto-detect `render.yaml`
-4. Click "Apply" to deploy all services
+Common API groups:
+- Auth: `/api/auth/` and `/api/auth/registration/`
+- Accounts, doctors, patients, appointments, reviews: mounted under `/api/`
 
-For detailed deployment instructions, see [DOCKER_DEPLOYMENT.md](./DOCKER_DEPLOYMENT.md)
+## Development Commands
 
-## 📚 API Documentation
+### Frontend (`client`)
 
-### Interactive API Documentation
-
-- **Swagger UI**: http://localhost:8000/swagger/
-- **ReDoc**: http://localhost:8000/redoc/
-
-### Main API Endpoints
-
-#### Authentication
-- `POST /api/auth/register/` - Register new user
-- `POST /api/auth/login/` - Login user
-- `POST /api/auth/logout/` - Logout user
-- `GET /api/auth/user/` - Get current user
-
-#### Patients
-- `GET /api/patients/profile/` - Get patient profile
-- `PUT /api/patients/profile/` - Update patient profile
-- `POST /api/patients/reports/` - Upload medical report
-- `GET /api/patients/reports/` - List medical reports
-
-#### Doctors
-- `GET /api/doctors/` - List all doctors
-- `GET /api/doctors/{id}/` - Get doctor details
-- `GET /api/doctors/profile/` - Get own doctor profile
-- `PUT /api/doctors/profile/` - Update doctor profile
-- `POST /api/doctors/availability/` - Set availability
-- `GET /api/doctors/availability/` - Get availability
-
-#### Appointments
-- `POST /api/appointments/` - Create appointment
-- `GET /api/appointments/` - List appointments
-- `PATCH /api/appointments/{id}/accept/` - Accept appointment
-- `PATCH /api/appointments/{id}/reject/` - Reject appointment
-- `PATCH /api/appointments/{id}/complete/` - Complete appointment
-
-## 📁 Project Structure
-
-```
-health-pilot/
-├── client/                    # Next.js Frontend
-│   ├── app/                   # Next.js App Router
-│   │   ├── (auth)/           # Authentication pages
-│   │   ├── (dashboard)/      # Dashboard pages
-│   │   └── layout.tsx        # Root layout
-│   ├── components/           # React components
-│   │   ├── dashboard/        # Dashboard components
-│   │   └── ui/              # Reusable UI components
-│   ├── hooks/               # Custom React hooks
-│   ├── lib/                 # Utility functions
-│   ├── types/               # TypeScript types
-│   ├── public/              # Static assets
-│   ├── Dockerfile           # Frontend Docker config
-│   └── package.json         # Frontend dependencies
-│
-├── server/                   # Django Backend
-│   ├── api/                 # Django settings
-│   ├── accounts/            # User authentication
-│   ├── doctors/             # Doctor management
-│   ├── patients/            # Patient management
-│   ├── appointments/        # Appointment system
-│   ├── Dockerfile           # Backend Docker config
-│   ├── requirements.txt     # Python dependencies
-│   └── manage.py            # Django management
-│
-├── docker-compose.yml       # Multi-service orchestration
-├── render.yaml             # Render deployment config
-├── .env.example            # Environment template
-└── README.md               # This file
+```bash
+npm run dev
+npm run build
+npm run start
+npm run lint
+npm run format
+npm run typecheck
 ```
 
-## 🗄️ Database Models
+### Backend (`server`)
 
-### User & Authentication
-- **User** - Custom user model with email authentication
-  - Fields: email, user_type (patient/doctor), phone, first_name, last_name
-- **UserSettings** - User preferences and notification settings
-  - Fields: appointment_reminders, health_tips, security_alerts, two_factor_auth
+```bash
+python manage.py runserver
+python manage.py migrate
+python manage.py test
+```
 
-### Doctor Management
-- **Doctor** - Doctor profile and information
-  - Fields: user, specialization, bio, profile_picture, experience_years, consultation_fee
-  - Specializations: Cardiologist, Neurologist, Dermatologist, Orthopedic, Pediatrician, etc.
-- **DoctorAvailability** - Doctor schedule management
-  - Fields: doctor, day_of_week, start_time, end_time, is_available
+## Contributing
 
-### Patient Management
-- **Patient** - Patient profile and information
-  - Fields: user, date_of_birth, blood_group, address, emergency_contact
-- **MedicalReport** - Patient medical reports with AI analysis
-  - Fields: patient, report_file, symptoms, ai_specialization, ai_summary, extracted_text
+1. Fork the repository.
+2. Create a feature branch.
+3. Add or update tests for behavior changes.
+4. Run lint/type checks/tests.
+5. Open a pull request with a clear summary.
 
-### Appointments
-- **Appointment** - Appointment booking and management
-  - Fields: patient, doctor, medical_report, appointment_date, appointment_time, status, symptoms, doctor_notes, rejection_reason
-  - Status: pending, accepted, rejected, completed, cancelled
+## License
 
-## 🤝 Contributing
-
-Contributions are welcome! Please follow these steps:
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-### Development Guidelines
-
-- Follow PEP 8 for Python code
-- Use TypeScript for all frontend code
-- Write meaningful commit messages
-- Add tests for new features
-- Update documentation as needed
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 👥 Authors
-
-- Your Name - Initial work
-
-## 🙏 Acknowledgments
-
-- Django REST Framework for the robust API framework
-- Next.js team for the amazing React framework
-- Radix UI for accessible component primitives
-- OpenAI for AI-powered features
-- All contributors and supporters
-
-## 📞 Support
-
-For support, email support@healthpilot.com or open an issue in the repository.
-
----
-
-**Built with ❤️ for better healthcare management**
+MIT License. See [LICENSE](LICENSE).
