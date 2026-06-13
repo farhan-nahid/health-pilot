@@ -1,6 +1,7 @@
 from django.db import models
 from doctors.models import Doctor
 from patients.models import Patient
+from django.core.exceptions import ValidationError
 
 
 class Appointment(models.Model):
@@ -47,3 +48,30 @@ class Appointment(models.Model):
 
     def __str__(self):
         return f"{self.patient.user.get_full_name()} -> Dr. {self.doctor.user.get_full_name()} on {self.appointment_date}"
+
+
+class ChatMessage(models.Model):
+    appointment = models.ForeignKey(
+        Appointment,
+        on_delete=models.CASCADE,
+        related_name="messages"
+    )
+
+    patient = models.ForeignKey(
+        Patient,
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True
+    )
+
+    doctor = models.ForeignKey(
+        Doctor,
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True
+    )
+
+    message = models.TextField()
+    attachment = models.FileField(upload_to="chat_files/", null=True, blank=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)

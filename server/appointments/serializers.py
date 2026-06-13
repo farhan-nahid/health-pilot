@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Appointment
+from .models import Appointment, ChatMessage
 from doctors.serializers import DoctorListSerializer
 from patients.models import Patient
 
@@ -201,3 +201,19 @@ class AppointmentCompleteSerializer(serializers.ModelSerializer):
 
         instance.save()
         return instance
+
+
+# Chat
+
+class ChatMessageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ChatMessage
+        fields = "__all__"
+
+    def validate(self, attrs):
+        appointment = attrs["appointment"]
+
+        if appointment.status not in ["accepted", "completed"]:
+            raise serializers.ValidationError("Chat not allowed for this appointment")
+
+        return attrs

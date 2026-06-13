@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Appointment
+from .models import Appointment, ChatMessage
 
 
 @admin.register(Appointment)
@@ -47,3 +47,7 @@ class AppointmentAdmin(admin.ModelAdmin):
         ),
         ("Timestamps", {"fields": ("created_at", "updated_at")}),
     )
+
+
+
+admin.site.register(ChatMessage)
