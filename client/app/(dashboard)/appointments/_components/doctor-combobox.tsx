@@ -24,9 +24,17 @@ interface DoctorComboboxProps {
   value?: string;
   onChange: (value: string) => void;
   modal?: boolean;
+  specialization?: string;
+  disabled?: boolean;
 }
 
-export function DoctorCombobox({ value, onChange, modal = false }: DoctorComboboxProps) {
+export function DoctorCombobox({
+  value,
+  onChange,
+  modal = false,
+  specialization,
+  disabled = false,
+}: DoctorComboboxProps) {
   const [open, setOpen] = React.useState(false);
   const [searchTerm, setSearchTerm] = React.useState("");
   const debouncedSearch = useDebounce(searchTerm, 300);
@@ -34,13 +42,16 @@ export function DoctorCombobox({ value, onChange, modal = false }: DoctorCombobo
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
     useInfiniteQuery({
-      queryKey: ["doctors", "infinite", debouncedSearch],
+      queryKey: ["doctors", "infinite", debouncedSearch, specialization],
       queryFn: async ({ pageParam = 1 }) => {
         const params = new URLSearchParams({
           page: pageParam.toString(),
         });
         if (debouncedSearch) {
           params.append("search", debouncedSearch);
+        }
+        if (specialization && specialization !== "all") {
+          params.append("specialization", specialization);
         }
         const response = await api.get<PaginatedResponse<Doctor>>(
           `/doctors/?${params.toString()}`,
@@ -81,6 +92,7 @@ export function DoctorCombobox({ value, onChange, modal = false }: DoctorCombobo
           role="combobox"
           aria-expanded={open}
           className="w-full justify-between"
+          disabled={disabled}
         >
           {selectedDoctor
             ? `${selectedDoctor.doctor_name} (${selectedDoctor.specialization})`

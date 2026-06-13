@@ -33,6 +33,12 @@ class DoctorViewSet(viewsets.ModelViewSet):
         queryset = Doctor.objects.annotate(
             average_rating=Avg("reviews__rating"), total_reviews=Count("reviews")
         )
+
+        # Filter by specialization if provided
+        specialization = self.request.query_params.get("specialization", None)
+        if specialization:
+            queryset = queryset.filter(specialization__icontains=specialization)
+
         if self.request.user.user_type == "doctor":
             return queryset.filter(user=self.request.user)
         return queryset
@@ -277,7 +283,7 @@ class DoctorAvailabilityViewSet(viewsets.ModelViewSet):
                     serializer = self.get_serializer(data=slot_data)
                     if serializer.is_valid():
                         try:
-                            availability = serializer.save(doctor=doctor)
+                            serializer.save(doctor=doctor)
                             created_slots.append(serializer.data)
                         except IntegrityError:
                             return Response(
