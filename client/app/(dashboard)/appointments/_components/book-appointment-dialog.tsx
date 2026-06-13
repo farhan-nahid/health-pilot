@@ -1,5 +1,11 @@
 "use client";
 
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { format } from "date-fns";
+import { Calendar as CalendarIcon, Plus } from "lucide-react";
+import { useState } from "react";
+import { Controller, useForm } from "react-hook-form";
 import { FormSelect, FormTextarea } from "@/components/form";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -23,19 +29,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { TIME_SLOTS } from "@/constants";
+import { SPECIALIZATIONS, TIME_SLOTS } from "@/constants";
 import { useDependents } from "@/hooks/use-dependents";
 import { useDoctors } from "@/hooks/use-doctors";
 import api from "@/lib/api";
 import { showError, showSuccess } from "@/lib/notifications";
 import { cn } from "@/lib/utils";
 import { type AppointmentValues, appointmentSchema } from "@/schemas/appointment";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { format } from "date-fns";
-import { Calendar as CalendarIcon, Plus } from "lucide-react";
-import { useState } from "react";
-import { Controller, useForm } from "react-hook-form";
 import { DoctorCombobox } from "./doctor-combobox";
 
 export function BookAppointmentDialog({
@@ -49,6 +49,7 @@ export function BookAppointmentDialog({
 }) {
   const [open, setOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [specialization, setSpecialization] = useState<string>("");
 
   const queryClient = useQueryClient();
   const { doctors, isLoading: loadingDoctors } = useDoctors();
@@ -72,6 +73,7 @@ export function BookAppointmentDialog({
       queryClient.invalidateQueries({ queryKey: ["appointments"] });
       setOpen(false);
       form.reset();
+      setSpecialization("");
       if (onSuccess) onSuccess();
     },
     onError: (err: any) => {
@@ -117,44 +119,72 @@ export function BookAppointmentDialog({
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 py-4">
+            <div className="grid grid-cols-1 space-x-4 md:grid-cols-2 md:space-y-0">
+              <div>
+                <Controller
+                  control={form.control}
+                  name="dependent_id"
+                  render={({ field }) => (
+                    <div className="space-y-2">
+                      <Label>For Family Member</Label>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value || "self"}
+                      >
+                        <FormControl>
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Booking for myself" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="self">Myself</SelectItem>
+                          {dependents.map((dep) => (
+                            <SelectItem key={dep.id} value={dep.id.toString()}>
+                              {dep.name} ({dep.relationship})
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  )}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label>Select Specialization</Label>
+                <Select
+                  value={specialization}
+                  onValueChange={(val) => {
+                    setSpecialization(val);
+                    form.setValue("doctor", "");
+                  }}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Pick a specialization first" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {SPECIALIZATIONS.map((spec) => (
+                      <SelectItem key={spec.value} value={spec.value}>
+                        {spec.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
             <Controller
               control={form.control}
               name="doctor"
               render={({ field }) => (
                 <div className="space-y-2">
-                  <Controller
-                    control={form.control}
-                    name="dependent_id"
-                    render={({ field }) => (
-                      <div className="space-y-2">
-                        <Label>For Family Member</Label>
-                        <Select
-                          onValueChange={field.onChange}
-                          defaultValue={field.value || "self"}
-                        >
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Booking for myself" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            <SelectItem value="self">Myself</SelectItem>
-                            {dependents.map((dep) => (
-                              <SelectItem key={dep.id} value={dep.id.toString()}>
-                                {dep.name} ({dep.relationship})
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    )}
-                  />
-
                   <Label>Select Doctor</Label>
                   <DoctorCombobox
                     value={field.value}
                     onChange={field.onChange}
                     modal={true}
+                    specialization={specialization}
+                    disabled={!specialization}
                   />
                   {form.formState.errors.doctor && (
                     <p className="font-medium text-destructive text-sm">

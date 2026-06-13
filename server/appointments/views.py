@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from django.db import models
 from django.http import FileResponse
-from .models import Appointment, ChatMessage
+from .models import Appointment
 from .serializers import (
     AppointmentSerializer,
     AppointmentCreateSerializer,
@@ -377,4 +377,4 @@ class ChatMessageListView(generics.ListAPIView):
         if not patient and not doctor:
             raise PermissionDenied()
 
-        return appointment.messages.order_by("created_at")
+        return appointment.messages.order_by("-created_at")
