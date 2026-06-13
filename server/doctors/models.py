@@ -34,7 +34,10 @@ class Doctor(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f"Dr. {self.user.get_full_name()} - {self.specialization}"
+        if self.user.get_full_name():
+            return f"Dr. {self.user.get_full_name()} - {self.specialization}"
+        else:
+            return self.user.email
 
 
 class DoctorAvailability(models.Model):

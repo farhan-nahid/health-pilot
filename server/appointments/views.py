@@ -4,14 +4,18 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from django.db import models
 from django.http import FileResponse
-from .models import Appointment
+from .models import Appointment, ChatMessage
 from .serializers import (
     AppointmentSerializer,
     AppointmentCreateSerializer,
     AppointmentUpdateSerializer,
     AppointmentCompleteSerializer,
+    ChatMessageSerializer
 )
 from .pdf import build_prescription_pdf
+
+from rest_framework import generics, permissions
+from rest_framework.exceptions import PermissionDenied
 
 
 class AppointmentViewSet(viewsets.ModelViewSet):
@@ -325,3 +329,52 @@ class AppointmentViewSet(viewsets.ModelViewSet):
                 {"error": "Invalid date format. Use YYYY-MM-DD"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
+
+
+
+# Chat
+
+class SendMessageView(generics.CreateAPIView):
+    serializer_class = ChatMessageSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def perform_create(self, serializer):
+        user = self.request.user
+        patient = getattr(user, "patient_profile", None)
+        doctor = getattr(user, "doctor_profile", None)
+
+        appointment = serializer.validated_data["appointment"]
+
+        if appointment.status not in ["accepted", "completed"]:
+            raise PermissionDenied("Chat not allowed")
+
+        if patient and appointment.patient == patient:
+            serializer.save(patient=patient)
+
+        elif doctor and appointment.doctor == doctor:
+            serializer.save(doctor=doctor)
+
+        else:
+            raise PermissionDenied("Not part of this appointment")
+        
+class ChatMessageListView(generics.ListAPIView):
+    serializer_class = ChatMessageSerializer
+
+    def get_queryset(self):
+        appointment_id = self.kwargs["appointment_id"]
+        appointment = Appointment.objects.get(id=appointment_id)
+
+        user = self.request.user
+        patient = getattr(user, "patient_profile", None)
+        doctor = getattr(user, "doctor_profile", None)
+
+        if patient and appointment.patient != patient:
+            raise PermissionDenied()
+
+        if doctor and appointment.doctor != doctor:
+            raise PermissionDenied()
+
+        if not patient and not doctor:
+            raise PermissionDenied()
+
+        return appointment.messages.order_by("created_at")

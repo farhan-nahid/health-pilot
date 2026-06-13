@@ -9,7 +9,10 @@ class PatientAdmin(admin.ModelAdmin):
     search_fields = ("user__email", "user__first_name", "user__last_name")
 
     def get_patient_name(self, obj):
-        return obj.user.get_full_name()
+        if obj.user.get_full_name():
+            return obj.user.get_full_name()
+        else:
+            return obj.user.email
 
     get_patient_name.short_description = "Patient Name"
 
