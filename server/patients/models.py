@@ -16,7 +16,10 @@ class Patient(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return self.user.get_full_name()
+        if self.user.get_full_name():
+            return self.user.get_full_name()
+        else:
+            return self.user.email
 
 
 class MedicalReport(models.Model):
