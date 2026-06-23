@@ -5,24 +5,57 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('doctors', '0001_initial'),
-        ('patients', '0002_symptomassessment'),
-        ('appointments', '0002_appointment_follow_up_date_and_more'),
+        ("doctors", "0001_initial"),
+        ("patients", "0002_symptomassessment"),
+        ("appointments", "0002_appointment_follow_up_date_and_more"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='ChatMessage',
+            name="ChatMessage",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('message', models.TextField()),
-                ('attachment', models.FileField(blank=True, null=True, upload_to='chat_files/')),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('appointment', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='messages', to='appointments.appointment')),
-                ('doctor', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='doctors.doctor')),
-                ('patient', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='patients.patient')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("message", models.TextField()),
+                (
+                    "attachment",
+                    models.FileField(blank=True, null=True, upload_to="chat_files/"),
+                ),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                (
+                    "appointment",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="messages",
+                        to="appointments.appointment",
+                    ),
+                ),
+                (
+                    "doctor",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="doctors.doctor",
+                    ),
+                ),
+                (
+                    "patient",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="patients.patient",
+                    ),
+                ),
             ],
         ),
     ]

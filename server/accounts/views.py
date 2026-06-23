@@ -13,6 +13,7 @@ from rest_framework.response import Response
 
 User = get_user_model()
 
+
 class UserSettingsView(generics.RetrieveUpdateAPIView):
     serializer_class = UserSettingsSerializer
 

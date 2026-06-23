@@ -52,24 +52,14 @@ class Appointment(models.Model):
 
 class ChatMessage(models.Model):
     appointment = models.ForeignKey(
-        Appointment,
-        on_delete=models.CASCADE,
-        related_name="messages"
+        Appointment, on_delete=models.CASCADE, related_name="messages"
     )
 
     patient = models.ForeignKey(
-        Patient,
-        on_delete=models.CASCADE,
-        null=True,
-        blank=True
+        Patient, on_delete=models.CASCADE, null=True, blank=True
     )
 
-    doctor = models.ForeignKey(
-        Doctor,
-        on_delete=models.CASCADE,
-        null=True,
-        blank=True
-    )
+    doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE, null=True, blank=True)
 
     message = models.TextField()
     attachment = models.FileField(upload_to="chat_files/", null=True, blank=True)
