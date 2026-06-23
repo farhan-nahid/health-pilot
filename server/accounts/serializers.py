@@ -2,6 +2,12 @@ from rest_framework import serializers
 from dj_rest_auth.registration.serializers import RegisterSerializer
 from .models import User
 
+from django.contrib.auth.tokens import default_token_generator
+from django.utils.encoding import force_bytes
+from django.utils.http import urlsafe_base64_encode
+from django.conf import settings
+from django.core.mail import send_mail
+
 
 class CustomRegisterSerializer(RegisterSerializer):
     username = None
@@ -78,3 +84,28 @@ class UserSettingsSerializer(serializers.ModelSerializer):
             "security_alerts",
             "two_factor_auth",
         )
+
+
+class CustomPasswordResetSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+
+    def validate_email(self, value):
+        self.users = User.objects.filter(email__iexact=value, is_active=True)
+        if not self.users.exists():
+            return value
+        return value
+
+    def save(self):
+        request = self.context.get("request")
+        frontend_url = getattr(settings, 'FRONTEND_URL')
+
+        for user in getattr(self, "users", []):
+            uid = urlsafe_base64_encode(force_bytes(user.pk))
+            token = default_token_generator.make_token(user)
+
+            reset_link = f"{frontend_url}/reset-password/{uid}/{token}"
+
+            subject = "Password Reset Request"
+            message = f"Click to reset your password: {reset_link}"
+
+            send_mail(subject, message, None, [user.email], fail_silently=False,)
