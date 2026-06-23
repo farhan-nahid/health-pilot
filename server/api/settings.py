@@ -212,20 +212,25 @@ REST_AUTH = {
     "SESSION_LOGIN": False,
     "USER_DETAILS_SERIALIZER": "accounts.serializers.UserSerializer",
     "REGISTER_SERIALIZER": "accounts.serializers.CustomRegisterSerializer",
+    "PASSWORD_RESET_SERIALIZER": "accounts.serializers.CustomPasswordResetSerializer",
 }
 
 ACCOUNT_SIGNUP_PASSWORD_ENTER_TWICE = False
 
 
 # Email Configuration
-EMAIL_BACKEND = os.environ.get(
-    "EMAIL_BACKEND", "django.core.mail.backends.console.EmailBackend"
-)
+EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD")
+
+if EMAIL_HOST_USER and EMAIL_HOST_PASSWORD:
+    EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+else:
+    EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+
 EMAIL_HOST = os.environ.get("EMAIL_HOST", "smtp.gmail.com")
 EMAIL_PORT = int(os.environ.get("EMAIL_PORT", "587"))
-EMAIL_USE_TLS = os.environ.get("EMAIL_USE_TLS", "True") == "True"
-EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER", "")
-EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD", "")
+EMAIL_USE_TLS = os.environ.get("EMAIL_USE_TLS", True)
+
 DEFAULT_FROM_EMAIL = os.environ.get(
     "DEFAULT_FROM_EMAIL", "Health Pilot <noreply@healthpilot.com>"
 )
@@ -288,3 +293,6 @@ LOGGING = {
         "level": os.environ.get("LOG_LEVEL", "INFO"),
     },
 }
+
+
+FRONTEND_URL = os.environ.get("FRONTEND_URL")
