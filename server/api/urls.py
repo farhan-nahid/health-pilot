@@ -6,6 +6,7 @@ from drf_yasg.views import get_schema_view
 from rest_framework import permissions
 from drf_yasg import openapi
 from .views import health_check
+from accounts.views import PasswordResetConfirmAPI
 
 schema_view = get_schema_view(
     openapi.Info(
@@ -30,6 +31,7 @@ urlpatterns = [
     # Authentication URLs
     path("api/auth/", include("dj_rest_auth.urls")),
     path("api/auth/registration/", include("dj_rest_auth.registration.urls")),
+    path("api/auth/password/reset/confirm/", PasswordResetConfirmAPI.as_view()),
     # App URLs
     path("api/", include("accounts.urls")),
     path("api/", include("doctors.urls")),
