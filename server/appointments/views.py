@@ -10,7 +10,7 @@ from .serializers import (
     AppointmentCreateSerializer,
     AppointmentUpdateSerializer,
     AppointmentCompleteSerializer,
-    ChatMessageSerializer
+    ChatMessageSerializer,
 )
 from .pdf import build_prescription_pdf
 
@@ -331,8 +331,8 @@ class AppointmentViewSet(viewsets.ModelViewSet):
             )
 
 
-
 # Chat
+
 
 class SendMessageView(generics.CreateAPIView):
     serializer_class = ChatMessageSerializer
@@ -356,7 +356,8 @@ class SendMessageView(generics.CreateAPIView):
 
         else:
             raise PermissionDenied("Not part of this appointment")
-        
+
+
 class ChatMessageListView(generics.ListAPIView):
     serializer_class = ChatMessageSerializer
 

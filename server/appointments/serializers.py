@@ -205,6 +205,7 @@ class AppointmentCompleteSerializer(serializers.ModelSerializer):
 
 # Chat
 
+
 class ChatMessageSerializer(serializers.ModelSerializer):
     class Meta:
         model = ChatMessage

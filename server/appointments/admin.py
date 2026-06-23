@@ -49,5 +49,4 @@ class AppointmentAdmin(admin.ModelAdmin):
     )
 
 
-
 admin.site.register(ChatMessage)

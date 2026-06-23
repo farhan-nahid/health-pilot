@@ -97,7 +97,7 @@ class CustomPasswordResetSerializer(serializers.Serializer):
 
     def save(self):
         request = self.context.get("request")
-        frontend_url = getattr(settings, 'FRONTEND_URL')
+        frontend_url = getattr(settings, "FRONTEND_URL")
 
         for user in getattr(self, "users", []):
             uid = urlsafe_base64_encode(force_bytes(user.pk))
@@ -108,4 +108,10 @@ class CustomPasswordResetSerializer(serializers.Serializer):
             subject = "Password Reset Request"
             message = f"Click to reset your password: {reset_link}"
 
-            send_mail(subject, message, None, [user.email], fail_silently=False,)
+            send_mail(
+                subject,
+                message,
+                None,
+                [user.email],
+                fail_silently=False,
+            )
