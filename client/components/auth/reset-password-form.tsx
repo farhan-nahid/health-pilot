@@ -2,7 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowRight, Lock } from "lucide-react";
-import { useSearchParams } from "next/navigation";
+import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { FormPasswordInput } from "@/components/form";
 import { Button } from "@/components/ui/button";
@@ -17,11 +17,13 @@ import {
 import { useAuth } from "@/hooks/use-auth";
 import { type ResetPasswordValues, resetPasswordSchema } from "@/schemas/auth";
 
-export function ResetPasswordForm() {
+interface ResetPasswordFormProps {
+  uid: string;
+  token: string;
+}
+
+export function ResetPasswordForm({ uid, token }: ResetPasswordFormProps) {
   const { resetPasswordConfirm } = useAuth();
-  const searchParams = useSearchParams();
-  const uid = searchParams.get("uid") || "";
-  const token = searchParams.get("token") || "";
 
   const form = useForm<ResetPasswordValues>({
     resolver: zodResolver(resetPasswordSchema),
@@ -32,12 +34,14 @@ export function ResetPasswordForm() {
   });
 
   const onSubmit = (values: ResetPasswordValues) => {
-    resetPasswordConfirm.mutate({
-      ...values,
-      uid,
-      token,
-    });
+    resetPasswordConfirm.mutate({ ...values, uid, token });
   };
+
+  const errorMessage = resetPasswordConfirm.error
+    ? (resetPasswordConfirm.error as any).response?.status === 400
+      ? "This reset link is invalid or has expired."
+      : "Something went wrong. Please try again."
+    : null;
 
   if (!uid || !token) {
     return (
@@ -53,7 +57,7 @@ export function ResetPasswordForm() {
         </CardHeader>
         <CardFooter className="px-0 pt-6">
           <Button asChild className="w-full">
-            <a href="/forgot-password">Request new link</a>
+            <Link href="/forgot-password">Request new link</Link>
           </Button>
         </CardFooter>
       </Card>
@@ -80,6 +84,19 @@ export function ResetPasswordForm() {
             name="confirmPassword"
             label="Confirm New Password"
           />
+          {errorMessage && (
+            <div className="rounded-md border border-destructive/20 bg-destructive/10 py-2 text-center font-medium text-destructive text-sm">
+              {errorMessage}
+            </div>
+          )}
+          <div className="text-center text-sm">
+            <Link
+              href="/login"
+              className="inline-flex items-center font-medium text-primary hover:underline"
+            >
+              Back to sign in
+            </Link>
+          </div>
         </CardContent>
         <CardFooter className="px-0 pt-6">
           <Button
