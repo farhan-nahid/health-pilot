@@ -29,7 +29,7 @@ class PasswordResetConfirmAPI(APIView):
     def post(self, request):
         uid = request.data.get("uid")
         token = request.data.get("token")
-        new_password = request.data.get("new_password")
+        new_password = request.data.get("new_password1")
 
         try:
             user_id = force_str(urlsafe_base64_decode(uid))
