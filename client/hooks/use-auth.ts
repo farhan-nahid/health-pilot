@@ -99,8 +99,7 @@ export function useAuth() {
       await api.post("/auth/password/reset/confirm/", {
         uid: payload.uid,
         token: payload.token,
-        new_password1: payload.password,
-        new_password2: payload.confirmPassword,
+        new_password: payload.password,
       });
     },
     onSuccess: () => {
