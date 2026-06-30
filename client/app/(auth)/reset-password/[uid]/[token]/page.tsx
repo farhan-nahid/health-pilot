@@ -7,16 +7,17 @@ export const metadata: Metadata = {
   description: "Set a new password for your Health Pilot account.",
 };
 
-export default function ResetPasswordPage({
+export default async function ResetPasswordPage({
   params,
 }: {
-  params: { uid: string; token: string };
+  params: Promise<{ uid: string; token: string }>;
 }) {
+  const { uid, token } = await params;
   return (
     <Suspense
       fallback={<div className="flex items-center justify-center p-8">Loading...</div>}
     >
-      <ResetPasswordForm uid={params.uid} token={params.token} />
+      <ResetPasswordForm uid={uid} token={token} />
     </Suspense>
   );
 }
