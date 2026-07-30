@@ -3,16 +3,18 @@ from django.db import IntegrityError
 from django.db.models import Avg, Count
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
-from .models import Doctor, DoctorAvailability
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
+from .models import Doctor, DoctorAvailability, DoctorDocument
 from .serializers import (
     DoctorSerializer,
     DoctorUpdateSerializer,
     DoctorAvailabilitySerializer,
     DoctorListSerializer,
+    DoctorDocumentSerializer
 )
 from appointments.models import Appointment
 from appointments.serializers import AppointmentSerializer
+from django.utils import timezone
 
 
 class StandardResultsSetPagination(pagination.PageNumberPagination):
@@ -316,3 +318,157 @@ class DoctorAvailabilityViewSet(viewsets.ModelViewSet):
             return Response(
                 {"error": "Doctor profile not found"}, status=status.HTTP_404_NOT_FOUND
             )
+
+
+class DoctorDocumentViewSet(viewsets.ModelViewSet):
+    serializer_class = DoctorDocumentSerializer
+    permission_classes = [IsAuthenticated]
+    pagination_class = StandardResultsSetPagination
+
+    def get_queryset(self):
+        if self.request.user.user_type == "doctor":
+            return DoctorDocument.objects.filter(
+                doctor__user=self.request.user
+            ).order_by("-uploaded_at")
+
+        return DoctorDocument.objects.none()
+
+    def create(self, request, *args, **kwargs):
+        if request.user.user_type != "doctor":
+            return Response(
+                {"error": "Only doctors can upload verification documents"},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+        try:
+            doctor = request.user.doctor_profile
+        except Doctor.DoesNotExist:
+            return Response(
+                {"error": "Doctor profile not found"},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        serializer = self.get_serializer(data=request.data)
+
+        if serializer.is_valid():
+            serializer.save(doctor=doctor)
+
+            if doctor.verification_status in ["pending", "rejected"]:
+                doctor.verification_status = "under_review"
+                doctor.save(
+                    update_fields=[
+                        "verification_status",
+                        "updated_at",
+                    ]
+                )
+
+            return Response(
+                serializer.data,
+                status=status.HTTP_201_CREATED,
+            )
+
+        return Response(
+            serializer.errors,
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+    def destroy(self, request, *args, **kwargs):
+        if request.user.user_type != "doctor":
+            return Response(
+                {"error": "Only doctors can delete their documents"},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+        instance = self.get_object()
+        if instance.status == "approved":
+            return Response(
+                {
+                    "error": (
+                        "Approved documents cannot be deleted. "
+                        "Please contact an administrator."
+                    )
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        instance.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    @action(detail=True, methods=["post"],permission_classes=[IsAdminUser],)
+    def approve(self, request, pk=None):
+        document = self.get_object()
+
+        document.status = "approved"
+        document.reviewer_notes = request.data.get("reviewer_notes", "")
+        document.reviewed_at = timezone.now()
+        document.save(
+            update_fields=[
+                "status",
+                "reviewer_notes",
+                "reviewed_at",
+                "updated_at",
+            ]
+        )
+
+        doctor = document.doctor
+
+        required_documents = {
+            "bmdc_registration",
+            "medical_degree",
+            "internship",
+            "identity",
+        }
+
+        approved_documents = set(
+            doctor.verification_documents
+            .filter(status="approved")
+            .values_list("document_type", flat=True)
+        )
+
+        if required_documents.issubset(approved_documents):
+            doctor.verification_status = "verified"
+            doctor.verified_at = timezone.now()
+            doctor.save(
+                update_fields=[
+                    "verification_status",
+                    "verified_at",
+                    "updated_at",
+                ]
+            )
+
+        return Response(
+            self.get_serializer(document).data,
+            status=status.HTTP_200_OK,
+        )
+
+
+    @action(detail=True, methods=["post"], permission_classes=[IsAdminUser],)
+    def reject(self, request, pk=None):
+        document = self.get_object()
+
+        document.status = "rejected"
+        document.reviewer_notes = request.data.get("reviewer_notes", "")
+        document.reviewed_at = timezone.now()
+        document.save(
+            update_fields=[
+                "status",
+                "reviewer_notes",
+                "reviewed_at",
+                "updated_at",
+            ]
+        )
+
+        doctor = document.doctor
+
+        doctor.verification_status = "rejected"
+        doctor.save(
+            update_fields=[
+                "verification_status",
+                "updated_at",
+            ]
+        )
+
+        return Response(
+            self.get_serializer(document).data,
+            status=status.HTTP_200_OK,
+        )
