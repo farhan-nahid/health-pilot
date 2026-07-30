@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Doctor, DoctorAvailability
+from .models import Doctor, DoctorAvailability, DoctorDocument
 
 
 class DoctorAvailabilityInline(admin.TabularInline):
@@ -14,6 +14,7 @@ class DoctorAdmin(admin.ModelAdmin):
         "specialization",
         "experience_years",
         "consultation_fee",
+        "verification_status",
         "created_at",
     )
     list_filter = ("specialization", "experience_years")
@@ -35,3 +36,7 @@ class DoctorAvailabilityAdmin(admin.ModelAdmin):
         "doctor__user__first_name",
         "doctor__user__last_name",
     )
+
+@admin.register(DoctorDocument)
+class DoctorDocumentAdmin(admin.ModelAdmin):
+    list_display = ("doctor", "document_type", "status", "uploaded_at")
