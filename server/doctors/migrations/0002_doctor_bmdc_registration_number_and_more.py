@@ -5,47 +5,94 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('doctors', '0001_initial'),
+        ("doctors", "0001_initial"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='doctor',
-            name='bmdc_registration_number',
+            model_name="doctor",
+            name="bmdc_registration_number",
             field=models.CharField(blank=True, max_length=50, null=True, unique=True),
         ),
         migrations.AddField(
-            model_name='doctor',
-            name='verification_notes',
+            model_name="doctor",
+            name="verification_notes",
             field=models.TextField(blank=True, null=True),
         ),
         migrations.AddField(
-            model_name='doctor',
-            name='verification_status',
-            field=models.CharField(choices=[('pending', 'Pending'), ('under_review', 'Under Review'), ('verified', 'Verified'), ('rejected', 'Rejected')], default='pending', max_length=20),
+            model_name="doctor",
+            name="verification_status",
+            field=models.CharField(
+                choices=[
+                    ("pending", "Pending"),
+                    ("under_review", "Under Review"),
+                    ("verified", "Verified"),
+                    ("rejected", "Rejected"),
+                ],
+                default="pending",
+                max_length=20,
+            ),
         ),
         migrations.AddField(
-            model_name='doctor',
-            name='verified_at',
+            model_name="doctor",
+            name="verified_at",
             field=models.DateTimeField(blank=True, null=True),
         ),
         migrations.CreateModel(
-            name='DoctorDocument',
+            name="DoctorDocument",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('document_type', models.CharField(choices=[('bmdc_registration', 'BM&DC Registration Certificate'), ('medical_degree', 'Medical Degree Certificate'), ('internship', 'Internship Certificate'), ('identity', 'NID / Passport'), ('specialist_qualification', 'Specialist Qualification'), ('additional_degree', 'Additional Degree / Certificate')], max_length=50)),
-                ('file', models.FileField(upload_to='doctors/verification_documents/')),
-                ('status', models.CharField(choices=[('pending', 'Pending'), ('approved', 'Approved'), ('rejected', 'Rejected')], default='pending', max_length=20)),
-                ('reviewer_notes', models.TextField(blank=True, null=True)),
-                ('reviewed_at', models.DateTimeField(blank=True, null=True)),
-                ('uploaded_at', models.DateTimeField(auto_now_add=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('doctor', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='verification_documents', to='doctors.doctor')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "document_type",
+                    models.CharField(
+                        choices=[
+                            ("bmdc_registration", "BM&DC Registration Certificate"),
+                            ("medical_degree", "Medical Degree Certificate"),
+                            ("internship", "Internship Certificate"),
+                            ("identity", "NID / Passport"),
+                            ("specialist_qualification", "Specialist Qualification"),
+                            ("additional_degree", "Additional Degree / Certificate"),
+                        ],
+                        max_length=50,
+                    ),
+                ),
+                ("file", models.FileField(upload_to="doctors/verification_documents/")),
+                (
+                    "status",
+                    models.CharField(
+                        choices=[
+                            ("pending", "Pending"),
+                            ("approved", "Approved"),
+                            ("rejected", "Rejected"),
+                        ],
+                        default="pending",
+                        max_length=20,
+                    ),
+                ),
+                ("reviewer_notes", models.TextField(blank=True, null=True)),
+                ("reviewed_at", models.DateTimeField(blank=True, null=True)),
+                ("uploaded_at", models.DateTimeField(auto_now_add=True)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                (
+                    "doctor",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="verification_documents",
+                        to="doctors.doctor",
+                    ),
+                ),
             ],
             options={
-                'ordering': ['document_type', '-uploaded_at'],
+                "ordering": ["document_type", "-uploaded_at"],
             },
         ),
     ]

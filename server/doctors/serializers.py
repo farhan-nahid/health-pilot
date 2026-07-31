@@ -116,13 +116,9 @@ class DoctorListSerializer(serializers.ModelSerializer):
 
 class DoctorDocumentSerializer(serializers.ModelSerializer):
     document_type_display = serializers.CharField(
-        source="get_document_type_display",
-        read_only=True
+        source="get_document_type_display", read_only=True
     )
-    status_display = serializers.CharField(
-        source="get_status_display",
-        read_only=True
-    )
+    status_display = serializers.CharField(source="get_status_display", read_only=True)
 
     class Meta:
         model = DoctorDocument
