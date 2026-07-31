@@ -189,12 +189,8 @@ REST_FRAMEWORK = {
 }
 
 # CORS Settings
-CORS_ALLOW_ALL_ORIGINS = os.environ.get("CORS_ALLOW_ALL_ORIGINS", "False") == "True"
-CORS_ALLOWED_ORIGINS = (
-    os.environ.get("FRONTEND_URL", "http://localhost:3000").split(",")
-    if not CORS_ALLOW_ALL_ORIGINS
-    else []
-)
+CORS_ALLOW_ALL_ORIGINS = False
+CORS_ALLOWED_ORIGINS = ["http://localhost:3000", "https://health-piilot.vercel.app"]
 CORS_ALLOW_CREDENTIALS = True
 
 # ---- ALLAUTH SETTINGS ----
