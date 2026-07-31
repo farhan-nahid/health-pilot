@@ -37,6 +37,7 @@ class DoctorAvailabilityAdmin(admin.ModelAdmin):
         "doctor__user__last_name",
     )
 
+
 @admin.register(DoctorDocument)
 class DoctorDocumentAdmin(admin.ModelAdmin):
     list_display = ("doctor", "document_type", "status", "uploaded_at")
