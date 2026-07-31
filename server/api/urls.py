@@ -29,7 +29,11 @@ urlpatterns = [
         name="schema-swagger-ui",
     ),
     # Authentication URLs
-    path("api/auth/password/reset/confirm/", PasswordResetConfirmAPI.as_view(), name="password_reset_confirm"),
+    path(
+        "api/auth/password/reset/confirm/",
+        PasswordResetConfirmAPI.as_view(),
+        name="password_reset_confirm",
+    ),
     path("api/auth/registration/", include("dj_rest_auth.registration.urls")),
     path("api/auth/", include("dj_rest_auth.urls")),
     # App URLs
