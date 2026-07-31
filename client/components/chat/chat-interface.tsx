@@ -119,7 +119,9 @@ export function ChatInterface({ appointment }: ChatInterfaceProps) {
           ) : (
             <>
               <AvatarImage src={appointment.doctor_details.profile_picture || ""} />
-              <AvatarFallback>{appointment.doctor_details.doctor_name[0]}</AvatarFallback>
+              <AvatarFallback>
+                {(appointment.doctor_details?.doctor_name || "D")[0]}
+              </AvatarFallback>
             </>
           )}
         </Avatar>
@@ -127,12 +129,14 @@ export function ChatInterface({ appointment }: ChatInterfaceProps) {
           <h3 className="font-semibold text-sm">
             {user?.user_type === "doctor"
               ? appointment.patient_name
-              : `Dr. ${appointment.doctor_details.doctor_name}`}
+              : appointment.doctor_details?.doctor_name
+                ? `Dr. ${appointment.doctor_details.doctor_name}`
+                : "Doctor"}
           </h3>
           <p className="text-[10px] text-muted-foreground uppercase">
             {user?.user_type === "doctor"
               ? "Patient"
-              : appointment.doctor_details.specialization}
+              : appointment.doctor_details?.specialization}
           </p>
         </div>
       </div>
@@ -177,7 +181,7 @@ export function ChatInterface({ appointment }: ChatInterfaceProps) {
                           src={appointment.doctor_details.profile_picture || ""}
                         />
                         <AvatarFallback>
-                          {appointment.doctor_details.doctor_name[0]}
+                          {(appointment.doctor_details?.doctor_name || "D")[0]}
                         </AvatarFallback>
                       </>
                     ) : (

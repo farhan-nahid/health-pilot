@@ -83,7 +83,7 @@ export function DoctorList({
               <Avatar className="h-full w-full rounded-none">
                 <AvatarImage
                   src={doctor.profile_picture || ""}
-                  alt={doctor.doctor_name}
+                  alt={doctor.doctor_name || "Doctor"}
                   className="object-cover transition-transform group-hover:scale-105"
                 />
                 <AvatarFallback className="rounded-none">
@@ -101,12 +101,17 @@ export function DoctorList({
             <CardHeader className="pb-2">
               <div className="flex items-start justify-between">
                 <div>
-                  <CardTitle className="text-xl">{doctor.doctor_name}</CardTitle>
+                  <CardTitle className="text-xl">
+                    {doctor.doctor_name || "Doctor"}
+                  </CardTitle>
                   <CardDescription className="font-medium text-primary">
                     {doctor.specialization}
                   </CardDescription>
                 </div>
-                <DoctorReviewsDialog doctorId={doctor.id} doctorName={doctor.doctor_name}>
+                <DoctorReviewsDialog
+                  doctorId={doctor.id}
+                  doctorName={doctor.doctor_name || "Doctor"}
+                >
                   <div className="flex cursor-pointer items-center rounded-md p-1 text-yellow-500 transition-colors hover:bg-muted/50">
                     <Star
                       className={`mr-1 h-4 w-4 ${doctor.average_rating ? "fill-current" : "text-gray-300"}`}

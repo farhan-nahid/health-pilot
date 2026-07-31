@@ -3,7 +3,12 @@
 import { useDoctorProfile } from "@/hooks/use-doctors";
 import { usePatientProfile } from "@/hooks/use-patient";
 import { useUser } from "@/hooks/use-user";
-import { AccountInfoCard, DoctorProfileCard, PatientProfileCard } from "./profile-cards";
+import {
+  AccountInfoCard,
+  DoctorDocumentsCard,
+  DoctorProfileCard,
+  PatientProfileCard,
+} from "./profile-cards";
 
 export function ProfileClient() {
   const { user, isLoading: userLoading } = useUser();
@@ -30,7 +35,12 @@ export function ProfileClient() {
 
       {isPatient && patientProfile && <PatientProfileCard profile={patientProfile} />}
 
-      {isDoctor && doctorProfile && <DoctorProfileCard profile={doctorProfile} />}
+      {isDoctor && doctorProfile && (
+        <>
+          <DoctorProfileCard profile={doctorProfile} />
+          <DoctorDocumentsCard />
+        </>
+      )}
     </div>
   );
 }

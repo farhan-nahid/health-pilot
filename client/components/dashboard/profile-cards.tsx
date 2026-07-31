@@ -13,8 +13,13 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { SelectItem } from "@/components/ui/select";
-import { BLOOD_GROUPS, SPECIALIZATIONS } from "@/constants";
-import { useUpdateDoctorProfile } from "@/hooks/use-doctors";
+import { BLOOD_GROUPS, DOCTOR_DOCUMENT_TYPES, SPECIALIZATIONS } from "@/constants";
+import {
+  useDeleteDoctorDocument,
+  useDoctorDocuments,
+  useUpdateDoctorProfile,
+  useUploadDoctorDocument,
+} from "@/hooks/use-doctors";
 import { useUpdatePatientProfile } from "@/hooks/use-patient";
 import { useUpdateUser } from "@/hooks/use-user";
 import { showError, showSuccess } from "@/lib/notifications";
@@ -26,6 +31,16 @@ import {
   type PatientProfileValues,
   patientProfileSchema,
 } from "@/schemas/profile";
+import type { Doctor, DoctorDocument } from "@/types";
+import {
+  CheckCircle2,
+  Clock,
+  ExternalLink,
+  FileText,
+  Trash2,
+  Upload,
+  XCircle,
+} from "lucide-react";
 
 export function AccountInfoCard({ user }: { user: any }) {
   const mutation = useUpdateUser();
@@ -193,7 +208,7 @@ export function PatientProfileCard({ profile }: { profile: any }) {
   );
 }
 
-export function DoctorProfileCard({ profile }: { profile: any }) {
+export function DoctorProfileCard({ profile }: { profile: Doctor }) {
   const mutation = useUpdateDoctorProfile();
   const [error, setError] = useState<string | null>(null);
 
@@ -274,6 +289,200 @@ export function DoctorProfileCard({ profile }: { profile: any }) {
             Update Professional Profile
           </Button>
         </form>
+      </CardContent>
+    </Card>
+  );
+}
+
+export function DoctorDocumentsCard() {
+  const { documents, isLoading } = useDoctorDocuments();
+  const uploadMutation = useUploadDoctorDocument();
+  const deleteMutation = useDeleteDoctorDocument();
+
+  const [documentType, setDocumentType] = useState<string>("bmdc_registration");
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setSelectedFile(e.target.files[0]);
+    }
+  };
+
+  const handleUpload = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedFile) {
+      setError("Please select a document file to upload.");
+      return;
+    }
+
+    setError(null);
+    const formData = new FormData();
+    formData.append("document_type", documentType);
+    formData.append("file", selectedFile);
+
+    try {
+      await uploadMutation.mutateAsync(formData);
+      showSuccess("Document uploaded successfully!");
+      setSelectedFile(null);
+      const fileInput = document.getElementById("document_file") as HTMLInputElement;
+      if (fileInput) fileInput.value = "";
+    } catch (err: any) {
+      showError(err);
+      setError(err.response?.data?.message || err.message || "Failed to upload document");
+    }
+  };
+
+  const handleDelete = async (id: number) => {
+    try {
+      await deleteMutation.mutateAsync(id);
+      showSuccess("Document deleted!");
+    } catch (err: any) {
+      showError(err);
+    }
+  };
+
+  const getStatusBadge = (status: string, display: string) => {
+    switch (status) {
+      case "approved":
+        return (
+          <span className="inline-flex items-center gap-1 rounded-full bg-green-100 px-2.5 py-0.5 font-medium text-green-800 text-xs dark:bg-green-950 dark:text-green-300">
+            <CheckCircle2 className="h-3 w-3" />
+            {display || "Approved"}
+          </span>
+        );
+      case "rejected":
+        return (
+          <span className="inline-flex items-center gap-1 rounded-full bg-red-100 px-2.5 py-0.5 font-medium text-red-800 text-xs dark:bg-red-950 dark:text-red-300">
+            <XCircle className="h-3 w-3" />
+            {display || "Rejected"}
+          </span>
+        );
+      default:
+        return (
+          <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2.5 py-0.5 font-medium text-amber-800 text-xs dark:bg-amber-950 dark:text-amber-300">
+            <Clock className="h-3 w-3" />
+            {display || "Pending"}
+          </span>
+        );
+    }
+  };
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <FileText className="h-5 w-5 text-primary" />
+          Verification Documents
+        </CardTitle>
+        <CardDescription>
+          Upload and manage your medical licenses and verification documents.
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-6">
+        <form
+          onSubmit={handleUpload}
+          className="space-y-4 rounded-lg border p-4 bg-muted/30"
+        >
+          <h4 className="font-semibold text-sm">Upload New Document</h4>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div className="space-y-2">
+              <label className="font-medium text-sm">Document Type</label>
+              <select
+                value={documentType}
+                onChange={(e) => setDocumentType(e.target.value)}
+                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              >
+                {DOCTOR_DOCUMENT_TYPES.map((dt) => (
+                  <option key={dt.value} value={dt.value}>
+                    {dt.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="space-y-2">
+              <label className="font-medium text-sm">File (PDF, PNG, JPG)</label>
+              <input
+                id="document_file"
+                type="file"
+                accept=".pdf,.png,.jpg,.jpeg"
+                onChange={handleFileChange}
+                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm file:border-0 file:bg-transparent file:font-medium file:text-sm"
+              />
+            </div>
+          </div>
+
+          {error && <p className="font-medium text-destructive text-sm">{error}</p>}
+
+          <Button type="submit" size="sm" loading={uploadMutation.isPending}>
+            <Upload className="mr-2 h-4 w-4" />
+            Upload Document
+          </Button>
+        </form>
+
+        <div className="space-y-3">
+          <h4 className="font-semibold text-sm">Uploaded Documents</h4>
+
+          {isLoading ? (
+            <div className="flex items-center justify-center py-6">
+              <div className="h-6 w-6 animate-spin rounded-full border-primary border-b-2"></div>
+            </div>
+          ) : documents.length === 0 ? (
+            <p className="text-center py-6 text-muted-foreground text-sm">
+              No verification documents uploaded yet.
+            </p>
+          ) : (
+            <div className="divide-y rounded-lg border">
+              {documents.map((doc: DoctorDocument) => (
+                <div
+                  key={doc.id}
+                  className="flex flex-col gap-2 p-3 sm:flex-row sm:items-center sm:justify-between"
+                >
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2">
+                      <span className="font-medium text-sm">
+                        {doc.document_type_display || doc.document_type}
+                      </span>
+                      {getStatusBadge(doc.status, doc.status_display)}
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      Uploaded on {new Date(doc.uploaded_at).toLocaleDateString()}
+                    </p>
+                    {doc.reviewer_notes && (
+                      <p className="text-xs text-amber-600 dark:text-amber-400">
+                        Notes: {doc.reviewer_notes}
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="flex items-center gap-2 pt-2 sm:pt-0">
+                    {doc.file && (
+                      <Button variant="outline" size="sm" asChild>
+                        <a href={doc.file} target="_blank" rel="noopener noreferrer">
+                          <ExternalLink className="mr-1 h-3.5 w-3.5" />
+                          View
+                        </a>
+                      </Button>
+                    )}
+
+                    {doc.status !== "approved" && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="text-destructive hover:text-destructive"
+                        onClick={() => handleDelete(doc.id)}
+                        loading={deleteMutation.isPending}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       </CardContent>
     </Card>
   );

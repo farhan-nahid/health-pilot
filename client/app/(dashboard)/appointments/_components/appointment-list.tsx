@@ -97,12 +97,16 @@ export function AppointmentList({
                       <AvatarImage src={apt.doctor_details.profile_picture || ""} />
                     )}
                     {!isDoctor && (
-                      <AvatarFallback>{apt.doctor_details.doctor_name[0]}</AvatarFallback>
+                      <AvatarFallback>
+                        {(apt.doctor_details?.doctor_name || "D")[0]}
+                      </AvatarFallback>
                     )}
                   </Avatar>
                   <div className="flex flex-col">
                     <span className="font-semibold text-sm">
-                      {isDoctor ? apt.patient_name : apt.doctor_details.doctor_name}
+                      {isDoctor
+                        ? apt.patient_name
+                        : apt.doctor_details?.doctor_name || "Doctor"}
                       {!isDoctor && apt.patient_name && (
                         <span className="ml-2 rounded-full bg-muted px-2 py-0.5 text-[10px] text-muted-foreground">
                           For: {apt.patient_name}
