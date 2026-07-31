@@ -10,7 +10,7 @@ from .serializers import (
     DoctorUpdateSerializer,
     DoctorAvailabilitySerializer,
     DoctorListSerializer,
-    DoctorDocumentSerializer
+    DoctorDocumentSerializer,
 )
 from appointments.models import Appointment
 from appointments.serializers import AppointmentSerializer
@@ -394,7 +394,11 @@ class DoctorDocumentViewSet(viewsets.ModelViewSet):
         instance.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-    @action(detail=True, methods=["post"],permission_classes=[IsAdminUser],)
+    @action(
+        detail=True,
+        methods=["post"],
+        permission_classes=[IsAdminUser],
+    )
     def approve(self, request, pk=None):
         document = self.get_object()
 
@@ -420,9 +424,9 @@ class DoctorDocumentViewSet(viewsets.ModelViewSet):
         }
 
         approved_documents = set(
-            doctor.verification_documents
-            .filter(status="approved")
-            .values_list("document_type", flat=True)
+            doctor.verification_documents.filter(status="approved").values_list(
+                "document_type", flat=True
+            )
         )
 
         if required_documents.issubset(approved_documents):
@@ -441,8 +445,11 @@ class DoctorDocumentViewSet(viewsets.ModelViewSet):
             status=status.HTTP_200_OK,
         )
 
-
-    @action(detail=True, methods=["post"], permission_classes=[IsAdminUser],)
+    @action(
+        detail=True,
+        methods=["post"],
+        permission_classes=[IsAdminUser],
+    )
     def reject(self, request, pk=None):
         document = self.get_object()
 
