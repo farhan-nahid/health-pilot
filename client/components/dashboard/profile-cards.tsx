@@ -380,7 +380,10 @@ export function DoctorDocumentsCard() {
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
-        <form onSubmit={handleUpload} className="space-y-4 rounded-lg border p-4 bg-muted/30">
+        <form
+          onSubmit={handleUpload}
+          className="space-y-4 rounded-lg border p-4 bg-muted/30"
+        >
           <h4 className="font-semibold text-sm">Upload New Document</h4>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div className="space-y-2">

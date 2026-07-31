@@ -101,7 +101,9 @@ export function DoctorList({
             <CardHeader className="pb-2">
               <div className="flex items-start justify-between">
                 <div>
-                  <CardTitle className="text-xl">{doctor.doctor_name || "Doctor"}</CardTitle>
+                  <CardTitle className="text-xl">
+                    {doctor.doctor_name || "Doctor"}
+                  </CardTitle>
                   <CardDescription className="font-medium text-primary">
                     {doctor.specialization}
                   </CardDescription>
