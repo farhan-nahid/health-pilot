@@ -56,3 +56,55 @@ export function useUpdateDoctorProfile() {
     },
   });
 }
+
+export function useDoctorDocuments() {
+  const { data, isLoading, error, refetch } = useQuery<any>({
+    queryKey: ["doctor-documents"],
+    queryFn: async () => {
+      const { data } = await api.get("/doctor-documents/");
+      return data;
+    },
+  });
+
+  const documents = Array.isArray(data) ? data : data?.results || [];
+
+  return {
+    documents,
+    isLoading,
+    error: error ? (error as any).message : null,
+    refetch,
+  };
+}
+
+export function useUploadDoctorDocument() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (formData: FormData) => {
+      const { data } = await api.post("/doctor-documents/", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["doctor-documents"] });
+      queryClient.invalidateQueries({ queryKey: ["doctor-profile"] });
+    },
+  });
+}
+
+export function useDeleteDoctorDocument() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (documentId: number) => {
+      await api.delete(`/doctor-documents/${documentId}/`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["doctor-documents"] });
+      queryClient.invalidateQueries({ queryKey: ["doctor-profile"] });
+    },
+  });
+}

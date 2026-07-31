@@ -28,3 +28,12 @@ export const SPECIALIZATIONS = [
   { value: "gastroenterologist", label: "Gastroenterologist" },
   { value: "general_physician", label: "General Physician" },
 ];
+
+export const DOCTOR_DOCUMENT_TYPES = [
+  { value: "bmdc_registration", label: "BM&DC Registration Certificate" },
+  { value: "medical_degree", label: "Medical Degree Certificate" },
+  { value: "internship", label: "Internship Certificate" },
+  { value: "identity", label: "NID / Passport" },
+  { value: "specialist_qualification", label: "Specialist Qualification" },
+  { value: "additional_degree", label: "Additional Degree / Certificate" },
+];
